@@ -4,7 +4,7 @@ const { exec } = require('child_process');
 function remote_cmd(cmd, async = false) {
   console.log("cmd: " + cmd);
   var res = {'status': 'async'};
-  var rem = `ssh -i config/deploy.key root@37.1.220.232 '${cmd}'`;
+  var rem = `ssh -i config/teleChart.pem root@37.1.220.232 '${cmd}'`;
   if (false == async) {
     try {
       res['result'] = execSync(rem, { stdio: 'pipe' } );
@@ -28,11 +28,9 @@ function fast_deploy() {
   console.log(result);
   result = remote_cmd('cd /data/teleChart && ./teleChart-pull');
   console.log(result);
-  result = remote_cmd('cd /data/nonsense && kill -9 "$(< log/nonsense.pid)"');
+  result = remote_cmd('cd /data/teleChart && kill -9 "$(< logs/teleChart.pid)"');
   console.log(result);
-  result = remote_cmd('cd /data/nonsense && ./vgit-pull');
-  console.log(result);
-  result = remote_cmd('cd /data/nonsense && ./nonsense-run');
+  result = remote_cmd('cd /data/teleChart && ./teleChart-run');
   console.log(result);
 }
 

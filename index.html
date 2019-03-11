@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--meta name="viewport" content="width=device-width"-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
   <title></title>
 </head>
 <script type="text/javascript" src="js/teleChart.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
 <body>
-<svg width="300px" height="300px" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="50" cy="50" r="40" stroke="red" fill="grey" />
+<svg id="anyChart" width="300px" height="300px" xmlns="http://www.w3.org/2000/svg">
+  <line x1="0" y1="0" x2="300" y2="300" stroke="black" stroke-width=3 />
+  <line x1="300" y1="0" x2="0" y2="300" stroke="black" stroke-width=3 />
+<!--   <circle cx="50" cy="50" r="40" stroke="red" fill="grey" />
   <circle cx="150" cy="50" r="4" stroke="red" fill="grey" />
-
-  <svg viewBox="0 0 10 10" x="200" width="100">
-    <circle cx="5" cy="5" r="4" stroke="red" fill="grey" />
-  </svg>
+ -->
 </svg>
 <div>
   Hello
