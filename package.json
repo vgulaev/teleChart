@@ -1,0 +1,22 @@
+{
+  "name": "telechart",
+  "version": "1.0.0",
+  "description": "The Telegram official coding competition for Android, iOS and JS developers",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vgulaev/teleChart.git"
+  },
+  "author": "vgulaev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vgulaev/teleChart/issues"
+  },
+  "homepage": "https://github.com/vgulaev/teleChart#readme",
+  "dependencies": {
+    "http-server": "^0.11.1"
+  }
+}
