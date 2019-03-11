@@ -1,0 +1,1 @@
+ssh-agent bash -c 'ssh-add config/teleChart.pem; git pull'
