@@ -51,12 +51,12 @@ class TeleChart {
     return element;
   }
 
-  static text(innerText, options = {}) {
-    let element = TeleChart.createSVG('text');
-    TeleChart.setAttribute(element, options);
-    element.innerHTML = innerText;
-    return element;
-  }
+  // static text(innerHTML, options = {}) {
+  //   let element = TeleChart.createSVG('text');
+  //   TeleChart.setAttribute(element, options);
+  //   element.innerHTML = innerHTML;
+  //   return element;
+  // }
 
   makeWellStructuredData() {
     this.data.raw.columns.forEach((element, index) => {
@@ -66,14 +66,14 @@ class TeleChart {
     for (const [name, _type] of Object.entries(this.data.raw.types)) {
       let a = this.data.raw.columns[this.data.nameByIndex[name]];
       if ('x' == _type) {
-        for (let i = 1; i < a.length - 1; i++) {
+        for (let i = 1; i < a.length; i++) {
           this.data.x.push(new Date(a[i]));
         }
       } else if ('line' == _type) {
         this.data.y[name] = {
           coord: []
         };
-        for (let i = 1; i < a.length - 1; i++) {
+        for (let i = 1; i < a.length; i++) {
           this.data.y[name].coord.push(a[i]);
         }
         this.data.y[name].max = Math.max(...this.data.y[name].coord);
@@ -88,42 +88,75 @@ class TeleChart {
       raw: data,
       x: [],
       y: {},
+      viewList: new Set(),
       nameByIndex: {}
     };
     this.makeWellStructuredData();
     this.width = this.svgRoot.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
-    if (options.panelHeight < 1) {
-      this.heightPanel = Math.ceil(this.height * options.panelHeight);
+    if (options.heightPanel < 1) {
+      this.heightPanel = Math.ceil(this.height * options.heightPanel);
     } else {
-      this.heightPanel = options.panelHeight;
+      this.heightPanel = options.heightPanel;
     }
-
     this.render();
     // alert('TeleChart ready');
   }
 
+  button(name) {
+    return `<button style="border-radius: 40px; border: 0;">
+      <svg width="40px" height="40px" style=" display: inline-block; vertical-align: middle;">
+      <polygon fill="#FFD41D" points="0,0 50,0 50,50 0,50">
+      </svg>
+      <span>${name}</span>
+    </button>`;
+  }
+
   createHeader() {
+    this.header = document.getElementById('Header');
+    Object.keys(this.data.raw.names).forEach(element => {
+      this.header.innerHTML += this.button(element);
+      // this.header.append();
+    });
   }
 
   calcLineCoord(fromX, fromY, dx, dy, data) {
+    console.log(dy);
+    let strArray = [];
+    let points = [];
+    let scaleX = dx / (this.xLength - 1);
+    let heightY = this.maxy - this.miny;
+    for (let i = 0; i < this.xLength; i++) {
+      let x = fromX + scaleX * i;
+      let y = fromY - (data[i] - this.miny) / heightY * dy;
+      points.push([x, y]);
+    }
 
+    strArray.push(`M ${points[0].join(',')}`);
+    strArray.push('L');
+
+    for (let i = 1; i < this.xLength; i++) {
+      strArray.push(points[i].join(','));
+    }
+    return strArray.join(' ');
   }
 
   createMiniMap() {
     let a = [];
-    let xLength = this.data.x.length;
-    Object.keys(this.data.raw.names).forEach(element => {
+    let names = this.data.raw.names;
+    Object.keys(names).forEach(element => {
       a.push(this.data.y[element].min);
       a.push(this.data.y[element].max);
     });
-    let miny = Math.min(...a);
-    let maxy = Math.max(...a);
-    for (let i = 0; i < xLength; i++) {
-      console.log(this.data.x[i]);
-    }
-    let path = TeleChart.path({'d': 'M 10,10 L 20,30 40,60 100,200 400,100 0,300 400,400', 'stroke-width': 2, 'stroke': 'black', 'fill': 'none'});
-    this.svgRoot.append(path);
+    this.xLength = this.data.x.length;
+    this.miny = Math.min(...a);
+    this.maxy = Math.max(...a);
+    console.log(this.heightPanel);
+    Object.keys(names).forEach(element => {
+      let d = this.calcLineCoord(2, this.height - 2, this.width - 4, this.heightPanel - 4, this.data.y[element].coord);
+      let path = TeleChart.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[element], 'fill': 'none'});
+      this.svgRoot.append(path)
+    });
   }
 
   render() {
