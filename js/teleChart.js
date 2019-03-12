@@ -44,6 +44,12 @@ class TeleChart {
     return element;
   }
 
+  static animate(options = {}) {
+    let element = TeleChart.createSVG('animate');
+    TeleChart.setAttribute(element, options);
+    return element;
+  }
+
   static circle(cx, cy, r, options = {}) {
     let element = TeleChart.createSVG('circle');
     TeleChart.setAttribute(element, {'cx': cx, 'cy': cy, 'r': r});
@@ -89,6 +95,7 @@ class TeleChart {
       x: [],
       y: {},
       viewItems: new Set(Object.keys(data.names)),
+      allItems: new Set(Object.keys(data.names)),
       nameByIndex: {}
     };
     this.makeWellStructuredData();
@@ -114,7 +121,19 @@ class TeleChart {
   }
 
   animatePanel() {
-    // let miny =
+    let needUpdate = this.updateMinMax();
+    if (false == needUpdate) return;
+    for (let item of this.data.viewItems) {
+      let p = this.data.y[item].path;
+      let d = this.fastCalcLineCoord(item, 'panel');
+      let a = this.data.y[item].animate;
+      TeleChart.setAttribute(a, {'attributeName': 'd', 'to': d});
+      // a.setAttributeNS(null, );
+      a.beginElement();
+    }
+    // if (0 == viewItems.length) {
+    // }
+    // console.log('do what you do');
   }
 
   reCheck(button, name) {
@@ -125,6 +144,7 @@ class TeleChart {
       this.data.viewItems.add(name);
       this.data.y[name].path.style.display = 'inline';
     }
+    this.animatePanel();
   }
 
   createHeader() {
@@ -190,7 +210,12 @@ class TeleChart {
     Object.keys(names).forEach(element => {
       let d = this.fastCalcLineCoord(element, 'panel');
       let path = TeleChart.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[element], 'fill': 'none'});
+      let a = TeleChart.animate({
+        'attributeName': 'd', 'dur': '2000ms', 'to': '', 'fill': 'freeze', 'begin': 'indefinite'
+      });
+      path.append(a);
       this.data.y[element].path = path;
+      this.data.y[element].animate = a;
       this.svgRoot.append(path)
     });
   }
