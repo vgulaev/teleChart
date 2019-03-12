@@ -88,7 +88,7 @@ class TeleChart {
       raw: data,
       x: [],
       y: {},
-      viewList: new Set(),
+      viewItems: new Set(Object.keys(data.names)),
       nameByIndex: {}
     };
     this.makeWellStructuredData();
@@ -104,24 +104,45 @@ class TeleChart {
   }
 
   button(name) {
-    return `<button style="border-radius: 40px; border: 0;">
+    return `<button id="${name}Button" style="border-radius: 40px; border: 0;">
       <svg width="40px" height="40px" style=" display: inline-block; vertical-align: middle;">
-      <polygon fill="#FFD41D" points="0,0 50,0 50,50 0,50">
+      <path d="M 5, 20 a 15,15 0 1,0 30,0 a 15,15 0 1,0 -30,0 M 15,15 h 10 v 10 h -10 z" stroke-width="2" stroke="${this.data.raw.colors[name]}" fill="${this.data.raw.colors[name]}">
+        </path>
       </svg>
       <span>${name}</span>
     </button>`;
   }
 
+  animatePanel() {
+    // let miny =
+  }
+
+  reCheck(button, name) {
+    if (this.data.viewItems.has(name)) {
+      this.data.viewItems.delete(name);
+      //this.data.y[name].path.style.display = 'none';
+    } else {
+      this.data.viewItems.add(name);
+      this.data.y[name].path.style.display = 'inline';
+    }
+  }
+
   createHeader() {
+    let keys = Object.keys(this.data.raw.names);
     this.header = document.getElementById('Header');
-    Object.keys(this.data.raw.names).forEach(element => {
+
+    keys.forEach(element => {
       this.header.innerHTML += this.button(element);
-      // this.header.append();
+    });
+    keys.forEach(element => {
+      let b = document.getElementById(`${element}Button`);
+      b.addEventListener('click', eventData => {
+        this.reCheck(b, element);
+      });
     });
   }
 
   calcLineCoord(fromX, fromY, dx, dy, data) {
-    console.log(dy);
     let strArray = [];
     let points = [];
     let scaleX = dx / (this.xLength - 1);
@@ -141,20 +162,35 @@ class TeleChart {
     return strArray.join(' ');
   }
 
-  createMiniMap() {
+  fastCalcLineCoord(element, type) {
+    return this.calcLineCoord(2, this.height - 2, this.width - 4, this.heightPanel - 4, this.data.y[element].coord);
+  }
+
+  updateMinMax() {
     let a = [];
+    for (let item of this.data.viewItems) {
+      a.push(this.data.y[item].min);
+      a.push(this.data.y[item].max);
+    }
+    let miny = Math.min(...a);
+    let maxy = Math.max(...a);
+    if (this.miny != miny || this.maxy != maxy) {
+      this.miny = miny;
+      this.maxy = maxy;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  createMiniMap() {
+    this.updateMinMax();
     let names = this.data.raw.names;
-    Object.keys(names).forEach(element => {
-      a.push(this.data.y[element].min);
-      a.push(this.data.y[element].max);
-    });
     this.xLength = this.data.x.length;
-    this.miny = Math.min(...a);
-    this.maxy = Math.max(...a);
-    console.log(this.heightPanel);
     Object.keys(names).forEach(element => {
-      let d = this.calcLineCoord(2, this.height - 2, this.width - 4, this.heightPanel - 4, this.data.y[element].coord);
+      let d = this.fastCalcLineCoord(element, 'panel');
       let path = TeleChart.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[element], 'fill': 'none'});
+      this.data.y[element].path = path;
       this.svgRoot.append(path)
     });
   }
