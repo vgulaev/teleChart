@@ -70,7 +70,9 @@ class TeleChart {
         }
       } else if ('line' == _type) {
         this.data.y[name] = {
-          coord: []
+          coord: [],
+          panel: {},
+          graph: {}
         };
         for (let i = 1; i < a.length; i++) {
           this.data.y[name].coord.push(a[i]);
@@ -81,24 +83,17 @@ class TeleChart {
     }
   }
 
-  createStyleTag() {
-    this.style = document.createElement('style');
-    this.style.setAttribute('type', 'text/css');
-    this.svgRoot.append(this.style);
-  }
-
   constructor(tagID, data, options = {}) {
     this.svgRoot = document.getElementById(tagID);
     this.data = {
       raw: data,
       x: [],
-      y: {},
+      y: {
+      },
       viewItems: new Set(Object.keys(data.names)),
       allItems: new Set(Object.keys(data.names)),
       nameByIndex: {}
     };
-    this.animationCounter = 0;
-    this.createStyleTag();
     this.makeWellStructuredData();
     this.width = this.svgRoot.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
@@ -123,13 +118,15 @@ class TeleChart {
 
   animationStep() {
     let curTime = performance.now();
-    let progress = (curTime - TeleChart.startTime) / TeleChart.animationTime;
+    let rightProgres = (curTime - TeleChart.startTime) / TeleChart.animationTime;
+    let leftProgres = 1 - rightProgres;
     for (let item of this.data.viewItems) {
-      let tempPoints = this.data.y[item].newViewCoord.map((xy, index) => [
+      let panel = this.data.y[item].panel;
+      let tempPoints = panel.newViewCoord.map((xy, index) => [
         xy[0],
-        xy[1] - this.data.y[item].deltaY[index] * (1 - progress)
+        xy[1] - panel.deltaY[index] * leftProgres
         ]);
-      this.data.y[item].curViewCoord = tempPoints;
+      panel.curViewCoord = tempPoints;
       this.data.y[item].path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
     }
 
@@ -137,8 +134,8 @@ class TeleChart {
       requestAnimationFrame(() => this.animationStep());
     } else {
       for (let item of this.data.viewItems) {
-        this.data.y[item].curViewCoord = this.data.y[item].newViewCoord;
-        this.data.y[item].path.setAttributeNS(null, 'd', this.pointsToD(this.data.y[item].curViewCoord));
+        this.data.y[item].panel.curViewCoord = this.data.y[item].panel.newViewCoord;
+        this.data.y[item].path.setAttributeNS(null, 'd', this.pointsToD(this.data.y[item].panel.curViewCoord));
       }
     }
   }
@@ -151,29 +148,13 @@ class TeleChart {
     if (!this.updateMinMax()) return;
 
     for (let item of this.data.viewItems) {
-      this.data.y[item].newViewCoord = this.fastCalcLineCoord(item, 'panel');
-      this.data.y[item].deltaY = this.data.y[item].curViewCoord.map((xy, index) => this.data.y[item].newViewCoord[index][1] - this.data.y[item].curViewCoord[index][1]);
+      let panel = this.data.y[item].panel;
+      panel.newViewCoord = this.fastCalcLineCoord(item, 'panel');
+      panel.deltaY = panel.curViewCoord.map((xy, index) => panel.newViewCoord[index][1] - panel.curViewCoord[index][1]);
     }
 
     requestAnimationFrame(() => this.animationStep());
 
-    // let curentDY = this.maxy - this.miny;
-    // // if (!this.updateMinMax()) return;
-    // // if (0 == this.data.viewItems.length) return;
-    // let newDY = this.maxy - this.miny;
-    // console.log(curentDY, newDY);
-    // this.style.innerHTML = `
-    // #gMiniMap {
-    //   -webkit-animation: move_eye${this.animationCounter} 2s ease forwards;
-    // }
-    // /**/
-    // @keyframes move_eye${this.animationCounter} {
-    // from { transform: matrix( 1, 0, 0, 1, 0, 0); }
-    // to   {
-    //   transform: matrix(1, 0, 0, 3, 0, -300);
-    //   }
-    // }`;
-    // this.animationCounter += 1;
   }
 
   reCheck(button, name) {
@@ -228,7 +209,11 @@ class TeleChart {
   }
 
   fastCalcLineCoord(element, type) {
-    return this.calcLineCoord(2, this.height - 2, this.width - 4, this.heightPanel - 4, element);
+    if ('panel' == type) {
+      return this.calcLineCoord(2, this.height - 2, this.width - 4, this.heightPanel - 4, element);
+    } else {
+      return this.calcLineCoord(2, this.height - 2, this.width - 4, this.width - this.heightPanel - 4, element);
+    }
   }
 
   updateMinMax() {
@@ -255,8 +240,8 @@ class TeleChart {
     this.gMiniMap = TeleChart.createSVG('g');
     TeleChart.setAttribute(this.gMiniMap, {'id': 'gMiniMap'});
     Object.keys(names).forEach(element => {
-      this.data.y[element].curViewCoord = this.fastCalcLineCoord(element, 'panel');
-      let d = this.pointsToD(this.data.y[element].curViewCoord);
+      this.data.y[element].panel.curViewCoord = this.fastCalcLineCoord(element, 'panel');
+      let d = this.pointsToD(this.data.y[element].panel.curViewCoord);
       let path = TeleChart.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[element], 'fill': 'none'});
       this.data.y[element].path = path;
       this.gMiniMap.append(path);
