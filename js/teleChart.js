@@ -57,13 +57,6 @@ class TeleChart {
     return element;
   }
 
-  // static text(innerHTML, options = {}) {
-  //   let element = TeleChart.createSVG('text');
-  //   TeleChart.setAttribute(element, options);
-  //   element.innerHTML = innerHTML;
-  //   return element;
-  // }
-
   makeWellStructuredData() {
     this.data.raw.columns.forEach((element, index) => {
       this.data.nameByIndex[element[0]] = index;
@@ -88,6 +81,12 @@ class TeleChart {
     }
   }
 
+  createStyleTag() {
+    this.style = document.createElement('style');
+    this.style.setAttribute('type', 'text/css');
+    this.svgRoot.append(this.style);
+  }
+
   constructor(tagID, data, options = {}) {
     this.svgRoot = document.getElementById(tagID);
     this.data = {
@@ -98,6 +97,8 @@ class TeleChart {
       allItems: new Set(Object.keys(data.names)),
       nameByIndex: {}
     };
+    this.animationCounter = 0;
+    this.createStyleTag();
     this.makeWellStructuredData();
     this.width = this.svgRoot.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
@@ -121,19 +122,24 @@ class TeleChart {
   }
 
   animatePanel() {
-    let needUpdate = this.updateMinMax();
-    if (false == needUpdate) return;
-    for (let item of this.data.viewItems) {
-      let p = this.data.y[item].path;
-      let d = this.fastCalcLineCoord(item, 'panel');
-      let a = this.data.y[item].animate;
-      TeleChart.setAttribute(a, {'attributeName': 'd', 'to': d});
-      // a.setAttributeNS(null, );
-      a.beginElement();
+    console.log(this.gMiniMap.style.webkitAnimation);
+    this.style.innerHTML = `
+    #gMiniMap {
+      -webkit-animation: move_eye${this.animationCounter} 2s ease;
     }
-    // if (0 == viewItems.length) {
-    // }
-    // console.log('do what you do');
+    /**/
+    @keyframes move_eye${this.animationCounter} {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+    }`;
+  this.animationCounter += 1;
+  // this.gMiniMap.classList.remove('gMiniMap');
+  // requestAnimationFrame(() => {
+  //   this.gMiniMap.classList.add('gMiniMap');
+  // });
+  // setTimeout(() => {
+  //
+  // }, 2000);
   }
 
   reCheck(button, name) {
@@ -207,17 +213,15 @@ class TeleChart {
     this.updateMinMax();
     let names = this.data.raw.names;
     this.xLength = this.data.x.length;
+    this.gMiniMap = TeleChart.createSVG('g');
+    TeleChart.setAttribute(this.gMiniMap, {'id': 'gMiniMap'});
     Object.keys(names).forEach(element => {
       let d = this.fastCalcLineCoord(element, 'panel');
       let path = TeleChart.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[element], 'fill': 'none'});
-      let a = TeleChart.animate({
-        'attributeName': 'd', 'dur': '2000ms', 'to': '', 'fill': 'freeze', 'begin': 'indefinite'
-      });
-      path.append(a);
       this.data.y[element].path = path;
-      this.data.y[element].animate = a;
-      this.svgRoot.append(path)
+      this.gMiniMap.append(path);
     });
+    this.svgRoot.append(this.gMiniMap);
   }
 
   render() {

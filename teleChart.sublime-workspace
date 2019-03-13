@@ -1,0 +1,1277 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"se",
+				"setAttribute"
+			],
+			[
+				"set",
+				"setAttributeNS"
+			],
+			[
+				"fa",
+				"fastCalcLineCoord"
+			],
+			[
+				"le",
+				"length"
+			],
+			[
+				"ma",
+				"maxy"
+			],
+			[
+				"mi",
+				"miny"
+			],
+			[
+				"na",
+				"name"
+			],
+			[
+				"get",
+				"getElementById"
+			],
+			[
+				"col",
+				"colors"
+			],
+			[
+				"pa",
+				"path"
+			],
+			[
+				"inn",
+				"innerHTML"
+			],
+			[
+				"cre",
+				"createElementNS"
+			],
+			[
+				"co",
+				"console"
+			],
+			[
+				"he",
+				"height"
+			],
+			[
+				"heigh",
+				"heightY"
+			],
+			[
+				"fr",
+				"fromY"
+			],
+			[
+				"m",
+				"maxy"
+			],
+			[
+				"fro",
+				"fromX"
+			],
+			[
+				"x",
+				"xLength"
+			],
+			[
+				"sv",
+				"svgRoot"
+			],
+			[
+				"te",
+				"TeleChart"
+			],
+			[
+				"for",
+				"forEach"
+			],
+			[
+				"to",
+				"toFixed"
+			],
+			[
+				"ava",
+				"average"
+			],
+			[
+				"res",
+				"resolve"
+			],
+			[
+				"re",
+				"return"
+			],
+			[
+				"tot",
+				"totalUnits"
+			],
+			[
+				"f",
+				"fix"
+			],
+			[
+				"a",
+				"allCmd"
+			],
+			[
+				"pr",
+				"private"
+			],
+			[
+				"cons",
+				"console"
+			],
+			[
+				"con",
+				"console"
+			],
+			[
+				"e",
+				"empty_res"
+			],
+			[
+				"s",
+				"shift"
+			],
+			[
+				"req",
+				"reqcounter"
+			],
+			[
+				"de",
+				"default"
+			],
+			[
+				"lo",
+				"load_layout"
+			],
+			[
+				"no",
+				"nonsense"
+			],
+			[
+				"err",
+				"error_callback"
+			],
+			[
+				"pro",
+				"process"
+			],
+			[
+				"sta",
+				"stack"
+			],
+			[
+				"c",
+				"client"
+			],
+			[
+				"nod",
+				"node"
+			],
+			[
+				"fo",
+				"folder"
+			],
+			[
+				"loa",
+				"load_page"
+			],
+			[
+				"ti",
+				"title"
+			],
+			[
+				"po",
+				"post"
+			],
+			[
+				"pos",
+				"posts"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"conn",
+				"connections"
+			],
+			[
+				"onc",
+				"onclick\tAttr"
+			],
+			[
+				"ur",
+				"uri"
+			],
+			[
+				"ht",
+				"html"
+			],
+			[
+				"conte",
+				"content_type"
+			],
+			[
+				"in",
+				"input\tTag"
+			],
+			[
+				"tr",
+				"trial"
+			],
+			[
+				"sh",
+				"sheet_name"
+			],
+			[
+				"aw",
+				"aws_id"
+			],
+			[
+				"Fil",
+				"File\tFile.open(\"..\") { |file| .. }"
+			],
+			[
+				"ke",
+				"key"
+			],
+			[
+				"Fi",
+				"File\tFile.open(\"..\") { |file| .. }"
+			],
+			[
+				"ssh",
+				"ssh_key"
+			],
+			[
+				"use",
+				"user_host"
+			],
+			[
+				"dd",
+				"dbcred"
+			],
+			[
+				"aws",
+				"aws_cred"
+			],
+			[
+				"new",
+				"new_keys"
+			],
+			[
+				"ro",
+				"rotate_credentials"
+			],
+			[
+				"prov",
+				"provider_id"
+			],
+			[
+				"cred",
+				"credentials"
+			],
+			[
+				"key",
+				"key_for_remove"
+			],
+			[
+				"Re",
+				"remote_query"
+			],
+			[
+				"db",
+				"dbname"
+			],
+			[
+				"ra",
+				"range_name"
+			],
+			[
+				"va",
+				"values"
+			],
+			[
+				"pus",
+				"push_to_gs"
+			],
+			[
+				"range",
+				"range_name"
+			],
+			[
+				"pu",
+				"push"
+			],
+			[
+				"sel",
+				"self"
+			],
+			[
+				"els",
+				"else"
+			],
+			[
+				"del",
+				"deleted"
+			],
+			[
+				"su",
+				"sum"
+			],
+			[
+				"ca",
+				"category1"
+			],
+			[
+				"comm",
+				"commit"
+			],
+			[
+				"ty",
+				"type"
+			],
+			[
+				"typ",
+				"types"
+			],
+			[
+				"st",
+				"staging_aws"
+			],
+			[
+				"acc",
+				"account_id"
+			],
+			[
+				"eac",
+				"each"
+			],
+			[
+				"da",
+				"dailycost"
+			],
+			[
+				"tota",
+				"Total"
+			],
+			[
+				"cat",
+				"category3"
+			],
+			[
+				"com",
+				"common"
+			],
+			[
+				"k",
+				"keys"
+			],
+			[
+				"det",
+				"detect_stagings"
+			],
+			[
+				"ss",
+				"ssh_key"
+			],
+			[
+				"ho",
+				"host"
+			],
+			[
+				"el",
+				"elb"
+			],
+			[
+				"ber",
+				"berkeley"
+			],
+			[
+				"fil",
+				"file_name"
+			],
+			[
+				"qu",
+				"quote"
+			],
+			[
+				"zo",
+				"zone"
+			],
+			[
+				"zon",
+				"zone_mask"
+			],
+			[
+				"stat",
+				"status"
+			],
+			[
+				"wh",
+				"whois"
+			],
+			[
+				"whe",
+				"where"
+			],
+			[
+				"si",
+				"silent_mode"
+			],
+			[
+				"ta",
+				"table_name"
+			],
+			[
+				"z",
+				"zone"
+			],
+			[
+				"lam",
+				"lambda"
+			],
+			[
+				"fi",
+				"File"
+			],
+			[
+				"nam",
+				"name"
+			],
+			[
+				"q",
+				"query"
+			],
+			[
+				"op",
+				"opt\toption(..)"
+			],
+			[
+				"dep",
+				"deploy_path"
+			],
+			[
+				"li",
+				"link\tTag"
+			],
+			[
+				"di",
+				"div\tTag"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "index.html",
+			"settings":
+			{
+				"buffer_size": 680,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "js/teleChart.js",
+			"settings":
+			{
+				"buffer_size": 7282,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "test.html",
+			"settings":
+			{
+				"buffer_size": 996,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "logs/tmp/chart_data.js",
+			"settings":
+			{
+				"buffer_size": 58029,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "js/index.js",
+			"settings":
+			{
+				"buffer_size": 636,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"wra",
+				"Word Wrap: Toggle"
+			],
+			[
+				"wr",
+				"Word Wrap: Toggle"
+			],
+			[
+				"jso pret",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"jso",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"jsa",
+				"Pretty JSON: Format and Sort JSON"
+			],
+			[
+				"json",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"WRAP",
+				"Word Wrap: Toggle"
+			],
+			[
+				"js",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"wrap",
+				"Word Wrap: Toggle"
+			],
+			[
+				"w",
+				"Word Wrap: Toggle"
+			],
+			[
+				"syn sq",
+				"Set Syntax: SQL"
+			],
+			[
+				"jsO",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"Package Control: in",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 192.0,
+		"history":
+		[
+			"source",
+			"selector"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/vgulaev/workspaces/teleChart",
+		"/home/vgulaev/workspaces/teleChart/js",
+		"/home/vgulaev/workspaces/teleChart/logs",
+		"/home/vgulaev/workspaces/teleChart/logs/tmp"
+	],
+	"file_history":
+	[
+		"/home/vgulaev/workspaces/teleChart/js/teleChart.js",
+		"/home/vgulaev/workspaces/ftjs/.gitignore",
+		"/home/vgulaev/workspaces/jarvis/jarvis.sublime-project",
+		"/home/vgulaev/workspaces/jarvis/deploy.js",
+		"/home/vgulaev/workspaces/jarvis/jarvis-pull",
+		"/home/vgulaev/workspaces/jarvis/config/secrets.json",
+		"/home/vgulaev/workspaces/nonsense/deploy.js",
+		"/home/vgulaev/workspaces/ftjs/stats.js",
+		"/home/vgulaev/workspaces/ftjs/logs/.keep",
+		"/home/vgulaev/workspaces/ftjs/config/.keep",
+		"/home/vgulaev/workspaces/ftjs/jarvis.sublime-project",
+		"/home/vgulaev/workspaces/jarvis/jarvis",
+		"/home/vgulaev/workspaces/jarvis/log/.keep",
+		"/home/vgulaev/workspaces/nonsense/nonsense.sublime-project",
+		"/home/vgulaev/workspaces/jarvis/jarvis.js",
+		"/home/vgulaev/workspaces/jarvis/.gitignore",
+		"/home/vgulaev/workspaces/jarvis/config/.keep",
+		"/home/vgulaev/workspaces/jarvis/devdemon.js",
+		"/home/vgulaev/workspaces/jarvis/package.json",
+		"/home/vgulaev/workspaces/nonsense/jekyll.js",
+		"/home/vgulaev/workspaces/nonsense/nonsense-v2.js",
+		"/home/vgulaev/workspaces/nonsense/empty.js",
+		"/home/vgulaev/workspaces/nonsense/respond.js",
+		"/home/vgulaev/workspaces/nonsense/hw.js",
+		"/home/vgulaev/workspaces/nonsense/deploy/remote.js",
+		"/home/vgulaev/workspaces/nonsense/nonsense-run",
+		"/home/vgulaev/workspaces/vgulaev.github.io/_posts/2019-02-11-11-40-00.markdown",
+		"/home/vgulaev/workspaces/vgulaev.github.io/about-us.html",
+		"/home/vgulaev/workspaces/nonsense/vgit-pull",
+		"/home/vgulaev/workspaces/vgulaev.github.io/_layouts/default.html",
+		"/home/vgulaev/workspaces/vgulaev.github.io/_layouts/post.html",
+		"/home/vgulaev/workspaces/nonsense/config/environment.json",
+		"/home/vgulaev/workspaces/nonsense/nonsense.js",
+		"/home/vgulaev/workspaces/saasjs/content/js/common.js",
+		"/home/vgulaev/workspaces/nonsense/reqcounter.js",
+		"/home/vgulaev/workspaces/nonsense/config.js",
+		"/home/vgulaev/workspaces/nonsense/devdemon.js",
+		"/home/vgulaev/workspaces/vgulaev.github.io/robots.txt",
+		"/home/vgulaev/workspaces/nonsense/nonsense-pull",
+		"/home/vgulaev/workspaces/nonsense/eyutil.js",
+		"/home/vgulaev/workspaces/vgulaev.github.io/_posts/2018-12-17-11-40-00.markdown",
+		"/home/vgulaev/workspaces/nonsense/deploy/devlisener.js",
+		"/home/vgulaev/workspaces/vgulaev.github.io/blog.html",
+		"/home/vgulaev/workspaces/nonsense/log/counter/.keep",
+		"/home/vgulaev/workspaces/nonsense/log/counter/2018-12-11.txt",
+		"/home/vgulaev/workspaces/nonsense/.gitignore",
+		"/home/vgulaev/.bashrc",
+		"/home/vgulaev/workspaces/vgulaev.github.io/_posts/2018-12-11-11-40-00.markdown",
+		"/home/vgulaev/workspaces/nonsense/log/counter",
+		"/home/vgulaev/workspaces/nonsense/log/requests/.keep",
+		"/home/vgulaev/workspaces/vgulaev.github.io/css/_main.css",
+		"/home/vgulaev/workspaces/vgulaev.github.io/css/main.css",
+		"/home/vgulaev/workspaces/nonsense/package.json",
+		"/home/vgulaev/workspaces/vgulaev.github.io/contact.html",
+		"/home/vgulaev/workspaces/nonsense/config/templates/ssh.config",
+		"/home/vgulaev/workspaces/nonsense/log/output.txt",
+		"/home/vgulaev/workspaces/nonsense/log/.keep",
+		"/home/vgulaev/workspaces/nonsense/config/templates/environment.json.prod",
+		"/home/vgulaev/workspaces/nonsense/config/templates",
+		"/home/vgulaev/workspaces/nonsense/config/environment",
+		"/home/vgulaev/workspaces/nonsense/config/.keep",
+		"/home/vgulaev/workspaces/nonsense/config/config.js",
+		"/home/vgulaev/workspaces/nonsense/config",
+		"/home/vgulaev/workspaces/vgulaev.github.io/_posts/2018-12-01-11-40-00.markdown",
+		"/home/vgulaev/workspaces/ey2020js/eyutil.js",
+		"/home/vgulaev/workspaces/ey2020js/config/.keep",
+		"/home/vgulaev/workspaces/ey2020js/config/database.yml",
+		"/home/vgulaev/workspaces/ey2020js/.gitignore",
+		"/home/vgulaev/workspaces/ey2020js/hw.js",
+		"/home/vgulaev/workspaces/ey2020js/devserver.js",
+		"/home/vgulaev/workspaces/ey2020js/content/hw.html",
+		"/home/vgulaev/.config/sublime-text-3/Packages/User/nodejs.sublime-build",
+		"/home/vgulaev/workspaces/ey2020js/myapp.js",
+		"/home/vgulaev/workspaces/ey2020/app/views/layouts/application.html.erb",
+		"/home/vgulaev/workspaces/ey2020/app/views/welcome/index.html.erb",
+		"/home/vgulaev/workspaces/ey2020/app/controllers/sessions_controller.rb",
+		"/home/vgulaev/workspaces/ey2020/config/routes.rb",
+		"/home/vgulaev/workspaces/ey2020/app/views/login/index.html.erb",
+		"/home/vgulaev/workspaces/ey2020/app/models/session.rb",
+		"/home/vgulaev/workspaces/ey2020/app/controllers/cc_controller.rb",
+		"/home/vgulaev/workspaces/ey2020/app/views/cc/index.html.erb",
+		"/home/vgulaev/workspaces/ey2020/ey2020.sublime-project",
+		"/home/vgulaev/workspaces/ey2020/db/migrate/20181114162106_create_sessions.rb",
+		"/home/vgulaev/workspaces/ey2020/db/migrate/20181112234512_create_users.rb",
+		"/home/vgulaev/workspaces/ey2020/app/controllers/login_controller.rb",
+		"/home/vgulaev/workspaces/ey2020/app/helpers/login_helper.rb",
+		"/home/vgulaev/workspaces/ey2020/config/database.yml",
+		"/home/vgulaev/workspaces/ey2020/.gitignore",
+		"/home/vgulaev/workspaces/work_in_XO/input/changerequest.txt",
+		"/home/vgulaev/workspaces/work_in_XO/aws_ey_spending_update.rb",
+		"/home/vgulaev/workspaces/work_in_XO/tmp/notice.txt",
+		"/home/vgulaev/workspaces/work_in_XO/input/aws_cost_tracker.json",
+		"/home/vgulaev/workspaces/work_in_XO/aws_update_smithy.rb",
+		"/home/vgulaev/workspaces/work_in_XO/input/jira_fields.json",
+		"/home/vgulaev/workspaces/work_in_XO/hw.sh",
+		"/home/vgulaev/.ssh/config",
+		"/home/vgulaev/workspaces/work_in_XO/aws_cred.rb",
+		"/home/vgulaev/workspaces/work_in_XO/hw.rb",
+		"/home/vgulaev/workspaces/work_in_XO/aws_rotate_credentials.rb",
+		"/home/vgulaev/workspaces/work_in_XO/secrets/aws_rotate.json",
+		"/home/vgulaev/workspaces/work_in_XO/aws_ct_accounts.rb",
+		"/home/vgulaev/workspaces/work_in_XO/text/Best story on how Crossover has changed your life.txt",
+		"/home/vgulaev/workspaces/work_in_XO/jiracr.php",
+		"/home/vgulaev/workspaces/work_in_XO/tmp/smithy.json",
+		"/home/vgulaev/workspaces/work_in_XO/secrets/aws_cli.json",
+		"/home/vgulaev/workspaces/work_in_XO/secrets/ad_login.json",
+		"/home/vgulaev/workspaces/work_in_XO/hw.py",
+		"/home/vgulaev/workspaces/work_in_XO/aws_recreate_credentials.rb",
+		"/home/vgulaev/workspaces/work_in_XO/aws_query_mysql_ssh.rb",
+		"/home/vgulaev/workspaces/work_in_XO/tmp/out.csv",
+		"/home/vgulaev/workspaces/work_in_XO/lib/remote_query.rb",
+		"/home/vgulaev/workspaces/_del/customers.sql",
+		"/home/vgulaev/workspaces/_del/providers.sql",
+		"/home/vgulaev/workspaces/work_in_XO/aws_cost_tracker.rb",
+		"/home/vgulaev/workspaces/work_in_XO/ans/out.json",
+		"/home/vgulaev/workspaces/work_in_XO/secrets/tocken.yaml",
+		"/home/vgulaev/workspaces/work_in_XO/secrets/google_sheet.json",
+		"/home/vgulaev/workspaces/work_in_XO/secrets/mysql_cred.json",
+		"/home/vgulaev/workspaces/work_in_XO/input/aws_cred.input",
+		"/home/vgulaev/workspaces/work_in_XO/aws_list_billable.rb",
+		"/home/vgulaev/workspaces/work_in_XO/aws_clean_up.rb",
+		"/home/vgulaev/workspaces/work_in_XO/secrets/berkeley.json",
+		"/home/vgulaev/workspaces/work_in_XO/aws_list_instances.rb",
+		"/home/vgulaev/workspaces/work_in_XO/{\"credentials\"=>\"{\\\"aws_secret_id\\\"",
+		"/home/vgulaev/workspaces/saas_center/hw.rb",
+		"/home/vgulaev/workspaces/ey-awsm/cookbooks/node_8_9_4/recipes/default.rb",
+		"/home/vgulaev/workspaces/ey-awsm/cookbooks/node_8_9_4/files/default/nodejs-bin-generic.ebuild",
+		"/home/vgulaev/workspaces/ey-awsm/cookbooks/main/recipes/default.rb"
+	],
+	"find":
+	{
+		"height": 32.0
+	},
+	"find_in_files":
+	{
+		"height": 116.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"{ opacity: 1; }",
+			".",
+			"element",
+			"inner",
+			"Math.round",
+			"><",
+			"'y0'",
+			"row",
+			" - dy"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 680,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								680,
+								680
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "js/teleChart.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7282,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3667,
+								3667
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2458.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "test.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 996,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								543,
+								543
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "logs/tmp/chart_data.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 58029,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								442,
+								442
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 92.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "js/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 636,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								163,
+								163
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 32.0
+	},
+	"input":
+	{
+		"height": 44.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 156.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/User/nodejs.sublime-build",
+	"project": "teleChart.sublime-project",
+	"replace":
+	{
+		"height": 60.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"ind",
+				"js/index.js"
+			],
+			[
+				"tele",
+				"js/teleChart.js"
+			],
+			[
+				"sts",
+				"ftjs/stats.js"
+			],
+			[
+				"deplo",
+				"nonsense/deploy.js"
+			],
+			[
+				"res",
+				"nonsense/respond.js"
+			],
+			[
+				"non2",
+				"nonsense/nonsense-v2.js"
+			],
+			[
+				"defa",
+				"vgulaev.github.io/_layouts/default.html"
+			],
+			[
+				"hw",
+				"nonsense/hw.js"
+			],
+			[
+				"nons",
+				"nonsense/nonsense.sublime-project"
+			],
+			[
+				"pos",
+				"vgulaev.github.io/_layouts/post.html"
+			],
+			[
+				"jek",
+				"nonsense/jekyll.js"
+			],
+			[
+				"en",
+				"nonsense/config/environment.json"
+			],
+			[
+				"je",
+				"nonsense/jekyll.js"
+			],
+			[
+				"req",
+				"nonsense/reqcounter.js"
+			],
+			[
+				"non",
+				"nonsense/nonsense.js"
+			],
+			[
+				"ey",
+				"nonsense/eyutil.js"
+			],
+			[
+				"re",
+				"nonsense/deploy/remote.js"
+			],
+			[
+				"remo",
+				"nonsense/deploy/remote.js"
+			],
+			[
+				"blo",
+				"vgulaev.github.io/blog.html"
+			],
+			[
+				"ign",
+				"nonsense/.gitignore"
+			],
+			[
+				"con",
+				"vgulaev.github.io/contact.html"
+			],
+			[
+				"not",
+				"tmp/notice.txt"
+			],
+			[
+				"laya",
+				"app/views/layouts/application.html.erb"
+			],
+			[
+				"sess",
+				"app/models/session.rb"
+			],
+			[
+				"rou",
+				"config/routes.rb"
+			],
+			[
+				"layouts/application.html.erb",
+				"app/views/layouts/application.html.erb"
+			],
+			[
+				"logi",
+				"app/views/login/index.html.erb"
+			],
+			[
+				"db/migrate/20181114162106_create_sessions.rb",
+				"db/migrate/20181114162106_create_sessions.rb"
+			],
+			[
+				"db/migrate/20181112234512_create_users.rb",
+				"db/migrate/20181112234512_create_users.rb"
+			],
+			[
+				"logi erb",
+				"app/views/login/index.html.erb"
+			],
+			[
+				"log er",
+				"app/helpers/login_helper.rb"
+			],
+			[
+				"lo",
+				"app/controllers/login_controller.rb"
+			],
+			[
+				"inde",
+				"app/views/welcome/index.html.erb"
+			],
+			[
+				"ig",
+				".gitignore"
+			],
+			[
+				"con da",
+				"config/database.yml"
+			],
+			[
+				"RotateCredentials",
+				"lib/awsm/aws/rotate_credentials.rb"
+			],
+			[
+				"acco",
+				"app/models/account.rb"
+			],
+			[
+				"moni",
+				"app/models/monitor_url.rb"
+			],
+			[
+				"ans/out.json",
+				"ans/out.json"
+			],
+			[
+				"si",
+				"ey_list_siteuptime.rb"
+			],
+			[
+				"cred",
+				"aws_cred.rb"
+			],
+			[
+				"aws_ro",
+				"secrets/aws_rotate.json"
+			],
+			[
+				"jir",
+				"input/jira_fields.json"
+			],
+			[
+				"aw ey",
+				"aws_ey_spending_update.rb"
+			],
+			[
+				"aws",
+				"aws_ct_accounts.rb"
+			],
+			[
+				"ji",
+				"jiracr.php"
+			],
+			[
+				"aws spe",
+				"aws_ey_spending_update.rb"
+			],
+			[
+				"ren",
+				"aws_recreate_credentials.rb"
+			],
+			[
+				"no",
+				"tmp/notice.txt"
+			],
+			[
+				"aws cos",
+				"aws_cost_tracker.rb"
+			],
+			[
+				"ey sp",
+				"aws_ey_spending_update.rb"
+			],
+			[
+				"aws cost",
+				"aws_cost_tracker.rb"
+			],
+			[
+				"aws ct",
+				"aws_ct_accounts.rb"
+			],
+			[
+				"goo",
+				"secrets/google_sheet.json"
+			],
+			[
+				"insta con",
+				"app/controllers/instances_controller.rb"
+			],
+			[
+				"envi",
+				"app/models/environment.rb"
+			],
+			[
+				"in",
+				"app/models/instance.rb"
+			],
+			[
+				"fi",
+				"input/jira_fields.json"
+			],
+			[
+				"aws_account_cost",
+				"helpers/aws_account_cost.rb"
+			],
+			[
+				"htt",
+				"http_server.rb"
+			],
+			[
+				"lis",
+				"listener.rb"
+			],
+			[
+				"remote_syslog.rb",
+				"cookbooks/remote_syslog/templates/default/remote_syslog.rb.erb"
+			],
+			[
+				"cent",
+				"center.rb"
+			],
+			[
+				"dyn",
+				"tmp/_del/dyn.json"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 376.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
