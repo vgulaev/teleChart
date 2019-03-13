@@ -125,10 +125,11 @@ class TeleChart {
     let curTime = performance.now();
     let progress = (curTime - TeleChart.startTime) / TeleChart.animationTime;
     for (let item of this.data.viewItems) {
-      let tempPoints = this.data.y[item].curViewCoord.map((xy, index) => [
+      let tempPoints = this.data.y[item].newViewCoord.map((xy, index) => [
         xy[0],
-        xy[1] + this.data.y[item].deltaY[index] * progress
+        xy[1] - this.data.y[item].deltaY[index] * (1 - progress)
         ]);
+      this.data.y[item].curViewCoord = tempPoints;
       this.data.y[item].path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
     }
 
