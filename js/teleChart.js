@@ -103,7 +103,8 @@ class TeleChart {
       right: this.xLength - 1,
       window: {
         width: Math.round(this.width * 0.25)
-      }
+      },
+      svg: {}
     };
     this.range.window.left = this.width - this.range.window.width;
 
@@ -388,49 +389,61 @@ class TeleChart {
   }
 
   drawWindow() {
-    let wBorder = 10;
-    let hBorder = Math.round(wBorder * 0.25);
-    console.log(this.range.window.left, this.range.window.width);
+    let svg = this.range.svg;
+    svg.wBorder = 10;
+    svg.hBorder = Math.round(svg.wBorder * 0.25);
+
     this.range.window.left = 100;
-    // let base = TeleChart.rect(this.range.window.left, this.height - this.heightPanel, this.range.window.width, this.heightPanel, {
-    //   'stroke-width': 1,
-    //   'stroke': 'black',
-    //   'fill': 'black',
-    //   'cursor': 'col-resize',
-    //   'opacity': '0.2',
-    // });
-    let right = TeleChart.rect(this.range.window.left + this.range.window.width - 10, this.height - this.heightPanel, 10, this.heightPanel, {
+
+    svg.right = TeleChart.rect(this.range.window.left + this.range.window.width - 10, this.height - this.heightPanel, 10, this.heightPanel, {
       'stroke-width': 0,
       'stroke': 'black',
       'fill': 'black',
       'cursor': 'col-resize',
       'opacity': '0.2',
     });
-    let left = TeleChart.rect(this.range.window.left, this.height - this.heightPanel, 10, this.heightPanel, {
+    svg.left = TeleChart.rect(this.range.window.left, this.height - this.heightPanel, 10, this.heightPanel, {
       'stroke-width': 0,
       'stroke': 'black',
       'fill': 'black',
       'cursor': 'col-resize',
       'opacity': '0.2',
     });
-    let top = TeleChart.rect(this.range.window.left + wBorder, this.height - this.heightPanel, this.range.window.width - 2 * wBorder, hBorder, {
+    svg.top = TeleChart.rect(this.range.window.left + svg.wBorder, this.height - this.heightPanel, this.range.window.width - 2 * svg.wBorder, svg.hBorder, {
       'stroke-width': 0,
       'stroke': 'black',
       'fill': 'black',
       'opacity': '0.2',
     });
-    let bottom = TeleChart.rect(this.range.window.left + wBorder, this.height - hBorder, this.range.window.width - 2 * wBorder, hBorder, {
+    svg.bottom = TeleChart.rect(this.range.window.left + svg.wBorder, this.height - svg.hBorder, this.range.window.width - 2 * svg.wBorder, svg.hBorder, {
       'stroke-width': 0,
       'stroke': 'black',
       'fill': 'black',
       'opacity': '0.2',
     });
 
-    this.svgRoot.append(right);
-    this.svgRoot.append(left);
-    this.svgRoot.append(top);
-    this.svgRoot.append(bottom);
-    // this.svgRoot.append(base);
+    svg.right.addEventListener('mousedown', (eventData) => {
+      svg.mouseXoffset = eventData.clientX - svg.right.x.baseVal.value;
+    });
+
+    svg.right.addEventListener('mouseup', (eventData) => {
+      svg.mouseXoffset = undefined;
+    });
+
+    document.addEventListener('mousemove', (eventData) => {
+      if (svg.mouseXoffset != undefined) {
+        svg.right.setAttributeNS(null, 'x', eventData.clientX - svg.mouseXoffset);
+        console.log('move:', eventData.clientX, svg.mouseXoffset);
+      }
+      // svg.right.setAttributeNS(null, 'x', )
+      //
+    });
+
+
+    this.svgRoot.append(svg.right);
+    this.svgRoot.append(svg.left);
+    this.svgRoot.append(svg.top);
+    this.svgRoot.append(svg.bottom);
   }
 
   render() {
