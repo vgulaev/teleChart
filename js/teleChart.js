@@ -431,14 +431,14 @@ class TeleChart {
     });
 
     document.addEventListener('touchmove', (eventData) => {
-      console.log(svg.mouseXoffset, eventData);
       if (svg.mouseXoffset != undefined) {
-        console.log(eventData.touches[0].clientX - svg.mouseXoffset);
         svg.right.setAttributeNS(null, 'x', eventData.touches[0].clientX - svg.mouseXoffset);
-        // console.log('move:', eventData.clientX, svg.mouseXoffset);
       }
     });
 
+    document.addEventListener('touchend', (eventData) => {
+      svg.mouseXoffset = undefined;
+    });
 
 
     svg.right.addEventListener('mouseup', (eventData) => {
