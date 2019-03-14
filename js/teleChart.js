@@ -95,6 +95,10 @@ class TeleChart {
       nameByIndex: {}
     };
     this.makeWellStructuredData();
+    this.range = {
+      left: 0,
+      right: this.data.x.length - 1
+    };
     this.width = this.svgRoot.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
     if (options.heightPanel < 1) {
@@ -102,6 +106,8 @@ class TeleChart {
     } else {
       this.heightPanel = options.heightPanel;
     }
+    this.animationTime = options.animationTime;
+    this.animationLayers = new Set;
     this.render();
     // alert('TeleChart ready');
   }
@@ -116,10 +122,7 @@ class TeleChart {
     </button>`;
   }
 
-  animationStep() {
-    let curTime = performance.now();
-    let rightProgres = (curTime - TeleChart.startTime) / TeleChart.animationTime;
-    let leftProgres = 1 - rightProgres;
+  animationStepPanel(curTime, rightProgres, leftProgres) {
     for (let item of this.data.viewItems) {
       let panel = this.data.y[item].panel;
       let tempPoints = panel.newViewCoord.map((xy, index) => [
@@ -130,31 +133,54 @@ class TeleChart {
       this.data.y[item].path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
     }
 
-    if (curTime < TeleChart.finishTime) {
-      requestAnimationFrame(() => this.animationStep());
+    if (curTime < this.finishTime) {
+      return true;
     } else {
       for (let item of this.data.viewItems) {
         this.data.y[item].panel.curViewCoord = this.data.y[item].panel.newViewCoord;
         this.data.y[item].path.setAttributeNS(null, 'd', this.pointsToD(this.data.y[item].panel.curViewCoord));
       }
+      this.animationLayers.delete('panel');
+      return false;
     }
   }
 
   animatePanel() {
-    TeleChart.startTime = performance.now();
-    TeleChart.animationTime = 2000;
-    TeleChart.finishTime = TeleChart.startTime + TeleChart.animationTime;
-
-    if (!this.updateMinMax()) return;
+    this.updateMinMax();
 
     for (let item of this.data.viewItems) {
       let panel = this.data.y[item].panel;
       panel.newViewCoord = this.fastCalcLineCoord(item, 'panel');
       panel.deltaY = panel.curViewCoord.map((xy, index) => panel.newViewCoord[index][1] - panel.curViewCoord[index][1]);
     }
+  }
+
+  animateGraph() {
+    this.updateMinMaxInRange();
+    console.log('animateGraph', this.range);
+  }
+
+  animationStep() {
+    let curTime = performance.now();
+    let rightProgres = (curTime - this.startTime) / this.animationTime;
+    let leftProgres = 1 - rightProgres;
+    let callNextStep = false;
+
+    if (this.animationLayers.has('panel')) {
+      callNextStep = this.animationStepPanel(curTime, rightProgres, leftProgres);
+    }
+
+    if (callNextStep) requestAnimationFrame(() => this.animationStep());
+  }
+
+  doAnimation(layers) {
+    this.startTime = performance.now();
+    this.finishTime = this.startTime + this.animationTime;
+
+    if (this.animationLayers.has('panel')) this.animatePanel();
+    if (this.animationLayers.has('graph')) this.animateGraph();
 
     requestAnimationFrame(() => this.animationStep());
-
   }
 
   reCheck(button, name) {
@@ -165,22 +191,24 @@ class TeleChart {
       this.data.viewItems.add(name);
       this.data.y[name].path.style.display = 'inline';
     }
-    this.animatePanel();
+    this.animationLayers.add('panel');
+    this.animationLayers.add('graph');
+    this.doAnimation();
   }
 
   createHeader() {
-    let keys = Object.keys(this.data.raw.names);
     this.header = document.getElementById('Header');
 
-    keys.forEach(element => {
+    for (let element of this.data.allItems) {
       this.header.innerHTML += this.button(element);
-    });
-    keys.forEach(element => {
+    };
+
+    for (let element of this.data.allItems) {
       let b = document.getElementById(`${element}Button`);
       b.addEventListener('click', eventData => {
         this.reCheck(b, element);
       });
-    });
+    };
   }
 
   pointsToD(points) {
@@ -224,6 +252,18 @@ class TeleChart {
     }
     let miny = Math.min(...a);
     let maxy = Math.max(...a);
+    let delta;
+    if (miny == maxy) {
+      if (0 == miny) {
+        delta = 10;
+      } else {
+        delta = Math.abs(maxy) * 0.1;
+      }
+    } else {
+      delta = Math.abs(maxy - miny);
+    }
+    miny = miny - delta * 0.1;
+    maxy = maxy + delta * 0.1;
     if (this.miny != miny || this.maxy != maxy) {
       this.miny = miny;
       this.maxy = maxy;
@@ -233,7 +273,39 @@ class TeleChart {
     }
   }
 
-  createMiniMap() {
+  updateMinMaxInRange() {
+    let a = [];
+    let miny = this.miny;
+    let maxy = this.maxy;
+
+    for (let item of this.data.viewItems) {
+      let y = this.data.y[item].coord.slice(this.range.left, this.range.right + 1);
+      miny = Math.min(miny, ...y);
+      maxy = Math.max(maxy, ...y);
+    }
+    let delta;
+    if (miny == maxy) {
+      if (0 == miny) {
+        delta = 10;
+      } else {
+        delta = Math.abs(maxy) * 0.1;
+      }
+    } else {
+      delta = Math.abs(maxy - miny);
+    }
+    miny = miny - delta * 0.1;
+    maxy = maxy + delta * 0.1;
+    console.log(miny, maxy);
+    if (this.range.miny != miny || this.range.maxy != maxy) {
+      this.range.miny = miny;
+      this.range.maxy = maxy;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  drawMiniMap() {
     this.updateMinMax();
     let names = this.data.raw.names;
     this.xLength = this.data.x.length;
@@ -249,6 +321,10 @@ class TeleChart {
     this.svgRoot.append(this.gMiniMap);
   }
 
+  drawGraph() {
+    this.updateMinMaxInRange()
+  }
+
   render() {
     let element = TeleChart.line(0, 0, this.width, this.height - this.heightPanel, {'stroke-width': 2, 'stroke': 'black'});
     this.svgRoot.append(element);
@@ -262,6 +338,7 @@ class TeleChart {
     });
     this.svgRoot.append(element);
     this.createHeader();
-    this.createMiniMap();
+    this.drawMiniMap();
+    this.drawGraph();
   }
 }
