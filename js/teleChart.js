@@ -95,9 +95,10 @@ class TeleChart {
       nameByIndex: {}
     };
     this.makeWellStructuredData();
+    this.xLength = this.data.x.length;
     this.range = {
       left: 0,
-      right: this.data.x.length - 1
+      right: this.xLength - 1
     };
     this.width = this.svgRoot.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
@@ -107,7 +108,7 @@ class TeleChart {
       this.heightPanel = options.heightPanel;
     }
     this.animationTime = options.animationTime;
-    this.animationLayers = new Set;
+    this.animationLayers = new Set();
     this.render();
     // alert('TeleChart ready');
   }
@@ -130,7 +131,7 @@ class TeleChart {
         xy[1] - panel.deltaY[index] * leftProgres
         ]);
       panel.curViewCoord = tempPoints;
-      this.data.y[item].path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
+      this.data.y[item].panel.path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
     }
 
     if (curTime < this.finishTime) {
@@ -138,7 +139,7 @@ class TeleChart {
     } else {
       for (let item of this.data.viewItems) {
         this.data.y[item].panel.curViewCoord = this.data.y[item].panel.newViewCoord;
-        this.data.y[item].path.setAttributeNS(null, 'd', this.pointsToD(this.data.y[item].panel.curViewCoord));
+        this.data.y[item].panel.path.setAttributeNS(null, 'd', this.pointsToD(this.data.y[item].panel.curViewCoord));
       }
       this.animationLayers.delete('panel');
       return false;
@@ -186,10 +187,10 @@ class TeleChart {
   reCheck(button, name) {
     if (this.data.viewItems.has(name)) {
       this.data.viewItems.delete(name);
-      this.data.y[name].path.style.display = 'none';
+      this.data.y[name].panel.path.style.display = 'none';
     } else {
       this.data.viewItems.add(name);
-      this.data.y[name].path.style.display = 'inline';
+      this.data.y[name].panel.path.style.display = 'inline';
     }
     this.animationLayers.add('panel');
     this.animationLayers.add('graph');
@@ -240,7 +241,8 @@ class TeleChart {
     if ('panel' == type) {
       return this.calcLineCoord(2, this.height - 2, this.width - 4, this.heightPanel - 4, element);
     } else {
-      return this.calcLineCoord(2, this.height - 2, this.width - 4, this.width - this.heightPanel - 4, element);
+      return [[0,0], [200, 100], [300, 400], [350, 500]];
+      // return this.calcLineCoord(2, this.height - 2, this.width - 4, this.width - this.heightPanel - 4, element);
     }
   }
 
@@ -295,7 +297,6 @@ class TeleChart {
     }
     miny = miny - delta * 0.1;
     maxy = maxy + delta * 0.1;
-    console.log(miny, maxy);
     if (this.range.miny != miny || this.range.maxy != maxy) {
       this.range.miny = miny;
       this.range.maxy = maxy;
@@ -307,22 +308,24 @@ class TeleChart {
 
   drawMiniMap() {
     this.updateMinMax();
-    let names = this.data.raw.names;
-    this.xLength = this.data.x.length;
-    this.gMiniMap = TeleChart.createSVG('g');
-    TeleChart.setAttribute(this.gMiniMap, {'id': 'gMiniMap'});
-    Object.keys(names).forEach(element => {
+    for (let element of this.data.allItems) {
       this.data.y[element].panel.curViewCoord = this.fastCalcLineCoord(element, 'panel');
       let d = this.pointsToD(this.data.y[element].panel.curViewCoord);
       let path = TeleChart.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[element], 'fill': 'none'});
-      this.data.y[element].path = path;
-      this.gMiniMap.append(path);
-    });
-    this.svgRoot.append(this.gMiniMap);
+      this.data.y[element].panel.path = path;
+      this.svgRoot.append(path);
+    };
   }
 
   drawGraph() {
     this.updateMinMaxInRange()
+    for (let element of this.data.allItems) {
+      this.data.y[element].graph.curViewCoord = this.fastCalcLineCoord(element, 'graph');
+      let d = this.pointsToD(this.data.y[element].graph.curViewCoord);
+      // let path = TeleChart.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[element], 'fill': 'none'});
+      // this.data.y[element].path = path;
+      // this.svgRoot.append(path);
+    };
   }
 
   render() {
