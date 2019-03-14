@@ -426,6 +426,21 @@ class TeleChart {
       svg.mouseXoffset = eventData.clientX - svg.right.x.baseVal.value;
     });
 
+    svg.right.addEventListener('touchstart', (eventData) => {
+      svg.mouseXoffset = eventData.touches[0].clientX - svg.right.x.baseVal.value;
+    });
+
+    document.addEventListener('touchmove', (eventData) => {
+      console.log(svg.mouseXoffset, eventData);
+      if (svg.mouseXoffset != undefined) {
+        console.log(eventData.touches[0].clientX - svg.mouseXoffset);
+        svg.right.setAttributeNS(null, 'x', eventData.touches[0].clientX - svg.mouseXoffset);
+        // console.log('move:', eventData.clientX, svg.mouseXoffset);
+      }
+    });
+
+
+
     svg.right.addEventListener('mouseup', (eventData) => {
       svg.mouseXoffset = undefined;
     });
@@ -435,8 +450,6 @@ class TeleChart {
         svg.right.setAttributeNS(null, 'x', eventData.clientX - svg.mouseXoffset);
         console.log('move:', eventData.clientX, svg.mouseXoffset);
       }
-      // svg.right.setAttributeNS(null, 'x', )
-      //
     });
 
 
