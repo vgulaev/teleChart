@@ -85,6 +85,7 @@ class TeleChart {
 
   constructor(tagID, data, options = {}) {
     this.svgRoot = document.getElementById(tagID);
+    this.statusTag = document.getElementById('Status');
     this.data = {
       raw: data,
       x: [],
@@ -388,6 +389,10 @@ class TeleChart {
     };
   }
 
+  msg(text) {
+    this.statusTag.innerHTML = text;
+  }
+
   drawWindow() {
     let svg = this.range.svg;
     svg.wBorder = 10;
@@ -424,6 +429,7 @@ class TeleChart {
 
     svg.right.addEventListener('mousedown', (eventData) => {
       svg.mouseXoffset = eventData.clientX - svg.right.x.baseVal.value;
+      svg.target
     });
 
     svg.right.addEventListener('touchstart', (eventData) => {
@@ -434,6 +440,7 @@ class TeleChart {
       if (svg.mouseXoffset != undefined) {
         svg.right.setAttributeNS(null, 'x', eventData.touches[0].clientX - svg.mouseXoffset);
       }
+      this.msg(eventData.touches[0].clientX);
     });
 
     document.addEventListener('touchend', (eventData) => {
@@ -448,7 +455,6 @@ class TeleChart {
     document.addEventListener('mousemove', (eventData) => {
       if (svg.mouseXoffset != undefined) {
         svg.right.setAttributeNS(null, 'x', eventData.clientX - svg.mouseXoffset);
-        console.log('move:', eventData.clientX, svg.mouseXoffset);
       }
     });
 
