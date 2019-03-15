@@ -393,24 +393,33 @@ class TeleChart {
 
   onMove(clientX) {
     let svg = this.range.svg;
-    if (svg.mouseXoffset != undefined) {
-      let newW = clientX - svg.mouseXoffset - svg.wBorder - this.range.window.left;
-      this.range.window.width = newW + 2 * svg.wBorder;
-      if (this.range.window.width + this.range.window.left > this.width) {
-        this.range.window.width = this.width - this.range.window.left;
-        svg.right.setAttributeNS(null, 'x', this.width - this.range.svg.wBorder);
-        svg.mouseXoffset = undefined;
-      } else if (this.range.window.width < Math.round(this.width * 0.25)) {
-        this.range.window.width = Math.round(this.width * 0.25);
-        svg.right.setAttributeNS(null, 'x', this.range.window.left + this.range.window.width - this.range.svg.wBorder);
-        svg.mouseXoffset = undefined;
-      } else {
-        svg.right.setAttributeNS(null, 'x', clientX - svg.mouseXoffset);
+    if (svg.target != undefined) {
+      let delta = clientX - svg.mouseXStart;
+      if ('right' == svg.target) {
+        this.range.window.width = svg.reper + delta;
+        if (this.range.window.width + this.range.window.left > this.width) {
+          this.range.window.width = this.width - this.range.window.left;
+          svg.target = undefined;
+        } else if (this.range.window.width < Math.round(this.width * 0.25)) {
+          this.range.window.width = Math.round(this.width * 0.25);
+          svg.target = undefined;
+        }
+        svg.rightBox.setAttributeNS(null, 'x', this.range.window.left + this.range.window.width);
+        svg.rightBox.setAttributeNS(null, 'width', this.width - this.range.window.left - this.range.window.width);
+        svg.right.setAttributeNS(null, 'x', this.range.window.left + this.range.window.width - svg.wBorder);
+        svg.top.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
+        svg.bottom.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
+      } else if ('left' == svg.target) {
+        // console.log(svg.reper);
+        this.range.window.left = svg.reper['left'] + delta;
+        this.range.window.width = svg.reper['total'] - this.range.window.left;
+        svg.leftBox.setAttributeNS(null, 'width', this.range.window.left);
+        svg.left.setAttributeNS(null, 'x', this.range.window.left);
+        svg.top.setAttributeNS(null, 'x', this.range.window.left + svg.wBorder);
+        svg.top.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
+        svg.bottom.setAttributeNS(null, 'x', this.range.window.left + svg.wBorder);
+        svg.bottom.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
       }
-      svg.top.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
-      svg.bottom.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
-      svg.rightBox.setAttributeNS(null, 'x', this.range.window.left + this.range.window.width);
-      svg.rightBox.setAttributeNS(null, 'width', this.width - this.range.window.left - this.range.window.width);
       this.animationLayers.add('graph');
       this.doAnimation();
     }
@@ -440,11 +449,22 @@ class TeleChart {
       'fill': 'black',
       'opacity': '0.3',
     });
+    svg.leftBox = TeleChart.rect(0, this.height - this.heightPanel, this.range.window.left, this.heightPanel, {
+      'stroke-width': 0,
+      'fill': 'black',
+      'opacity': '0.3',
+    });
 
     svg.right.addEventListener('mousedown', (eventData) => {
-      svg.mouseXoffset = eventData.clientX - svg.right.x.baseVal.value;
       svg.mouseXStart = eventData.clientX;
-      // console.log(eventData.clientX);
+      svg.reper = this.range.window.width;
+      svg.target = 'right';
+    });
+
+    svg.left.addEventListener('mousedown', (eventData) => {
+      svg.mouseXStart = eventData.clientX;
+      svg.reper = {'total': this.range.window.left + this.range.window.width, 'left': this.range.window.left};
+      svg.target = 'left';
     });
 
     this.svgRoot.addEventListener('touchstart', (eventData) => {
@@ -452,12 +472,20 @@ class TeleChart {
       let left = svg.left.getBoundingClientRect();
 
       if (right.top < eventData.touches[0].pageY && eventData.touches[0].pageY < right.bottom) {
+        let tx = Math.round(eventData.touches[0].pageX);
         let lx = right.left - this.range.window.width * 0.1;
         let rx = right.right + this.range.window.width * 0.1;
-        console.log(lx, eventData.touches[0].pageX, rx);
         if (lx < eventData.touches[0].pageX && eventData.touches[0].pageX < rx) {
-          svg.mouseXoffset = Math.round(eventData.touches[0].pageX - svg.right.x.baseVal.value);
-          svg.mouseXStart = Math.round(eventData.touches[0].pageX);
+          svg.mouseXStart = tx;
+          svg.reper = this.range.window.width;
+          svg.target = 'right';
+        }
+        lx = left.left - this.range.window.width * 0.1;
+        rx = left.right + this.range.window.width * 0.1;
+        if (lx < eventData.touches[0].pageX && eventData.touches[0].pageX < rx) {
+          svg.mouseXStart = tx;
+          svg.reper = {'right': this.range.window.left + this.range.window.width, 'left': this.range.window.left};
+          svg.target = 'left';
         }
       }
     });
@@ -466,23 +494,29 @@ class TeleChart {
       this.onMove(Math.round(eventData.touches[0].pageX));
     });
 
-    document.addEventListener('touchend', (eventData) => {
-      svg.mouseXoffset = undefined;
-    });
-
     document.addEventListener('mousemove', (eventData) => {
-      this.onMove(Math.round(eventData.clientX));
+      this.onMove(Math.round(eventData.pageX));
     });
 
-    this.svgRoot.addEventListener('mouseup', (eventData) => {
-      svg.mouseXoffset = undefined;
+    document.addEventListener('touchend', (eventData) => {
+      svg.target = undefined;
     });
+
+    svg.right.addEventListener('mouseup', (eventData) => {
+      svg.target = undefined;
+    });
+
+    svg.left.addEventListener('mouseup', (eventData) => {
+      svg.target = undefined;
+    });
+
 
     this.svgRoot.append(svg.right);
     this.svgRoot.append(svg.left);
     this.svgRoot.append(svg.top);
     this.svgRoot.append(svg.bottom);
     this.svgRoot.append(svg.rightBox);
+    this.svgRoot.append(svg.leftBox);
   }
 
   render() {
