@@ -521,6 +521,11 @@ class TeleChart {
           svg.reper = {'total': this.range.window.left + this.range.window.width, 'left': this.range.window.left};
           svg.target = 'left';
         }
+        if (lrx < eventData.touches[0].pageX && eventData.touches[0].pageX < rlx) {
+          svg.mouseXStart = tx;
+          svg.reper = this.range.window.left;
+          svg.target = 'mid';
+        }
       }
     });
 
