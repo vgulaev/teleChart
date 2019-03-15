@@ -444,20 +444,26 @@ class TeleChart {
     svg.right.addEventListener('mousedown', (eventData) => {
       svg.mouseXoffset = eventData.clientX - svg.right.x.baseVal.value;
       svg.mouseXStart = eventData.clientX;
-      console.log(eventData.clientX);
+      // console.log(eventData.clientX);
     });
 
     this.svgRoot.addEventListener('touchstart', (eventData) => {
       let right = svg.right.getBoundingClientRect();
       let left = svg.left.getBoundingClientRect();
-      svg.mouseXoffset = Math.round(eventData.touches[0].clientX - svg.right.x.baseVal.value);
-      svg.mouseXStart = Math.round(eventData.touches[0].clientX);
-      // console.log('Ohhhhh!!!===', eventData.touches[0].clientX);
-      // console.log(eventData);
+
+      if (right.top < eventData.touches[0].pageY && eventData.touches[0].pageY < right.bottom) {
+        let lx = right.left - this.range.window.width * 0.1;
+        let rx = right.right + this.range.window.width * 0.1;
+        console.log(lx, eventData.touches[0].pageX, rx);
+        if (lx < eventData.touches[0].pageX && eventData.touches[0].pageX < rx) {
+          svg.mouseXoffset = Math.round(eventData.touches[0].pageX - svg.right.x.baseVal.value);
+          svg.mouseXStart = Math.round(eventData.touches[0].pageX);
+        }
+      }
     });
 
     document.addEventListener('touchmove', (eventData) => {
-      this.onMove(Math.round(eventData.touches[0].clientX));
+      this.onMove(Math.round(eventData.touches[0].pageX));
     });
 
     document.addEventListener('touchend', (eventData) => {
