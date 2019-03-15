@@ -433,6 +433,9 @@ class TeleChart {
         if (this.range.window.left < 0) {
           this.range.window.left = 0;
           svg.target = undefined;
+        } else if (this.range.window.left + this.range.window.width > this.width) {
+          this.range.window.left = this.width - this.range.window.width;
+          svg.target = undefined;
         }
         svg.leftBox.setAttributeNS(null, 'width', this.range.window.left);
         svg.rightBox.setAttributeNS(null, 'width', this.width - this.range.window.width - this.range.window.left);
