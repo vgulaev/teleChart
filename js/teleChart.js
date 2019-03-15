@@ -484,7 +484,7 @@ class TeleChart {
         rx = left.right + this.range.window.width * 0.1;
         if (lx < eventData.touches[0].pageX && eventData.touches[0].pageX < rx) {
           svg.mouseXStart = tx;
-          svg.reper = {'right': this.range.window.left + this.range.window.width, 'left': this.range.window.left};
+          svg.reper = {'total': this.range.window.left + this.range.window.width, 'left': this.range.window.left};
           svg.target = 'left';
         }
       }
