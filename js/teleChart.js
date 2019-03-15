@@ -137,7 +137,7 @@ class TeleChart {
       let panel = this.data.y[item].panel;
       let tempPoints = panel.newViewCoord.map((xy, index) => [
         xy[0],
-        xy[1] - panel.deltaY[index] * leftProgres
+        Math.floor(xy[1] - panel.deltaY[index] * leftProgres)
         ]);
       panel.curViewCoord = tempPoints;
       this.data.y[item].panel.path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
@@ -160,7 +160,7 @@ class TeleChart {
       let graph = this.data.y[item].graph;
       let tempPoints = graph.newViewCoord.map((xy, index) => [
         xy[0],
-        Math.round(xy[1] - graph.deltaY[index] * leftProgres)
+        Math.floor(xy[1] - graph.deltaY[index] * leftProgres)
         ]);
       graph.curViewCoord = tempPoints;
       this.data.y[item].graph.path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
