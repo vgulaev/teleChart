@@ -253,14 +253,12 @@ class TeleChart {
   }
 
   pointsToD(points) {
-    let strArray = [];
-    strArray.push(`M ${points[0].join(',')}`);
-    strArray.push('L');
-
+    let res = '';
+    res += `M ${points[0].join(',')} L `;
     for (let i = 1; i < points.length; i++) {
-      strArray.push(points[i].join(','));
+      res += ' ' + points[i].join(',');
     }
-    return strArray.join(' ');
+    return res;
   }
 
   calcLineCoord(fromX, fromY, dx, dy, element) {
@@ -278,8 +276,8 @@ class TeleChart {
   }
 
   calcGraphLineCoord(fromX, fromY, dx, dy, element) {
-    this.range.left = this.xLength * this.range.window.left / this.width;
-    this.range.right = this.xLength * (this.range.window.left + this.range.window.width) / this.width;
+    this.range.left = (this.xLength -1 ) * this.range.window.left / this.width;
+    this.range.right = (this.xLength - 1) * (this.range.window.left + this.range.window.width) / this.width;
     let data = this.data.y[element].coord;
     let points = [];
     let scaleX = dx / (this.range.right - this.range.left);
@@ -393,6 +391,31 @@ class TeleChart {
     this.statusTag.innerHTML = text;
   }
 
+  onMove(clientX) {
+    let svg = this.range.svg;
+    if (svg.mouseXoffset != undefined) {
+      let newW = clientX - svg.mouseXoffset - svg.wBorder - this.range.window.left;
+      this.range.window.width = newW + 2 * svg.wBorder;
+      if (this.range.window.width + this.range.window.left > this.width) {
+        this.range.window.width = this.width - this.range.window.left;
+        svg.right.setAttributeNS(null, 'x', this.width - this.range.svg.wBorder);
+        svg.mouseXoffset = undefined;
+      } else if (this.range.window.width < Math.round(this.width * 0.25)) {
+        this.range.window.width = Math.round(this.width * 0.25);
+        svg.right.setAttributeNS(null, 'x', this.range.window.left + this.range.window.width - this.range.svg.wBorder);
+        svg.mouseXoffset = undefined;
+      } else {
+        svg.right.setAttributeNS(null, 'x', clientX - svg.mouseXoffset);
+      }
+      svg.top.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
+      svg.bottom.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
+      svg.rightBox.setAttributeNS(null, 'x', this.range.window.left + this.range.window.width);
+      svg.rightBox.setAttributeNS(null, 'width', this.width - this.range.window.left - this.range.window.width);
+      this.animationLayers.add('graph');
+      this.doAnimation();
+    }
+  }
+
   drawWindow() {
     let svg = this.range.svg;
     svg.wBorder = 10;
@@ -400,69 +423,60 @@ class TeleChart {
 
     this.range.window.left = 100;
 
-    svg.right = TeleChart.rect(this.range.window.left + this.range.window.width - 10, this.height - this.heightPanel, 10, this.heightPanel, {
+    let windowStyle = {
       'stroke-width': 0,
-      'stroke': 'black',
       'fill': 'black',
       'cursor': 'col-resize',
-      'opacity': '0.2',
-    });
-    svg.left = TeleChart.rect(this.range.window.left, this.height - this.heightPanel, 10, this.heightPanel, {
+      'opacity': '0.15',
+    };
+
+    svg.right = TeleChart.rect(this.range.window.left + this.range.window.width - 10, this.height - this.heightPanel, 10, this.heightPanel, windowStyle);
+    svg.right.setAttributeNS(null, 'id', 'rr');
+    svg.left = TeleChart.rect(this.range.window.left, this.height - this.heightPanel, 10, this.heightPanel, windowStyle);
+    svg.top = TeleChart.rect(this.range.window.left + svg.wBorder, this.height - this.heightPanel, this.range.window.width - 2 * svg.wBorder, svg.hBorder, windowStyle);
+    svg.bottom = TeleChart.rect(this.range.window.left + svg.wBorder, this.height - svg.hBorder, this.range.window.width - 2 * svg.wBorder, svg.hBorder, windowStyle);
+    svg.rightBox = TeleChart.rect(this.range.window.left + this.range.window.width, this.height - this.heightPanel, this.width - this.range.window.left - this.range.window.width, this.heightPanel, {
       'stroke-width': 0,
-      'stroke': 'black',
       'fill': 'black',
-      'cursor': 'col-resize',
-      'opacity': '0.2',
-    });
-    svg.top = TeleChart.rect(this.range.window.left + svg.wBorder, this.height - this.heightPanel, this.range.window.width - 2 * svg.wBorder, svg.hBorder, {
-      'stroke-width': 0,
-      'stroke': 'black',
-      'fill': 'black',
-      'opacity': '0.2',
-    });
-    svg.bottom = TeleChart.rect(this.range.window.left + svg.wBorder, this.height - svg.hBorder, this.range.window.width - 2 * svg.wBorder, svg.hBorder, {
-      'stroke-width': 0,
-      'stroke': 'black',
-      'fill': 'black',
-      'opacity': '0.2',
+      'opacity': '0.3',
     });
 
     svg.right.addEventListener('mousedown', (eventData) => {
       svg.mouseXoffset = eventData.clientX - svg.right.x.baseVal.value;
-      svg.target
+      svg.mouseXStart = eventData.clientX;
+      console.log(eventData.clientX);
     });
 
-    svg.right.addEventListener('touchstart', (eventData) => {
-      svg.mouseXoffset = eventData.touches[0].clientX - svg.right.x.baseVal.value;
+    this.svgRoot.addEventListener('touchstart', (eventData) => {
+      let right = svg.right.getBoundingClientRect();
+      let left = svg.left.getBoundingClientRect();
+      svg.mouseXoffset = Math.round(eventData.touches[0].clientX - svg.right.x.baseVal.value);
+      svg.mouseXStart = Math.round(eventData.touches[0].clientX);
+      // console.log('Ohhhhh!!!===', eventData.touches[0].clientX);
+      // console.log(eventData);
     });
 
     document.addEventListener('touchmove', (eventData) => {
-      if (svg.mouseXoffset != undefined) {
-        svg.right.setAttributeNS(null, 'x', eventData.touches[0].clientX - svg.mouseXoffset);
-      }
-      this.msg(eventData.touches[0].clientX);
+      this.onMove(Math.round(eventData.touches[0].clientX));
     });
 
     document.addEventListener('touchend', (eventData) => {
       svg.mouseXoffset = undefined;
     });
 
+    document.addEventListener('mousemove', (eventData) => {
+      this.onMove(Math.round(eventData.clientX));
+    });
 
-    svg.right.addEventListener('mouseup', (eventData) => {
+    this.svgRoot.addEventListener('mouseup', (eventData) => {
       svg.mouseXoffset = undefined;
     });
-
-    document.addEventListener('mousemove', (eventData) => {
-      if (svg.mouseXoffset != undefined) {
-        svg.right.setAttributeNS(null, 'x', eventData.clientX - svg.mouseXoffset);
-      }
-    });
-
 
     this.svgRoot.append(svg.right);
     this.svgRoot.append(svg.left);
     this.svgRoot.append(svg.top);
     this.svgRoot.append(svg.bottom);
+    this.svgRoot.append(svg.rightBox);
   }
 
   render() {
