@@ -88,10 +88,6 @@ class TeleChart {
     this.divRoot.style.width = options['width'];
     this.svgRoot = TeleChart.createSVG('svg');
     TeleChart.setAttribute(this.svgRoot, {height: options['height'], width: options['width']})
-    // this.svgRoot = document.getElementById(tagID);
-    // this.divRoot.innerHTML = this.svgRoot.outerHTML;
-    // this.svgRoot.outerHTML = this.divRoot.outerHTML;
-    // this.svgRoot = document.getElementById(tagID);
     this.divRoot.append(this.svgRoot);
 
     this.statusTag = document.getElementById('Status');
@@ -472,31 +468,22 @@ class TeleChart {
     svg.wBorder = 10;
     svg.hBorder = Math.round(svg.wBorder * 0.25);
 
-    let windowStyle = {
-      'stroke-width': 0,
-      'fill': 'black',
-      'cursor': 'col-resize',
-      'opacity': '0.15',
-    };
+    let windowStyle = {'stroke-width': 0, 'fill': 'black', 'opacity': '0.15'};
 
     let whiteBox = TeleChart.rect(0, this.height - this.heightPanel, this.width, this.heightPanel, {'fill': 'white'});
     this.svgRoot.append(whiteBox);
 
-    svg.right = TeleChart.rect(this.range.window.left + this.range.window.width - 10, this.height - this.heightPanel, 10, this.heightPanel, windowStyle);
-    svg.right.setAttributeNS(null, 'id', 'rr');
-    svg.left = TeleChart.rect(this.range.window.left, this.height - this.heightPanel, 10, this.heightPanel, windowStyle);
     svg.top = TeleChart.rect(this.range.window.left + svg.wBorder, this.height - this.heightPanel, this.range.window.width - 2 * svg.wBorder, svg.hBorder, windowStyle);
     svg.bottom = TeleChart.rect(this.range.window.left + svg.wBorder, this.height - svg.hBorder, this.range.window.width - 2 * svg.wBorder, svg.hBorder, windowStyle);
-    svg.rightBox = TeleChart.rect(this.range.window.left + this.range.window.width, this.height - this.heightPanel, this.width - this.range.window.left - this.range.window.width, this.heightPanel, {
-      'stroke-width': 0,
-      'fill': 'black',
-      'opacity': '0.3',
-    });
-    svg.leftBox = TeleChart.rect(0, this.height - this.heightPanel, this.range.window.left, this.heightPanel, {
-      'stroke-width': 0,
-      'fill': 'black',
-      'opacity': '0.3',
-    });
+
+    windowStyle['cursor'] = 'col-resize';
+
+    svg.right = TeleChart.rect(this.range.window.left + this.range.window.width - 10, this.height - this.heightPanel, 10, this.heightPanel, windowStyle);
+    svg.left = TeleChart.rect(this.range.window.left, this.height - this.heightPanel, 10, this.heightPanel, windowStyle);
+
+    windowStyle = { 'stroke-width': 0, 'fill': 'black', 'opacity': '0.3'};
+    svg.rightBox = TeleChart.rect(this.range.window.left + this.range.window.width, this.height - this.heightPanel, this.width - this.range.window.left - this.range.window.width, this.heightPanel, windowStyle);
+    svg.leftBox = TeleChart.rect(0, this.height - this.heightPanel, this.range.window.left, this.heightPanel, windowStyle);
 
     svg.right.addEventListener('mousedown', (eventData) => {
       svg.mouseXStart = eventData.clientX;
@@ -513,7 +500,7 @@ class TeleChart {
     this.svgRoot.addEventListener('mousedown', (eventData) => {
       let right = svg.right.getBoundingClientRect();
       let left = svg.left.getBoundingClientRect();
-      if (right.top < eventData.pageY && eventData.pageY < right.bottom) {
+      if (right.top < eventData.clientY && eventData.clientY < right.bottom) {
         if (left.right < eventData.pageX && eventData.pageX < right.left) {
           svg.mouseXStart = eventData.clientX;
           svg.reper = this.range.window.left;
@@ -526,7 +513,7 @@ class TeleChart {
       let right = svg.right.getBoundingClientRect();
       let left = svg.left.getBoundingClientRect();
 
-      if (right.top < eventData.touches[0].pageY && eventData.touches[0].pageY < right.bottom) {
+      if (right.top < eventData.touches[0].clientY && eventData.touches[0].clientY < right.bottom) {
         let tx = Math.round(eventData.touches[0].pageX);
         let rlx = right.left - this.range.window.width * 0.1;
         let rx = right.right + this.range.window.width * 0.1;
@@ -566,24 +553,27 @@ class TeleChart {
       svg.target = undefined;
     });
 
+    [svg.right, svg.left, svg.top, svg.rightBox, svg.leftBox].forEach(element => this.svgRoot.append(element));
+  }
 
-    this.svgRoot.append(svg.right);
-    this.svgRoot.append(svg.left);
-    this.svgRoot.append(svg.top);
-    this.svgRoot.append(svg.bottom);
-    this.svgRoot.append(svg.rightBox);
-    this.svgRoot.append(svg.leftBox);
+  drawYAxis() {
+
   }
 
   render() {
     let element;
-    // let element = TeleChart.line(0, 0, this.width, this.height - this.heightPanel, {'stroke-width': 2, 'stroke': 'black'});
+    this.YAxis = TeleChart.createSVG('g');
+    this.svgRoot.append(this.YAxis);
+
+    // element = TeleChart.line(0, 0, this.width, this.height - this.heightPanel, {'stroke-width': 2, 'stroke': 'black'});
     // this.svgRoot.append(element);
     // element = TeleChart.line(0, this.height - this.heightPanel, this.width, 0, {'stroke-width': 2, 'stroke': 'black'});
     // this.svgRoot.append(element);
     this.drawGraph();
+    this.drawYAxis();
     this.drawWindow();
     this.drawMiniMap();
     this.createHeader();
+    // g.append(element);
   }
 }
