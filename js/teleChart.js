@@ -84,7 +84,16 @@ class TeleChart {
   }
 
   constructor(tagID, data, options = {}) {
-    this.svgRoot = document.getElementById(tagID);
+    this.divRoot = document.getElementById(tagID);
+    this.divRoot.style.width = options['width'];
+    this.svgRoot = TeleChart.createSVG('svg');
+    TeleChart.setAttribute(this.svgRoot, {height: options['height'], width: options['width']})
+    // this.svgRoot = document.getElementById(tagID);
+    // this.divRoot.innerHTML = this.svgRoot.outerHTML;
+    // this.svgRoot.outerHTML = this.divRoot.outerHTML;
+    // this.svgRoot = document.getElementById(tagID);
+    this.divRoot.append(this.svgRoot);
+
     this.statusTag = document.getElementById('Status');
     this.data = {
       raw: data,
@@ -119,7 +128,6 @@ class TeleChart {
     this.animationLayers = new Set();
     this.updateMinMaxInRange();
     this.render();
-    // alert('TeleChart ready');
   }
 
   button(name) {
@@ -240,7 +248,9 @@ class TeleChart {
   }
 
   createHeader() {
-    this.header = document.getElementById('Header');
+    this.header = document.createElement('div');
+    this.divRoot.append(this.header);
+    // this.header = document.getElementById('Header');
 
     for (let element of this.data.allItems) {
       this.header.innerHTML += this.button(element);
