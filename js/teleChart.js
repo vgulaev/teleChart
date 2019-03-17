@@ -112,6 +112,10 @@ class TeleChart {
       },
       svg: {}
     };
+    this.YAxis = {
+      y: [],
+      staff: {}
+    }
     // this.range.window.left = this.width - this.range.window.width;
     this.range.window.left = 180;
 
@@ -170,6 +174,14 @@ class TeleChart {
       this.data.y[item].graph.path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
     }
 
+    for (const [key, value] of this.YAxis.y.entries()) {
+      this.YAxis.curViewCoord[key][1] = this.YAxis.newViewCoord[key][1] - this.YAxis.deltaY[key] * leftProgres;
+      let tempPoints = [[0, this.YAxis.curViewCoord[key][1]], [this.width, this.YAxis.curViewCoord[key][1]]];
+      let d = this.pointsToD(tempPoints);
+      this.YAxis.staff[value].path.setAttributeNS(null, 'd', d);
+    }
+    // console.log(this.YAxis.curViewCoord, this.YAxis.deltaY);
+
     if (curTime < this.finishTime) {
       return true;
     } else {
@@ -196,9 +208,15 @@ class TeleChart {
     this.updateMinMaxInRange();
     for (let item of this.data.viewItems) {
       let graph = this.data.y[item].graph;
-      graph.newViewCoord = this.fastCalcLineCoord(item, 'graph');
+      graph.newViewCoord = this.fastCalcLineCoord(this.data.y[item].coord, 'graph');
       graph.deltaY = graph.curViewCoord.map((xy, index) => graph.newViewCoord[index][1] - graph.curViewCoord[index][1]);
     }
+
+    this.YAxis.newViewCoord = this.fastCalcLineCoord(this.YAxis.y, 'graph');
+
+    this.YAxis.deltaY = this.YAxis.y.map((xy, index) => {
+      return this.YAxis.newViewCoord[index][1] - this.YAxis.curViewCoord[index][1]
+    });
   }
 
   animationStep() {
@@ -215,7 +233,9 @@ class TeleChart {
       callNextStep |=  this.animationStepGraph(curTime, rightProgres, leftProgres);
     }
 
-    if (callNextStep) requestAnimationFrame(() => this.animationStep());
+    if (callNextStep) {
+      requestAnimationFrame(() => this.animationStep())
+    };
   }
 
   doAnimation() {
@@ -284,8 +304,8 @@ class TeleChart {
     return points;
   }
 
-  calcGraphLineCoord(fromX, fromY, dx, dy, element) {
-    let data = this.data.y[element].coord;
+  calcGraphLineCoord(fromX, fromY, dx, dy, data) {
+    //let data = this.data.y[element].coord;
     let points = [];
     let scaleX = dx / (this.range.right - this.range.left);
     let heightY = this.range.maxy - this.range.miny;
@@ -361,8 +381,19 @@ class TeleChart {
     } else {
       delta = Math.abs(maxy - miny);
     }
+    let rawMiny = miny;
     miny = miny - delta * 0.1;
     maxy = maxy + delta * 0.1;
+
+    delta = (maxy - miny);
+    let roundFactor = 10 ** ( Math.ceil(Math.log10(delta / 7)) - 2 );
+    let step = Math.ceil(delta / 7 / roundFactor) * roundFactor;
+    let y = Math.ceil(rawMiny / roundFactor) * roundFactor;
+    for (let i = 0; i < 6; i++) {
+      if (this.YAxis.y.length > 5) continue;
+      if (-1 == this.YAxis.y.indexOf(y)) this.YAxis.y.push(y);
+      y += step;
+    }
     if (this.range.miny != miny || this.range.maxy != maxy) {
       this.range.miny = miny;
       this.range.maxy = maxy;
@@ -379,8 +410,7 @@ class TeleChart {
       let d = this.pointsToD(this.data.y[element].panel.curViewCoord);
       let path = TeleChart.path({'d': d, 'stroke-width': 2,
         'stroke': this.data.raw.colors[element],
-        'fill': 'none',
-        'render-order': 0});
+        'fill': 'none'});
       this.data.y[element].panel.path = path;
       this.svgRoot.append(path);
     };
@@ -389,7 +419,7 @@ class TeleChart {
   drawGraph() {
     this.updateMinMaxInRange();
     for (let element of this.data.allItems) {
-      this.data.y[element].graph.curViewCoord = this.fastCalcLineCoord(element, 'graph');
+      this.data.y[element].graph.curViewCoord = this.fastCalcLineCoord(this.data.y[element].coord, 'graph');
       let d = this.pointsToD(this.data.y[element].graph.curViewCoord);
       let path = TeleChart.path({'d': d, 'stroke-width': 2,
         'stroke': this.data.raw.colors[element],
@@ -557,13 +587,23 @@ class TeleChart {
   }
 
   drawYAxis() {
-
+    let viewY = this.fastCalcLineCoord(this.YAxis.y, 'graph');
+    for (let i in this.YAxis.y) {
+      let coord = [[0, viewY[i][1]],[this.width, viewY[i][1]]]
+      let d = this.pointsToD(coord);
+      let path = TeleChart.path({'d': d, 'stroke-width': 2,
+        'stroke': 'green',
+        'fill': 'none'});
+      this.YAxis.staff[this.YAxis.y[i]] = {path: path};
+      this.YAxis.g.append(path);
+    }
+    this.YAxis.curViewCoord = viewY;
   }
 
   render() {
     let element;
-    this.YAxis = TeleChart.createSVG('g');
-    this.svgRoot.append(this.YAxis);
+    this.YAxis.g = TeleChart.createSVG('g');
+    this.svgRoot.append(this.YAxis.g);
 
     // element = TeleChart.line(0, 0, this.width, this.height - this.heightPanel, {'stroke-width': 2, 'stroke': 'black'});
     // this.svgRoot.append(element);
