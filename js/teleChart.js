@@ -194,7 +194,6 @@ class TeleChart {
       let d = this.pointsToD(tempPoints);
       this.YAxis.staff[value].path.setAttributeNS(null, 'd', d);
     }
-    // console.log(this.YAxis.curViewCoord, this.YAxis.deltaY);
 
     if (curTime < this.finishTime) {
       return true;
@@ -278,17 +277,14 @@ class TeleChart {
   }
 
   reCheck(button, name) {
-    let mark = button.querySelector('.mark');
     let whiteCircle = button.querySelector('.whiteCircle');
     let direction = 0;
     if (this.data.viewItems.has(name)) {
       this.data.viewItems.delete(name);
-      mark.style.display = 'none';
     } else {
       this.data.viewItems.add(name);
       this.data.y[name].panel.path.style.display = 'inline';
       this.data.y[name].graph.path.style.display = 'inline';
-      mark.style.display = 'inline';
       direction = -1;
     }
     let a = this.animateCircleInButton(this, whiteCircle, 200, direction);
