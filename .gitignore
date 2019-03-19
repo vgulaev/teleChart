@@ -4,3 +4,5 @@ config/*
 !config/.keep
 
 logs/*
+
+hw.js

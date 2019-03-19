@@ -126,16 +126,15 @@ class TeleChart {
 
   *animateCircleInButton(obj, target, duration, direction) {
     let startTime = performance.now();
-    if (direction == 0) target.style.display = 'inline';
+    if (1 == direction) target.style.display = 'inline';
     yield 'start';
     while (true) {
       if (startTime + duration > obj.animationTime) {
-        let progres = (obj.animationTime - startTime) / duration;
-        if (0 != direction) progres = 1 - progres;
+        let progres = direction * (-0.5 + (obj.animationTime - startTime) / duration) + 0.5;
         target.setAttributeNS(null, 'r', 12 * progres);
         yield performance.now()- startTime;
       } else {
-        if (direction != 0) target.style.display = 'none';
+        if (-1 == direction) target.style.display = 'none';
         yield false;
         break;
       }
@@ -278,7 +277,7 @@ class TeleChart {
 
   reCheck(button, name) {
     let whiteCircle = button.querySelector('.whiteCircle');
-    let direction = 0;
+    let direction = 1;
     if (this.data.viewItems.has(name)) {
       this.data.viewItems.delete(name);
     } else {
@@ -287,6 +286,7 @@ class TeleChart {
       this.data.y[name].graph.path.style.display = 'inline';
       direction = -1;
     }
+    console.log(whiteCircle);
     let a = this.animateCircleInButton(this, whiteCircle, 200, direction);
     this.animationStack.add(a);
     a.next();
@@ -299,7 +299,6 @@ class TeleChart {
   createHeader() {
     this.header = document.createElement('div');
     this.divRoot.append(this.header);
-    // this.header = document.getElementById('Header');
 
     for (let element of this.data.allItems) {
       this.header.innerHTML += this.button(element);
@@ -314,9 +313,7 @@ class TeleChart {
   }
 
   pointsToD(points) {
-    let res = '';
-    res += `M ${points[0].join(',')} L `;
-
+    let res = `M ${points[0].join(',')} L `;
     for (let i = 1; i < points.length; i++) {
       res += ' ' + points[i].join(',');
     }
@@ -338,7 +335,6 @@ class TeleChart {
   }
 
   calcGraphLineCoord(fromX, fromY, dx, dy, data) {
-    //let data = this.data.y[element].coord;
     let points = [];
     let scaleX = dx / (this.range.right - this.range.left);
     let heightY = this.range.maxy - this.range.miny;
@@ -356,7 +352,6 @@ class TeleChart {
   fastCalcLineCoord(element, type) {
     if ('panel' == type) {
       return this.calcLineCoord(2, 2, this.width - 4, this.heightPanel - 4, element);
-      // return [[0,0], [200, 100], [300, 400], [350, 500]];
     } else {
       return this.calcGraphLineCoord(0, 0, this.width, this.height, element);
     }
@@ -380,8 +375,8 @@ class TeleChart {
     } else {
       delta = Math.abs(maxy - miny);
     }
-    miny = miny - delta * 0.1;
-    maxy = maxy + delta * 0.1;
+    miny = miny - delta * 0.05;
+    maxy = maxy + delta * 0.05;
     if (this.miny != miny || this.maxy != maxy) {
       this.miny = miny;
       this.maxy = maxy;
@@ -622,7 +617,7 @@ class TeleChart {
       let coord = [[0, viewY[i][1]],[this.width, viewY[i][1]]]
       let d = this.pointsToD(coord);
       let path = TeleChart.path({'d': d, 'stroke-width': 2,
-        'stroke': 'green',
+        'stroke': '#96a2aa',
         'fill': 'none'});
       this.YAxis.staff[this.YAxis.y[i]] = {path: path};
       this.YAxis.g.append(path);
@@ -630,20 +625,27 @@ class TeleChart {
     this.YAxis.curViewCoord = viewY;
   }
 
+  mmDD(date) {
+    return TeleChart.monthNames[date.getMonth()] + ' ' + date.getDate().toString();
+  }
+
+  drawXAxis() {
+    let a = this.data.x[this.xLength - 1];
+    console.log(this.mmDD(a));
+  }
+
   render() {
     let element;
     this.YAxis.g = TeleChart.createSVG('g');
     this.svgRoot.append(this.YAxis.g);
 
-    // element = TeleChart.line(0, 0, this.width, this.height - this.heightPanel, {'stroke-width': 2, 'stroke': 'black'});
-    // this.svgRoot.append(element);
-    // element = TeleChart.line(0, this.height - this.heightPanel, this.width, 0, {'stroke-width': 2, 'stroke': 'black'});
-    // this.svgRoot.append(element);
     this.drawGraph();
     this.drawYAxis();
     this.drawWindow();
     this.drawMiniMap();
+    this.drawXAxis();
     this.createHeader();
-    // g.append(element);
   }
 }
+
+TeleChart.monthNames = ['Jan', 'Feb', 'Mar','Apr', 'May', 'Jun', 'Jul','Aug', 'Sep', 'Oct','Nov', 'Dec'];
