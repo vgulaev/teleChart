@@ -44,12 +44,6 @@ class TeleChart {
     return element;
   }
 
-  static animate(options = {}) {
-    let element = TeleChart.createSVG('animate');
-    TeleChart.setAttribute(element, options);
-    return element;
-  }
-
   static circle(cx, cy, r, options = {}) {
     let element = TeleChart.createSVG('circle');
     TeleChart.setAttribute(element, {'cx': cx, 'cy': cy, 'r': r});
@@ -123,17 +117,38 @@ class TeleChart {
     // this.range.window.left = this.width - this.range.window.width;
     this.range.window.left = 180;
     this.heightPanel = this.svgPanel.height.animVal.value;
-    this.animationTime = options.animationTime;
+    this.animationDuration = options.animationDuration;
     this.animationLayers = new Set();
+    this.animationStack = new Set();
     this.updateMinMaxInRange();
     this.render();
+  }
+
+  *animateCircleInButton(obj, target, duration, direction) {
+    let startTime = performance.now();
+    if (direction == 0) target.style.display = 'inline';
+    yield 'start';
+    while (true) {
+      if (startTime + duration > obj.animationTime) {
+        let progres = (obj.animationTime - startTime) / duration;
+        if (0 != direction) progres = 1 - progres;
+        target.setAttributeNS(null, 'r', 12 * progres);
+        yield performance.now()- startTime;
+      } else {
+        if (direction != 0) target.style.display = 'none';
+        yield false;
+        break;
+      }
+    }
   }
 
   button(name) {
     return `<button id="${name}Button" style="border-radius: 40px; border: 0;">
       <svg width="40px" height="40px" style=" display: inline-block; vertical-align: middle;">
-      <path d="M 5, 20 a 15,15 0 1,0 30,0 a 15,15 0 1,0 -30,0 M 15,15 h 10 v 10 h -10 z" stroke-width="2" stroke="${this.data.raw.colors[name]}" fill="${this.data.raw.colors[name]}">
+        <circle cy="20" cx="20" r="15" fill="${this.data.raw.colors[name]}"/>
+      <path class="mark" d="M 13,20 l7,7 l7,-12 l-4,0 l-3,7 l-3,-3 z" stroke-width="2" fill="white">
         </path>
+      <circle class="whiteCircle" cy="20" cx="20" r="1" fill="white" style="display: none;"/>
       </svg>
       <span>${name}</span>
     </button>`;
@@ -219,17 +234,25 @@ class TeleChart {
   }
 
   animationStep() {
-    let curTime = performance.now();
-    let rightProgres = (curTime - this.startTime) / this.animationTime;
+    this.animationTime = performance.now();
+    let rightProgres = (this.animationTime - this.startTime) / this.animationDuration;
     let leftProgres = 1 - rightProgres;
     let callNextStep = false;
 
     if (this.animationLayers.has('panel')) {
-      callNextStep = this.animationStepPanel(curTime, rightProgres, leftProgres);
+      callNextStep = this.animationStepPanel(this.animationTime, rightProgres, leftProgres);
     }
 
     if (this.animationLayers.has('graph')) {
-      callNextStep |=  this.animationStepGraph(curTime, rightProgres, leftProgres);
+      callNextStep |=  this.animationStepGraph(this.animationTime, rightProgres, leftProgres);
+    }
+
+    if (this.animationStack.size > 0) {
+      callNextStep = true;
+      for (let [key, value] of this.animationStack.entries()) {
+        let cont = key.next();
+        if (false == cont.value) this.animationStack.delete(key);
+      }
     }
 
     if (callNextStep) {
@@ -246,7 +269,7 @@ class TeleChart {
 
   doAnimation() {
     this.startTime = performance.now();
-    this.finishTime = this.startTime + this.animationTime;
+    this.finishTime = this.startTime + this.animationDuration;
 
     if (this.animationLayers.has('panel')) this.animatePanel();
     if (this.animationLayers.has('graph')) this.animateGraph();
@@ -255,13 +278,23 @@ class TeleChart {
   }
 
   reCheck(button, name) {
+    let mark = button.querySelector('.mark');
+    let whiteCircle = button.querySelector('.whiteCircle');
+    let direction = 0;
     if (this.data.viewItems.has(name)) {
       this.data.viewItems.delete(name);
+      mark.style.display = 'none';
     } else {
       this.data.viewItems.add(name);
       this.data.y[name].panel.path.style.display = 'inline';
       this.data.y[name].graph.path.style.display = 'inline';
+      mark.style.display = 'inline';
+      direction = -1;
     }
+    let a = this.animateCircleInButton(this, whiteCircle, 200, direction);
+    this.animationStack.add(a);
+    a.next();
+
     this.animationLayers.add('panel');
     this.animationLayers.add('graph');
     this.doAnimation();
