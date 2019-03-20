@@ -132,6 +132,7 @@ class TeleChart {
     this.animationLayers = new Set();
     this.animationStack = new Set();
     this.sieve = 0;
+    this.semafors = {};
     this.updateMinMaxInRange();
     this.render();
   }
@@ -296,12 +297,10 @@ class TeleChart {
       direction = -1;
     }
     let a = this.animateCircleInButton(whiteCircle, 200, direction);
-    this.animationStack.add(a);
-    a.next();
 
     this.animationLayers.add('panel');
     this.animationLayers.add('graph');
-    this.doAnimation();
+    this.doAnimation(a);
   }
 
   createHeader() {
@@ -313,7 +312,7 @@ class TeleChart {
     };
 
     for (let element of this.data.allItems) {
-      let b = document.getElementById(`${element}Button`);
+      let b = this.header.querySelector(`#${element}Button`);
       b.addEventListener('click', eventData => {
         this.reCheck(b, element);
       });
@@ -497,9 +496,17 @@ class TeleChart {
     yield false;
   }
 
+  requestScaleXAxis() {
+    if ('recall' == this.semafors['scaleXAxis']) return;
+    if ('work' == this.semafors['scaleXAxis']) {
+      this.semafors['scaleXAxis'] = 'recall';
+    } else {
+      this.semafors['scaleXAxis'] = 'work';
+      setTimeout(() => this.scaleXAxis());
+    }
+  }
 
-  scaleXAxisLeft() {
-    this.removalLength = 100;
+  scaleXAxis() {
     this.updateMinMaxInRange();
     let visibleCount = 0;
     let count = 0;
@@ -508,28 +515,31 @@ class TeleChart {
       item.viewX = this.getViewX(item.x);
       TeleChart.setAttribute(item.text, {x: item.viewX - item.coord.width});
       if (0 != count % (2 ** this.sieve) && 1 == item.visible) {
-        let a = this.animateLabelRemove(item, 800, -1);
+        let a = this.animateLabelRemove(item, 400, -1);
         this.doAnimation(a);
         item.visible = 0;
       } else if (0 == count % (2 ** this.sieve) && 0 == item.visible) {
-        let a = this.animateLabelRemove(item, 800, 1);
+        let a = this.animateLabelRemove(item, 400, 1);
         this.doAnimation(a);
         item.visible = 1;
-      }
-      if (0 < item.viewX && item.viewX < this.width) {
-        visibleCount += item.visible;
       }
       count += 1;
     }
 
+    visibleCount = this.width / (this.XAxis.points[0].viewX - this.XAxis.points[2 ** this.sieve].viewX);
+
     if (visibleCount > 8) {
       this.sieve += 1;
-      this.scaleXAxisLeft();
+      this.requestScaleXAxis();
+    } else if (visibleCount < 4 && this.sieve > 0)  {
+      this.sieve -= 1;
+      this.requestScaleXAxis();
     }
 
-    if (visibleCount < 4 && this.sieve > 0)  {
-      this.sieve -= 1;
-      this.scaleXAxisLeft();
+    if ('recall' == this.semafors['scaleXAxis']) {
+      setTimeout(() => this.scaleXAxis());
+    } else {
+      this.semafors['scaleXAxis'] = '';
     }
   }
 
@@ -551,7 +561,7 @@ class TeleChart {
         svg.right.setAttributeNS(null, 'x', this.range.window.left + this.range.window.width - svg.wBorder);
         svg.top.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
         svg.bottom.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
-        this.scaleXAxisLeft();
+        this.requestScaleXAxis();
       } else if ('left' == svg.target) {
         this.range.window.left = svg.reper['left'] + delta;
         this.range.window.width = svg.reper['total'] - this.range.window.left;
@@ -570,7 +580,7 @@ class TeleChart {
         svg.top.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
         svg.bottom.setAttributeNS(null, 'x', this.range.window.left + svg.wBorder);
         svg.bottom.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
-        this.scaleXAxisLeft();
+        this.requestScaleXAxis();
       } else if ('mid' == svg.target) {
         this.range.window.left = svg.reper + delta;
         if (this.range.window.left < 0) {
