@@ -481,11 +481,11 @@ class TeleChart {
     }
   }
 
-  *animateLabelRemove(target, duration) {
+  *animateLabelRemove(target, duration, direction) {
     let startTime = performance.now();
-    let moveLength = this.width / 6;
+    let moveLength = this.width / 7 * direction;
     yield 'start';
-    if (target.viewX > -100) {
+    if (-100 < target.viewX && target.viewX < this.width ) {
       while (true) {
         if (startTime + duration > this.animationTime) {
           let progres = (this.animationTime - startTime) / duration;
@@ -493,14 +493,15 @@ class TeleChart {
           target.text.setAttributeNS(null, 'opacity', 1 - progres);
           yield performance.now()- startTime;
         } else {
+          target.text.remove();
           yield false;
           break;
         }
       }
     } else {
+      target.text.remove();
       yield false;
     }
-    target.text.remove();
   }
 
 
@@ -511,6 +512,10 @@ class TeleChart {
     let newPoints = new Set(this.getXAxisPoints());
     let concat = [];
 
+    let direction = 1;
+    if (p.length < newPoints.size) {
+      direction = -1;
+    }
     for (let item of p) {
       if (newPoints.has(item.x)) {
         concat.push(item);
@@ -518,7 +523,7 @@ class TeleChart {
         item.viewX = this.getViewX(item.x);
         TeleChart.setAttribute(item.text, {x: item.viewX - item.coord.width});
       } else {
-        let a = this.animateLabelRemove(item, 400);
+        let a = this.animateLabelRemove(item, 800, direction);
         this.doAnimation(a);
       }
     }
