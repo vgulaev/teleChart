@@ -131,6 +131,7 @@ class TeleChart {
     this.animationDuration = options.animationDuration;
     this.animationLayers = new Set();
     this.animationStack = new Set();
+    this.sieve = 0;
     this.updateMinMaxInRange();
     this.render();
   }
@@ -483,57 +484,53 @@ class TeleChart {
 
   *animateLabelRemove(target, duration, direction) {
     let startTime = performance.now();
-    let moveLength = this.width / 7 * direction;
     yield 'start';
-    if (-100 < target.viewX && target.viewX < this.width ) {
       while (true) {
         if (startTime + duration > this.animationTime) {
-          let progres = (this.animationTime - startTime) / duration;
-          target.text.setAttributeNS(null, 'x', target.viewX + moveLength * progres);
-          target.text.setAttributeNS(null, 'opacity', 1 - progres);
+          let progres = direction * (-0.5 + (this.animationTime - startTime) / duration) + 0.5;
+          target.text.setAttributeNS(null, 'opacity',  progres);
           yield performance.now()- startTime;
         } else {
-          target.text.remove();
-          yield false;
           break;
         }
       }
-    } else {
-      target.text.remove();
-      yield false;
-    }
+    yield false;
   }
 
 
   scaleXAxisLeft() {
     this.removalLength = 100;
     this.updateMinMaxInRange();
-    let p = this.XAxis.points;
-    let newPoints = new Set(this.getXAxisPoints());
-    let concat = [];
+    let visibleCount = 0;
+    let count = 0;
 
-    let direction = 1;
-    if (p.length < newPoints.size) {
-      direction = -1;
-    }
-    for (let item of p) {
-      if (newPoints.has(item.x)) {
-        concat.push(item);
-        newPoints.delete(item.x);
-        item.viewX = this.getViewX(item.x);
-        TeleChart.setAttribute(item.text, {x: item.viewX - item.coord.width});
-      } else {
-        let a = this.animateLabelRemove(item, 800, direction);
+    for (let item of this.XAxis.points) {
+      item.viewX = this.getViewX(item.x);
+      TeleChart.setAttribute(item.text, {x: item.viewX - item.coord.width});
+      if (0 != count % (2 ** this.sieve) && 1 == item.visible) {
+        let a = this.animateLabelRemove(item, 800, -1);
         this.doAnimation(a);
+        item.visible = 0;
+      } else if (0 == count % (2 ** this.sieve) && 0 == item.visible) {
+        let a = this.animateLabelRemove(item, 800, 1);
+        this.doAnimation(a);
+        item.visible = 1;
       }
+      if (0 < item.viewX && item.viewX < this.width) {
+        visibleCount += item.visible;
+      }
+      count += 1;
     }
 
-    for (let item of newPoints) {
-      concat.push(this.drawLabel(item));
+    if (visibleCount > 8) {
+      this.sieve += 1;
+      this.scaleXAxisLeft();
     }
-    this.XAxis.points = concat;
-    // console.log(newPoints.join(','));
-    // console.log(concat.map(el => el.x).join(','));
+
+    if (visibleCount < 4 && this.sieve > 0)  {
+      this.sieve -= 1;
+      this.scaleXAxisLeft();
+    }
   }
 
   onMove(clientX) {
@@ -554,6 +551,7 @@ class TeleChart {
         svg.right.setAttributeNS(null, 'x', this.range.window.left + this.range.window.width - svg.wBorder);
         svg.top.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
         svg.bottom.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
+        this.scaleXAxisLeft();
       } else if ('left' == svg.target) {
         this.range.window.left = svg.reper['left'] + delta;
         this.range.window.width = svg.reper['total'] - this.range.window.left;
@@ -708,13 +706,14 @@ class TeleChart {
     return TeleChart.monthNames[date.getMonth()] + ' ' + date.getDate().toString();
   }
 
-  drawLabel(x) {
+  drawLabel(x, i) {
     let obj = {
       x: x,
+      visible: 1,
       viewX: this.getViewX(x),
       innerHTML: this.mmDD(this.data.x[x])
     };
-    obj.text = TeleChart.text({x: obj.viewX, y: this.height + 100, innerHTML: obj.innerHTML, fill: this.axisColor, style: 'font-size: 8px'});
+    obj.text = TeleChart.text({x: obj.viewX, y: this.height + 100, innerHTML: obj.innerHTML, fill: this.axisColor, style: 'font-size: 10px'});
     this.svgRoot.append(obj.text);
     obj.coord = obj.text.getBBox();
     TeleChart.setAttribute(obj.text, {x: obj.viewX - obj.coord.width, y: this.height - 2});
@@ -738,7 +737,7 @@ class TeleChart {
   }
 
   drawXAxis() {
-    this.XAxis.points = this.getXAxisPoints().map(x => this.drawLabel(x));
+    this.XAxis.points = this.getXAxisPoints().map((x, i) => this.drawLabel(x, i));
   }
 
   render() {
