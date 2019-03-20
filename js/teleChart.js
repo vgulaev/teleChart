@@ -54,6 +54,9 @@ class TeleChart {
   static text(options) {
     let element = TeleChart.createSVG('text');
     TeleChart.setAttribute(element, options);
+    if ('innerHTML' in options) {
+      element.innerHTML = options.innerHTML;
+    }
     return element;
   }
 
@@ -119,7 +122,8 @@ class TeleChart {
     this.YAxis = {
       y: [],
       staff: {}
-    }
+    };
+    this.XAxis = {};
     // this.range.window.left = this.width - this.range.window.width;
     this.range.window.left = 180;
     this.axisColor = '#96a2aa';
@@ -341,6 +345,12 @@ class TeleChart {
     return points;
   }
 
+  getViewX(x) {
+    let scaleX = this.width / (this.range.right - this.range.left);
+    return scaleX * (x - this.range.left)
+  }
+
+
   calcGraphLineCoord(fromX, fromY, dx, dy, data) {
     let points = [];
     let scaleX = dx / (this.range.right - this.range.left);
@@ -417,7 +427,7 @@ class TeleChart {
       delta = Math.abs(maxy - miny);
     }
     let rawMiny = miny;
-    miny = miny - delta * 0.05;
+    miny = miny - delta * 0.07;
     maxy = maxy + delta * 0.05;
 
     delta = (maxy - miny);
@@ -468,6 +478,15 @@ class TeleChart {
     this.statusTag.innerHTML = text;
   }
 
+  midMoveXAxis() {
+    for (let obj of this.XAxis.points) {
+      // console.log(obj);
+      // break;
+      obj.viewX = this.getViewX(obj.x);
+      TeleChart.setAttribute(obj.text, {x: obj.viewX - obj.coord.width});
+    }
+  }
+
   onMove(clientX) {
     let svg = this.range.svg;
     if (svg.target != undefined) {
@@ -508,11 +527,15 @@ class TeleChart {
       } else if ('mid' == svg.target) {
         this.range.window.left = svg.reper + delta;
         if (this.range.window.left < 0) {
+          // this.range.left = 0;
           this.range.window.left = 0;
           svg.target = undefined;
+          this.updateMinMaxInRange();
         } else if (this.range.window.left + this.range.window.width > this.width) {
+          // this.range.right = this.xLength - 1;
           this.range.window.left = this.width - this.range.window.width;
           svg.target = undefined;
+          this.updateMinMaxInRange();
         }
         svg.leftBox.setAttributeNS(null, 'width', this.range.window.left);
         svg.rightBox.setAttributeNS(null, 'width', this.width - this.range.window.width - this.range.window.left);
@@ -521,10 +544,12 @@ class TeleChart {
         svg.right.setAttributeNS(null, 'x', this.range.window.left + this.range.window.width - svg.wBorder);
         svg.top.setAttributeNS(null, 'x', this.range.window.left + svg.wBorder);
         svg.bottom.setAttributeNS(null, 'x', this.range.window.left + svg.wBorder);
+        this.midMoveXAxis();
       }
       this.animationLayers.add('graph');
       this.doAnimation();
-      this.msg(JSON.stringify(this.range.window));
+      // this.msg(JSON.stringify(this.range.window));
+      this.msg(this.range.left.toString() + ' ' + this.range.right.toString());
     }
   }
 
@@ -636,14 +661,34 @@ class TeleChart {
     return TeleChart.monthNames[date.getMonth()] + ' ' + date.getDate().toString();
   }
 
+  drawLabel(x) {
+    let obj = {
+      x: x,
+      viewX: this.getViewX(x),
+      innerHTML: this.mmDD(this.data.x[x])
+    };
+    obj.text = TeleChart.text({x: obj.viewX, y: this.height + 100, innerHTML: obj.innerHTML, fill: this.axisColor, style: 'font-size: 8px'});
+    this.svgRoot.append(obj.text);
+    obj.coord = obj.text.getBBox();
+    TeleChart.setAttribute(obj.text, {x: obj.viewX - obj.coord.width, y: this.height - 2});
+    return obj;
+  }
+
   drawXAxis() {
-    let a = this.data.x[this.xLength - 1];
-    let e = TeleChart.text({x: this.width + 50, y: this.height - 2, fill: this.axisColor, style: 'display: inline; font-size: 8px;'});
-    e.innerHTML = this.mmDD(a);
-    this.svgRoot.append(e);
-    let coord = e.getBBox();
-    e.setAttributeNS(null, 'x', this.width - coord.width);
-    console.log(this.mmDD(a));
+    let cur = this.xLength - 1;
+    let points = [this.drawLabel(cur)];
+    let dx = (this.range.right - this.range.left) / 5.5;
+    while ((cur -= dx) > 0) {
+      if (Math.ceil(cur) == points[points.length - 1]) {
+        cur = Math.floor(cur);
+      } else {
+        cur = Math.ceil(cur);
+      }
+      if (cur == points[points.length - 1]) break;
+      points.push(this.drawLabel(cur));
+    }
+    this.XAxis.points = points;
+    // console.log(this.XAxis.points)
   }
 
   render() {
