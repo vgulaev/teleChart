@@ -155,7 +155,7 @@ class TeleChart {
   }
 
   button(name) {
-    return `<button id="${name}Button" style="border-radius: 40px; border: 0;">
+    return `<button id="${name}Button" style="border-radius: 40px; border: 1px solid ${this.axisColor}; background-color: white; margin-right: 10px;">
       <svg width="40px" height="40px" style=" display: inline-block; vertical-align: middle;">
         <circle cy="20" cx="20" r="15" fill="${this.data.raw.colors[name]}"/>
       <path class="mark" d="M 13,20 l7,7 l7,-12 l-4,0 l-3,7 l-3,-3 z" stroke-width="2" fill="white">
