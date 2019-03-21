@@ -124,6 +124,7 @@ class TeleChart {
       staff: {}
     };
     this.XAxis = {};
+    this.tile = {};
     this.range.window.left = this.width - this.range.window.width;
     // this.range.window.left = 180;
     this.axisColor = '#96a2aa';
@@ -748,12 +749,28 @@ class TeleChart {
     this.XAxis.points = this.getXAxisPoints().map((x, i) => this.drawLabel(x, i));
   }
 
-  createTile(clientX) {
+  drawTile(clientX) {
+    this.targetLine.setAttributeNS(null, 'd', this.pointsToD([[this.tile.viewX, 0], [this.tile.viewX, this.height - 10]]));
+    this.svgRoot.querySelectorAll('.point').forEach(el => el.remove());
+    for (let item of this.data.viewItems) {
+      let y = this.data.y[item].graph.curViewCoord[this.tile.pointedX][1];
+      let circle = TeleChart.circle(this.tile.viewX, y, 5, {'class': 'point', 'fill': 'white', 'stroke': this.data.raw.colors[item], 'stroke-width': 2});
+      this.svgRoot.append(circle);
+      console.log(this.data.y[item].graph.curViewCoord[this.tile.pointedX][0], this.tile.viewX);
+    }
+  }
+
+  moveOnRoot(clientX) {
     let rect = this.svgRoot.getBoundingClientRect();
-    // console.log(eventData.clientX, eventData.pageX);
-    let x = clientX - rect.x;
-    this.targetLine.setAttributeNS(null, 'd', this.pointsToD([[x, 0], [x, this.height]]));
-    console.log();
+    let xSVG = clientX - rect.x;
+    let xPerPoint = this.width / (this.range.right - this.range.left);
+    let pointedX = Math.round(xSVG / xPerPoint + this.range.left);
+    let newViewX = Math.round((pointedX - this.range.left) * xPerPoint);
+    if (this.tile.x != newViewX) {
+      this.tile.viewX = newViewX;
+      this.tile.pointedX = pointedX;
+      this.drawTile(newViewX);
+    }
   }
 
   render() {
@@ -772,15 +789,15 @@ class TeleChart {
     this.createHeader();
 
     this.svgRoot.addEventListener('mousemove', (eventData) => {
-      this.createTile(eventData.clientX);
+      this.moveOnRoot(eventData.clientX);
     });
 
     this.svgRoot.addEventListener('touchstart', (eventData) => {
-      this.createTile(eventData.touches[0].pageX);
+      this.moveOnRoot(eventData.touches[0].pageX);
     });
 
     this.svgRoot.addEventListener('touchmove', (eventData) => {
-      this.createTile(eventData.touches[0].pageX);
+      this.moveOnRoot(eventData.touches[0].pageX);
     });
 
     console.log(this.svgRoot);

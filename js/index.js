@@ -1,5 +1,5 @@
 window.addEventListener('load', async function( event ) {
-  let data = chartData[6];
+  let data = chartData[0];
   let chart0 = new TeleChart('chart0', data, {
       width: '500px',
       height: '200px',
