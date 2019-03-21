@@ -95,7 +95,7 @@ class TeleChart {
     this.divRoot.append(this.svgRoot);
 
     this.divTile = document.createElement('div');
-    this.divTile.setAttribute('style', `display: none; position: absolute; background-color: white; left: 800px; top: 100px; border: 1px solid ${this.axisColor}; border-radius: 5px;`);
+    this.divTile.setAttribute('style', `display: none; position: absolute; background-color: white; left: 800px; top: 100px; border: 1px solid ${this.axisColor}; border-radius: 5px; white-space: nowrap;`);
     this.divRoot.append(this.divTile);
 
     this.svgPanel = TeleChart.createSVG('svg');
@@ -788,7 +788,12 @@ class TeleChart {
     }
 
     this.divTile.innerHTML = this.innerTile();
-    this.divTile.style.left = clientX + 25 + 'px';
+    let coord = this.divTile.getBoundingClientRect();
+    if (clientX + 25 + coord.width > document.body.clientWidth ) {
+      this.divTile.style.left = clientX - coord.width - 25 + 'px';
+    } else {
+      this.divTile.style.left = clientX + 25 + 'px';
+    }
     this.divTile.style.top = clientY + 'px';
     this.divTile.top = clientY;
 
