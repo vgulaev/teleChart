@@ -449,9 +449,7 @@ class TeleChart {
     for (let element of this.data.allItems) {
       this.data.y[element].panel.curViewCoord = this.fastCalcLineCoord(element, 'panel');
       let d = this.pointsToD(this.data.y[element].panel.curViewCoord);
-      let path = TeleChart.path({'d': d, 'stroke-width': 2,
-        'stroke': this.data.raw.colors[element],
-        'fill': 'none'});
+      let path = TeleChart.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[element], 'fill': 'none'});
       this.data.y[element].panel.path = path;
       this.svgPanel.append(path);
     };
@@ -537,6 +535,7 @@ class TeleChart {
     }
 
     if ('recall' == this.semafors['scaleXAxis']) {
+      this.semafors['scaleXAxis'] = 'work';
       setTimeout(() => this.scaleXAxis());
     } else {
       this.semafors['scaleXAxis'] = '';
@@ -578,8 +577,7 @@ class TeleChart {
         svg.left.setAttributeNS(null, 'x', this.range.window.left);
         svg.top.setAttributeNS(null, 'x', this.range.window.left + svg.wBorder);
         svg.top.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
-        svg.bottom.setAttributeNS(null, 'x', this.range.window.left + svg.wBorder);
-        svg.bottom.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
+        TeleChart.setAttribute(svg.bottom, {'x': this.range.window.left + svg.wBorder, 'width': this.range.window.width - 2 * svg.wBorder})
         this.requestScaleXAxis();
       } else if ('mid' == svg.target) {
         this.range.window.left = svg.reper + delta;
@@ -750,10 +748,21 @@ class TeleChart {
     this.XAxis.points = this.getXAxisPoints().map((x, i) => this.drawLabel(x, i));
   }
 
+  createTile(clientX) {
+    let rect = this.svgRoot.getBoundingClientRect();
+    // console.log(eventData.clientX, eventData.pageX);
+    let x = clientX - rect.x;
+    this.targetLine.setAttributeNS(null, 'd', this.pointsToD([[x, 0], [x, this.height]]));
+    console.log();
+  }
+
   render() {
     let element;
     this.YAxis.g = TeleChart.createSVG('g');
     this.svgRoot.append(this.YAxis.g);
+    this.svgRoot.setAttributeNS(null, 'id', 'sss');
+    this.targetLine = TeleChart.path({'fill': this.axisColor, 'stroke-width': 2, 'stroke': this.axisColor});
+    this.svgRoot.append(this.targetLine);
 
     this.drawGraph();
     this.drawYAxis();
@@ -761,6 +770,20 @@ class TeleChart {
     this.drawMiniMap();
     this.drawXAxis();
     this.createHeader();
+
+    this.svgRoot.addEventListener('mousemove', (eventData) => {
+      this.createTile(eventData.clientX);
+    });
+
+    this.svgRoot.addEventListener('touchstart', (eventData) => {
+      this.createTile(eventData.touches[0].pageX);
+    });
+
+    this.svgRoot.addEventListener('touchmove', (eventData) => {
+      this.createTile(eventData.touches[0].pageX);
+    });
+
+    console.log(this.svgRoot);
   }
 }
 
