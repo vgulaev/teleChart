@@ -222,13 +222,13 @@ class TeleChart {
         this.drawYLine(y, last, 0);
         this.YAxis.gs[y].newViewY = this.getViewY(y, this.range);
         this.YAxis.gs[y].delta = this.YAxis.gs[y].newViewY - this.YAxis.gs[y].viewY;
-        let a = this.animateYBlink(this.YAxis.gs[y], 1000, 1);
+        let a = this.animateYBlink(this.YAxis.gs[y], this.animationDuration, 1);
         this.doAnimation(a);
       }
     }
     for (let y of last.points) {
       if (!v.points.has(y)) {
-        let a = this.animateYBlink(this.YAxis.gs[y], 1000, -1);
+        let a = this.animateYBlink(this.YAxis.gs[y], this.animationDuration, -1);
         this.doAnimation(a);
         delete this.YAxis.gs[y];
       }
