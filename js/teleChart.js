@@ -125,8 +125,8 @@ class TeleChart {
       svg: {}
     };
     this.YAxis = {
-      y: [],
-      staff: {}
+      versions: [],
+      gs: {}
     };
     this.XAxis = {};
     this.tile = {};
@@ -205,6 +205,12 @@ class TeleChart {
       this.data.y[item].graph.path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
     }
 
+    for (let [y, g] of Object.entries(this.YAxis.gs)) {
+      g.viewY = g.newViewY - g.delta * leftProgres;
+      g.line.setAttributeNS(null, 'd', this.pointsToD([[0, g.viewY], [this.width, g.viewY]]));
+      g.text.setAttributeNS(null, 'y', g.viewY - 3);
+    }
+
     if (curTime < this.finishTime) {
       return true;
     } else {
@@ -235,11 +241,10 @@ class TeleChart {
       graph.deltaY = graph.curViewCoord.map((xy, index) => graph.newViewCoord[index][1] - graph.curViewCoord[index][1]);
     }
 
-    // this.YAxis.newViewCoord = this.fastCalcLineCoord(this.YAxis.y, 'graph');
-
-    // this.YAxis.deltaY = this.YAxis.y.map((xy, index) => {
-    //   return this.YAxis.newViewCoord[index][1] - this.YAxis.curViewCoord[index][1]
-    // });
+    for (let [y, g] of Object.entries(this.YAxis.gs)) {
+      g.newViewY = this.getViewY(y, this.range);
+      g.delta = g.newViewY - g.viewY;
+    }
   }
 
   animationStep() {
@@ -260,7 +265,7 @@ class TeleChart {
       callNextStep = true;
       for (let [key, value] of this.animationStack.entries()) {
         let cont = key.next();
-        if (false == cont.value) this.animationStack.delete(key);
+        if (undefined == cont.value) this.animationStack.delete(key);
       }
     }
 
@@ -347,6 +352,10 @@ class TeleChart {
     return points;
   }
 
+  getViewY(y, v) {
+    return Math.round(this.height - (y - v.miny) / v.delta * this.height);
+  }
+
   getViewX(x) {
     let scaleX = this.width / (this.range.right - this.range.left);
     return scaleX * (x - this.range.left)
@@ -405,6 +414,22 @@ class TeleChart {
     }
   }
 
+  getYSieve() {
+    let obj = {
+      points: [],
+      delta: this.range.maxy - this.range.miny,
+      miny: this.range.miny
+    };
+    let roundFactor = 10 ** ( Math.ceil(Math.log10(obj.delta / 7)) - 2 );
+    let step = Math.ceil(obj.delta / 7 / roundFactor) * roundFactor;
+    let y = Math.ceil(this.rawMiny / roundFactor) * roundFactor - step;
+    for (let i = 0; i < 8; i++) {
+      obj.points.push(y);
+      y += step;
+    }
+    return obj;
+  }
+
   updateMinMaxInRange() {
     let a = [];
     let miny = Infinity;
@@ -428,20 +453,12 @@ class TeleChart {
     } else {
       delta = Math.abs(maxy - miny);
     }
-    let rawMiny = miny;
+    this.rawMiny = miny;
     miny = miny - delta * 0.07;
     maxy = maxy + delta * 0.05;
 
-    delta = (maxy - miny);
-    let roundFactor = 10 ** ( Math.ceil(Math.log10(delta / 7)) - 2 );
-    let step = Math.ceil(delta / 7 / roundFactor) * roundFactor;
-    let y = Math.ceil(rawMiny / roundFactor) * roundFactor;
-    for (let i = 0; i < 6; i++) {
-      if (this.YAxis.y.length > 5) continue;
-      if (-1 == this.YAxis.y.indexOf(y)) this.YAxis.y.push(y);
-      y += step;
-    }
     if (this.range.miny != miny || this.range.maxy != maxy) {
+      this.range.delta = delta;
       this.range.miny = miny;
       this.range.maxy = maxy;
       return true;
@@ -488,16 +505,15 @@ class TeleChart {
   *animateLabelRemove(target, duration, direction) {
     let startTime = performance.now();
     yield 'start';
-      while (true) {
-        if (startTime + duration > this.animationTime) {
-          let progres = direction * (-0.5 + (this.animationTime - startTime) / duration) + 0.5;
-          target.text.setAttributeNS(null, 'opacity',  progres);
-          yield performance.now()- startTime;
-        } else {
-          break;
-        }
+    while (true) {
+      if (startTime + duration > this.animationTime) {
+        let progres = direction * (-0.5 + (this.animationTime - startTime) / duration) + 0.5;
+        target.text.setAttributeNS(null, 'opacity',  progres);
+        yield performance.now()- startTime;
+      } else {
+        break;
       }
-    yield false;
+    }
   }
 
   requestScaleXAxis() {
@@ -704,18 +720,27 @@ class TeleChart {
     [svg.right, svg.left, svg.top, svg.bottom, svg.rightBox, svg.leftBox].forEach(element => this.svgPanel.append(element));
   }
 
+  drawYLine(y, v) {
+    let viewY = this.getViewY(y, v);
+    console.log(y, viewY);
+    let g = {
+      viewY: viewY,
+      g: TeleChart.createSVG('g'),
+      line: TeleChart.path({d: this.pointsToD([[0, viewY], [this.width, viewY]]),'fill': this.axisColor, 'stroke-width': 2, 'stroke': this.axisColor}),
+      text: TeleChart.text({x: 4, y: viewY - 3, innerHTML: y, fill: this.axisColor, style: 'font-size: 10px'})
+    }
+    g.g.append(g.text);
+    g.g.append(g.line);
+    this.YAxis.gs[y] = g;
+    this.YAxis.g.append(g.g);
+  }
+
   drawYAxis() {
-    // let viewY = this.fastCalcLineCoord(this.YAxis.y, 'graph');
-    // for (let i in this.YAxis.y) {
-    //   let coord = [[0, viewY[i][1]],[this.width, viewY[i][1]]]
-    //   let d = this.pointsToD(coord);
-    //   let path = TeleChart.path({'d': d, 'stroke-width': 2,
-    //     'stroke': '#96a2aa',
-    //     'fill': 'none'});
-    //   this.YAxis.staff[this.YAxis.y[i]] = {path: path};
-    //   this.YAxis.g.append(path);
-    // }
-    // this.YAxis.curViewCoord = viewY;
+    let ys = this.getYSieve();
+    this.YAxis.versions.push(ys);
+    for (let y of ys.points) {
+      this.drawYLine(y, ys);
+    }
   }
 
   mmDD(date) {
@@ -824,10 +849,10 @@ class TeleChart {
     this.svgRoot.append(this.targetLine);
 
     this.drawGraph();
-    this.drawYAxis();
     this.drawWindow();
     this.drawMiniMap();
     this.drawXAxis();
+    this.drawYAxis();
     this.createHeader();
 
     this.svgRoot.addEventListener('mousemove', (eventData) => {
