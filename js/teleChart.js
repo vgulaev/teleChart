@@ -194,6 +194,48 @@ class TeleChart {
     }
   }
 
+  *animateYBlink(y, duration, direction) {
+    let startTime = performance.now();
+    yield 'start';
+    while (true) {
+      if (startTime + duration > this.animationTime) {
+        let progres = direction * (-0.5 + (this.animationTime - startTime) / duration) + 0.5;
+        y.g.setAttributeNS(null, 'opacity',  progres);
+        yield performance.now()- startTime;
+      } else {
+        break;
+      }
+    }
+    if (-1 == direction) {
+      y.g.remove()
+    } else {
+      y.g.setAttributeNS(null, 'opacity',  1);
+    }
+  }
+
+  scaleYAxis() {
+    let last = this.YAxis.versions[this.YAxis.versions.length - 1];
+    let v = this.getYSieve();
+    this.YAxis.versions.push(v);
+    for (let y of v.points) {
+      if (!(y in this.YAxis.gs)) {
+        this.drawYLine(y, last, 0);
+        this.YAxis.gs[y].newViewY = this.getViewY(y, this.range);
+        this.YAxis.gs[y].delta = this.YAxis.gs[y].newViewY - this.YAxis.gs[y].viewY;
+        let a = this.animateYBlink(this.YAxis.gs[y], 1000, 1);
+        this.doAnimation(a);
+      }
+    }
+    for (let y of last.points) {
+      if (!v.points.has(y)) {
+        let a = this.animateYBlink(this.YAxis.gs[y], 1000, -1);
+        this.doAnimation(a);
+        delete this.YAxis.gs[y];
+      }
+    }
+    if (this.YAxis.versions.length > 2) this.YAxis.versions.shift();
+  }
+
   animationStepGraph(curTime, rightProgres, leftProgres) {
     for (let item of this.data.allItems) {
       let graph = this.data.y[item].graph;
@@ -205,10 +247,19 @@ class TeleChart {
       this.data.y[item].graph.path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
     }
 
+    let count = 0;
+    let last = this.YAxis.versions[this.YAxis.versions.length - 1];
     for (let [y, g] of Object.entries(this.YAxis.gs)) {
       g.viewY = g.newViewY - g.delta * leftProgres;
       g.line.setAttributeNS(null, 'd', this.pointsToD([[0, g.viewY], [this.width, g.viewY]]));
       g.text.setAttributeNS(null, 'y', g.viewY - 3);
+      if (0 < g.viewY && g.viewY < this.height && last.points.has(parseInt(y))) {
+        count += 1;
+      }
+    }
+
+    if (count != 6) {
+      this.scaleYAxis();
     }
 
     if (curTime < this.finishTime) {
@@ -416,7 +467,7 @@ class TeleChart {
 
   getYSieve() {
     let obj = {
-      points: [],
+      points: new Set,
       delta: this.range.maxy - this.range.miny,
       miny: this.range.miny
     };
@@ -424,7 +475,7 @@ class TeleChart {
     let step = Math.ceil(obj.delta / 7 / roundFactor) * roundFactor;
     let y = Math.ceil(this.rawMiny / roundFactor) * roundFactor - step;
     for (let i = 0; i < 8; i++) {
-      obj.points.push(y);
+      obj.points.add(y);
       y += step;
     }
     return obj;
@@ -720,15 +771,15 @@ class TeleChart {
     [svg.right, svg.left, svg.top, svg.bottom, svg.rightBox, svg.leftBox].forEach(element => this.svgPanel.append(element));
   }
 
-  drawYLine(y, v) {
+  drawYLine(y, v, opacity = 1) {
     let viewY = this.getViewY(y, v);
-    console.log(y, viewY);
     let g = {
       viewY: viewY,
       g: TeleChart.createSVG('g'),
       line: TeleChart.path({d: this.pointsToD([[0, viewY], [this.width, viewY]]),'fill': this.axisColor, 'stroke-width': 2, 'stroke': this.axisColor}),
       text: TeleChart.text({x: 4, y: viewY - 3, innerHTML: y, fill: this.axisColor, style: 'font-size: 10px'})
     }
+    g.g.setAttributeNS(null, 'opacity', opacity);
     g.g.append(g.text);
     g.g.append(g.line);
     this.YAxis.gs[y] = g;
