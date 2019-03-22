@@ -126,7 +126,8 @@ class TeleChart {
     };
     this.YAxis = {
       versions: [],
-      gs: {}
+      gs: {},
+      garbage: []
     };
     this.XAxis = {};
     this.tile = {};
@@ -208,6 +209,9 @@ class TeleChart {
     }
     if (-1 == direction) {
       y.g.remove()
+      if (y.remove == this.YAxis.gs[y.remove].remove) {
+        delete this.YAxis.gs[y.remove];
+      }
     } else {
       y.g.setAttributeNS(null, 'opacity',  1);
     }
@@ -228,9 +232,11 @@ class TeleChart {
     }
     for (let y of last.points) {
       if (!v.points.has(y)) {
+        this.YAxis.gs[y].newViewY = this.getViewY(y, this.range);
+        this.YAxis.gs[y].delta = this.YAxis.gs[y].newViewY - this.YAxis.gs[y].viewY;
+        this.YAxis.gs[y].remove = y;
         let a = this.animateYBlink(this.YAxis.gs[y], this.animationDuration, -1);
         this.doAnimation(a);
-        delete this.YAxis.gs[y];
       }
     }
     if (this.YAxis.versions.length > 2) this.YAxis.versions.shift();

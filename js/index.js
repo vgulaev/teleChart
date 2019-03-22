@@ -5,7 +5,7 @@ window.addEventListener('load', async function( event ) {
       height: '200px',
       widthToPage: true,
       heightPanel: '100px',
-      animationDuration: 1000
+      animationDuration: 5000
     });
   // let chart1 = new TeleChart('chart1', chartData[2], {
   //     width: '500px',
