@@ -240,6 +240,14 @@ class TeleChart {
       }
     }
     if (this.YAxis.versions.length > 2) this.YAxis.versions.shift();
+
+    if ('recall' == this.semafors['scaleYAxis']) {
+      this.semafors['scaleYAxis'] = 'work';
+      this.animationLayers.add('graph');
+      setTimeout(() => this.scaleYAxis());
+    } else {
+      this.semafors['scaleYAxis'] = '';
+    }
   }
 
   animationStepGraph(curTime, rightProgres, leftProgres) {
@@ -265,7 +273,7 @@ class TeleChart {
     }
 
     if (count != 6) {
-      this.scaleYAxis();
+      this.requestScaleYAxis();
     }
 
     if (curTime < this.finishTime) {
@@ -570,6 +578,16 @@ class TeleChart {
       } else {
         break;
       }
+    }
+  }
+
+  requestScaleYAxis() {
+    if ('recall' == this.semafors['scaleYAxis']) return;
+    if ('work' == this.semafors['scaleYAxis']) {
+      this.semafors['scaleYAxis'] = 'recall';
+    } else {
+      this.semafors['scaleYAxis'] = 'work';
+      setTimeout(() => this.scaleYAxis());
     }
   }
 
