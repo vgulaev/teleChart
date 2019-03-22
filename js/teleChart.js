@@ -481,7 +481,7 @@ class TeleChart {
     let step = Math.ceil(obj.delta / 7 / roundFactor) * roundFactor;
     let y = Math.ceil(this.rawMiny / roundFactor) * roundFactor - step;
     for (let i = 0; i < 8; i++) {
-      obj.points.add(y);
+      obj.points.add(Math.round(y * 100) / 100);
       y += step;
     }
     return obj;
