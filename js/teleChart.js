@@ -629,9 +629,7 @@ class TeleChart {
       })
         .then(() => {
           this.semafors[n] = '';
-          if ('recall' == this.semafors[n]) {
-            this.requestExec(call);
-          }
+          if ('recall' == this.semafors[n]) this.requestExec(call);
         });
     }
   }
