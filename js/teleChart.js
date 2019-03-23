@@ -126,13 +126,24 @@ class TeleChart {
     };
     this.YAxis = {
       versions: [],
-      gs: {},
-      garbage: []
+      gs: {}
+    };
+    this.themes = {
+      current: 0,
+      list: [{
+        'title': 'Day',
+        'background-color': 'white',
+        'color': 'black'
+      },
+      {
+        'title': 'Night',
+        'background-color': '#252e3e',
+        'color': 'white'
+      }]
     };
     this.XAxis = {};
     this.tile = {};
     this.range.window.left = this.width - this.range.window.width;
-    // this.range.window.left = 180;
     this.heightPanel = this.svgPanel.height.animVal.value;
     this.animationDuration = options.animationDuration;
     this.animationLayers = new Set();
@@ -279,7 +290,11 @@ class TeleChart {
     if (curTime < this.finishTime) {
       return true;
     } else {
-      this.requestScaleYAxis();
+      for (let [y, g] of Object.entries(this.YAxis.gs)) {
+        g.viewY = g.newViewY;
+        g.line.setAttributeNS(null, 'd', this.pointsToD([[0, g.viewY], [this.width, g.viewY]]));
+        g.text.setAttributeNS(null, 'y', g.viewY - 3);
+      }
       for (let item of this.data.viewItems) {
         this.data.y[item].graph.curViewCoord = this.data.y[item].graph.newViewCoord;
         this.data.y[item].graph.path.setAttributeNS(null, 'd', this.pointsToD(this.data.y[item].graph.curViewCoord));
@@ -308,7 +323,7 @@ class TeleChart {
     }
 
     for (let [y, g] of Object.entries(this.YAxis.gs)) {
-      g.newViewY = this.getViewY(y, this.range);
+      g.newViewY = this.getViewY(y, this.YAxis.versions[this.YAxis.versions.length - 1]);
       g.delta = g.newViewY - g.viewY;
     }
   }
@@ -380,6 +395,22 @@ class TeleChart {
     this.doAnimation(a);
   }
 
+  themeLabel() {
+    return `Switch to ${this.themes.list[this.themes.current].title} Mode`;
+  }
+
+  swithTheme(eventData) {
+    this.themes.current = 1 - this.themes.current;
+    let style = this.themes.list[this.themes.current];
+    this.divRoot.style['background-color'] = style['background-color'];
+    this.divTile.style['background-color'] = style['background-color'];
+    this.divRoot.querySelectorAll('button').forEach(b => b.style['background-color'] = style['background-color']);
+    let label = this.divTile.querySelector('#date');
+    if (null != label) label.style['color'] = style['color'];
+    this.header.querySelectorAll('button').forEach(b => b.style['color'] = style['color']);
+    this.svgPanel.querySelectorAll('.window').forEach(w => w.setAttributeNS(null, 'fill', style['color']));
+  }
+
   createHeader() {
     this.header = document.createElement('div');
     this.divRoot.append(this.header);
@@ -394,6 +425,12 @@ class TeleChart {
         this.reCheck(b, element);
       });
     };
+
+    let dayNight = document.createElement('div');
+    dayNight.style['text-align'] = 'center';
+    dayNight.innerHTML = `<button style="background-color: white; border: none; font-size: 18px; color: #108be3">${this.themeLabel()}</button>`;
+    this.divRoot.append(dayNight);
+    dayNight.querySelector('button').addEventListener('click', (eventData) => this.swithTheme(eventData));
   }
 
   pointsToD(points) {
@@ -793,7 +830,10 @@ class TeleChart {
       svg.target = undefined;
     });
 
-    [svg.right, svg.left, svg.top, svg.bottom, svg.rightBox, svg.leftBox].forEach(element => this.svgPanel.append(element));
+    [svg.right, svg.left, svg.top, svg.bottom, svg.rightBox, svg.leftBox].forEach(element => {
+      element.setAttributeNS(null, 'class', 'window');
+      this.svgPanel.append(element)
+    });
   }
 
   drawYLine(y, v, opacity = 1) {
@@ -869,7 +909,8 @@ class TeleChart {
 
   innerTile() {
     let d = this.data.x[this.tile.pointedX];
-    let res = `<div style="margin: 5px;">${this.wwMMDD(d)}</div>`;
+    let style = this.themes.list[this.themes.current];
+    let res = `<div id="date" style="margin: 5px; color:${style['color']}">${this.wwMMDD(d)}</div>`;
     res += [...this.data.viewItems].map(item => {
       return `<div style="display: inline-block; margin: 5px; color: ${this.data.raw.colors[item]}">
       <div style="font-weight: bold;">${this.data.y[item].coord[this.tile.pointedX]}</div>
