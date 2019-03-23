@@ -209,7 +209,7 @@ class TeleChart {
     }
     if (-1 == direction) {
       y.g.remove()
-      if (y.remove == this.YAxis.gs[y.remove].remove) {
+      if ((undefined != y.remove) && (undefined != this.YAxis.gs[y.remove]) && (y.remove == this.YAxis.gs[y.remove].remove)) {
         delete this.YAxis.gs[y.remove];
       }
     } else {
@@ -231,7 +231,7 @@ class TeleChart {
       }
     }
     for (let y of last.points) {
-      if (!v.points.has(y)) {
+      if (!v.points.has(y) && (y in this.YAxis.gs)) {
         this.YAxis.gs[y].newViewY = this.getViewY(y, this.range);
         this.YAxis.gs[y].delta = this.YAxis.gs[y].newViewY - this.YAxis.gs[y].viewY;
         this.YAxis.gs[y].remove = y;
@@ -272,13 +272,14 @@ class TeleChart {
       }
     }
 
-    if (count != 6) {
+    if (count != 6 && Object.keys(this.YAxis.gs).length < 15) {
       this.requestScaleYAxis();
     }
 
     if (curTime < this.finishTime) {
       return true;
     } else {
+      this.requestScaleYAxis();
       for (let item of this.data.viewItems) {
         this.data.y[item].graph.curViewCoord = this.data.y[item].graph.newViewCoord;
         this.data.y[item].graph.path.setAttributeNS(null, 'd', this.pointsToD(this.data.y[item].graph.curViewCoord));
@@ -931,7 +932,7 @@ class TeleChart {
     this.createHeader();
 
     this.svgRoot.addEventListener('mousemove', (eventData) => {
-      this.moveOnRoot(eventData.clientX, eventData.clientY);
+      this.moveOnRoot(eventData.clientX, eventData.pageY);
     });
 
     this.svgRoot.addEventListener('touchstart', (eventData) => {
