@@ -349,16 +349,22 @@ class TeleChart {
     this.hidePointer();
     if (this.data.viewItems.has(name)) {
       this.data.viewItems.delete(name);
+      if (this.data.viewItems.size == 0) {
+        this.data.viewItems.delete(name);
+        this.data.y[name].panel.path.style.display = 'none';
+        this.data.y[name].graph.path.style.display = 'none';
+      }
     } else {
       this.data.viewItems.add(name);
       this.data.y[name].panel.path.style.display = 'inline';
       this.data.y[name].graph.path.style.display = 'inline';
       direction = -1;
     }
+    if (this.data.viewItems.size > 0) {
+      this.animationLayers.add('panel');
+      this.animationLayers.add('graph');
+    }
     let a = this.animateCircleInButton(whiteCircle, 200, direction);
-
-    this.animationLayers.add('panel');
-    this.animationLayers.add('graph');
     this.doAnimation(a);
   }
 
