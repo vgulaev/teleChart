@@ -353,6 +353,7 @@ class TeleChart {
         this.data.viewItems.delete(name);
         this.data.y[name].panel.path.style.display = 'none';
         this.data.y[name].graph.path.style.display = 'none';
+        this.animationLayers.clear();
       }
     } else {
       this.data.viewItems.add(name);
