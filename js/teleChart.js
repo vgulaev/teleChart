@@ -1,15 +1,4 @@
 class TeleChart {
-  static getUrl(url) {
-    return new Promise( resolve => {
-      var myRequest = new XMLHttpRequest();
-      myRequest.open("get", url);
-      myRequest.onload = function () {
-        resolve("Ok");
-      };
-      myRequest.send();
-    });
-  }
-
   static get xmlns() {
     return "http://www.w3.org/2000/svg";
   }
@@ -24,17 +13,9 @@ class TeleChart {
     });
   }
 
-  static line(x1, y1, x2, y2, options = {}) {
-    let element = TeleChart.createSVG('line');
-    TeleChart.setAttribute(element, {'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2});
-    TeleChart.setAttribute(element, options);
-    return element;
-  }
-
   static rect(x, y, width, height, options = {}) {
     let element = TeleChart.createSVG('rect');
-    TeleChart.setAttribute(element, {'x': x, 'y': y, 'width': width, 'height': height});
-    TeleChart.setAttribute(element, options);
+    TeleChart.setAttribute(element, Object.assign({'x': x, 'y': y, 'width': width, 'height': height}, options));
     return element;
   }
 
@@ -46,8 +27,7 @@ class TeleChart {
 
   static circle(cx, cy, r, options = {}) {
     let element = TeleChart.createSVG('circle');
-    TeleChart.setAttribute(element, {'cx': cx, 'cy': cy, 'r': r});
-    TeleChart.setAttribute(element, options);
+    TeleChart.setAttribute(element, Object.assign({'cx': cx, 'cy': cy, 'r': r}, options));
     return element;
   }
 
@@ -165,7 +145,7 @@ class TeleChart {
         yield performance.now()- startTime;
       } else {
         if (-1 == direction) target.style.display = 'none';
-        yield false;
+        yield undefined;
         break;
       }
     }
@@ -186,10 +166,7 @@ class TeleChart {
   animationStepPanel(curTime, rightProgres, leftProgres) {
     for (let item of this.data.allItems) {
       let panel = this.data.y[item].panel;
-      let tempPoints = panel.newViewCoord.map((xy, index) => [
-        xy[0],
-        Math.floor(xy[1] - panel.deltaY[index] * leftProgres)
-        ]);
+      let tempPoints = panel.newViewCoord.map((xy, index) => [xy[0], xy[1] - panel.deltaY[index] * leftProgres]);
       panel.curViewCoord = tempPoints;
       this.data.y[item].panel.path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
     }
@@ -251,23 +228,13 @@ class TeleChart {
       }
     }
     if (this.YAxis.versions.length > 2) this.YAxis.versions.shift();
-
-    if ('recall' == this.semafors['scaleYAxis']) {
-      this.semafors['scaleYAxis'] = 'work';
-      this.animationLayers.add('graph');
-      setTimeout(() => this.scaleYAxis());
-    } else {
-      this.semafors['scaleYAxis'] = '';
-    }
   }
 
   animationStepGraph(curTime, rightProgres, leftProgres) {
+    if (this.data.viewItems.size == 0) return false;
     for (let item of this.data.allItems) {
       let graph = this.data.y[item].graph;
-      let tempPoints = graph.newViewCoord.map((xy, index) => [
-        xy[0],
-        Math.floor(xy[1] - graph.deltaY[index] * leftProgres)
-        ]);
+      let tempPoints = graph.newViewCoord.map((xy, index) => [xy[0], xy[1] - graph.deltaY[index] * leftProgres]);
       graph.curViewCoord = tempPoints;
       this.data.y[item].graph.path.setAttributeNS(null, 'd', this.pointsToD(tempPoints));
     }
@@ -284,7 +251,7 @@ class TeleChart {
     }
 
     if (count != 6 && Object.keys(this.YAxis.gs).length < 15) {
-      this.requestScaleYAxis();
+      this.requestExec(this.scaleYAxis);
     }
 
     if (curTime < this.finishTime) {
@@ -434,9 +401,9 @@ class TeleChart {
   }
 
   pointsToD(points) {
-    let res = `M ${points[0].join(',')} L `;
+    let res = `M ${points[0].map(e => Math.floor(e)).join(',')} L `;
     for (let i = 1; i < points.length; i++) {
-      res += ' ' + points[i].join(',');
+      res += ' ' + points[i].map(e => Math.floor(e)).join(',');
     }
     return res;
   }
@@ -619,23 +586,23 @@ class TeleChart {
     }
   }
 
-  requestScaleYAxis() {
-    if ('recall' == this.semafors['scaleYAxis']) return;
-    if ('work' == this.semafors['scaleYAxis']) {
-      this.semafors['scaleYAxis'] = 'recall';
+  requestExec(call) {
+    let n = call.name;
+    if ('recall' == this.semafors[n]) return;
+    if ('work' == this.semafors[n]) {
+      this.semafors[n] = 'recall';
     } else {
-      this.semafors['scaleYAxis'] = 'work';
-      setTimeout(() => this.scaleYAxis());
-    }
-  }
-
-  requestScaleXAxis() {
-    if ('recall' == this.semafors['scaleXAxis']) return;
-    if ('work' == this.semafors['scaleXAxis']) {
-      this.semafors['scaleXAxis'] = 'recall';
-    } else {
-      this.semafors['scaleXAxis'] = 'work';
-      setTimeout(() => this.scaleXAxis());
+      this.semafors[n] = 'work';
+      new Promise((resolve, reject) => {
+        call.call(this);
+        resolve();
+      })
+        .then(() => {
+          this.semafors[n] = '';
+          if ('recall' == this.semafors[n]) {
+            this.requestExec(call);
+          }
+        });
     }
   }
 
@@ -663,17 +630,10 @@ class TeleChart {
 
     if (visibleCount > 8) {
       this.sieve += 1;
-      this.requestScaleXAxis();
+      this.requestExec(this.scaleXAxis);
     } else if (visibleCount < 4 && this.sieve > 0)  {
       this.sieve -= 1;
-      this.requestScaleXAxis();
-    }
-
-    if ('recall' == this.semafors['scaleXAxis']) {
-      this.semafors['scaleXAxis'] = 'work';
-      setTimeout(() => this.scaleXAxis());
-    } else {
-      this.semafors['scaleXAxis'] = '';
+      this.requestExec(this.scaleXAxis);
     }
   }
 
@@ -696,8 +656,7 @@ class TeleChart {
         svg.right.setAttributeNS(null, 'x', this.range.window.left + this.range.window.width - svg.wBorder);
         svg.top.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
         svg.bottom.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
-        this.requestScaleXAxis();
-
+        this.requestExec(this.scaleXAxis);
       } else if ('left' == svg.target) {
         this.range.window.left = svg.reper['left'] + delta;
         this.range.window.width = svg.reper['total'] - this.range.window.left;
@@ -715,7 +674,7 @@ class TeleChart {
         svg.top.setAttributeNS(null, 'x', this.range.window.left + svg.wBorder);
         svg.top.setAttributeNS(null, 'width', this.range.window.width - 2 * svg.wBorder);
         TeleChart.setAttribute(svg.bottom, {'x': this.range.window.left + svg.wBorder, 'width': this.range.window.width - 2 * svg.wBorder})
-        this.requestScaleXAxis();
+        this.requestExec(this.scaleXAxis);
       } else if ('mid' == svg.target) {
         this.range.window.left = svg.reper + delta;
         if (this.range.window.left < 0) {
@@ -738,7 +697,6 @@ class TeleChart {
       }
       this.animationLayers.add('graph');
       this.doAnimation();
-      // this.msg(JSON.stringify(this.range.window));
       this.msg(this.range.left.toString() + ' ' + this.range.right.toString());
     }
   }

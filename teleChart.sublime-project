@@ -6,6 +6,9 @@
     },
     {
       "path": "../OpenPianoJS"
+    },
+    {
+      "path": "../saasjs"
     }
   ]
 }
