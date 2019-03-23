@@ -174,7 +174,7 @@ class TeleChart {
     if (curTime < this.finishTime) {
       return true;
     } else {
-      for (let item of this.data.viewItems) {
+      for (let item of this.data.allItems) {
         this.data.y[item].panel.curViewCoord = this.data.y[item].panel.newViewCoord;
         this.data.y[item].panel.path.setAttributeNS(null, 'd', this.pointsToD(this.data.y[item].panel.curViewCoord));
       }
