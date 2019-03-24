@@ -1,12 +1,17 @@
-window.addEventListener('load', async function( event ) {
+function drawCharts() {
   craths = [];
+  let dur = parseInt(document.getElementById('animationDuration').value);
   document.querySelectorAll('.chart').forEach((el, index) =>
     craths.push(new TeleChart(el.id, chartData[index + 2], {
       width: '500px',
       height: '200px',
-      widthToPage: true,
+      widthToPage: document.getElementById('widthToPage').checked,
       heightPanel: '100px',
-      animationDuration: 1000
+      animationDuration: dur
     }))
     );
+}
+
+window.addEventListener('load', async function( event ) {
+  drawCharts();
 });

@@ -67,11 +67,18 @@ class TeleChart {
   }
 
   constructor(tagID, data, options = {}) {
+    let width = options['width'];
+
+    if (true == options['widthToPage']) {
+      width = document.body.clientWidth - 10 + 'px';
+    }
+
     this.axisColor = '#96a2aa';
     this.divRoot = document.getElementById(tagID);
-    this.divRoot.style.width = options['width'];
+    this.divRoot.innerHTML = '';
+    this.divRoot.style.width = width;
     this.svgRoot = TeleChart.createSVG('svg');
-    TeleChart.setAttribute(this.svgRoot, {height: options['height'], width: options['width']})
+    TeleChart.setAttribute(this.svgRoot, {height: options['height'], width: width})
     this.divRoot.append(this.svgRoot);
 
     this.divTile = document.createElement('div');
@@ -79,7 +86,7 @@ class TeleChart {
     this.divRoot.append(this.divTile);
 
     this.svgPanel = TeleChart.createSVG('svg');
-    TeleChart.setAttribute(this.svgPanel, {height: options['heightPanel'], width: options['width']})
+    TeleChart.setAttribute(this.svgPanel, {height: options['heightPanel'], width: width})
     this.divRoot.append(this.svgPanel);
 
     this.statusTag = document.getElementById('Status');
@@ -399,6 +406,7 @@ class TeleChart {
   swithTheme(eventData) {
     this.themes.current = 1 - this.themes.current;
     let style = this.themes.list[this.themes.current];
+    eventData.target.innerHTML = this.themeLabel();
     this.divRoot.style['background-color'] = style['background-color'];
     this.divTile.style['background-color'] = style['background-color'];
     this.divRoot.querySelectorAll('button').forEach(b => b.style['background-color'] = style['background-color']);
