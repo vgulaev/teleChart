@@ -166,7 +166,7 @@ class TeleChart {
         </path>
       <circle class="whiteCircle" cy="20" cx="20" r="1" fill="white" style="display: none;"/>
       </svg>
-      <span>${name}</span>
+      <span>${this.data.raw.names[name]}</span>
     </button>`;
   }
 
