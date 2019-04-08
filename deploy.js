@@ -20,7 +20,17 @@ function remote_cmd(cmd, async = false) {
   return res;
 }
 
-function deploy() {
+
+function test() {
+  [
+    'git add .',
+    'git commit -m "test"',
+    'git push',
+    'node deploy.js fast'
+  ].forEach((cmd) => {
+    let res = execSync(cmd);
+    console.log(res.toString());
+  });
 }
 
 function fast_deploy() {
@@ -35,9 +45,12 @@ function fast_deploy() {
 }
 
 if (3 == process.argv.length) {
-  if ("fast" == process.argv[2]) {
+  if ('fast' == process.argv[2]) {
     fast_deploy();
+  } else if ('test' == process.argv[2]) {
+    test();
   }
 }
 // remote_run();
 // deploy();
+test();

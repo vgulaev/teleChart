@@ -95,7 +95,7 @@ class TeleChart20 {
 
   render() {
     this.c = TeleChart20.circle(100, 100, 20, {'fill': '#E8AF14'});
-    this.svgRoot.append(this.c);
+    this.svgPanel.append(this.c);
 
     let a = this.moveCircle();
     this.doAnimation(a);
