@@ -7,14 +7,14 @@
     let rx = right.right + dw;
     if (rlx < x && x < rx) {
       s.mouseXStart = x;
-      // s.reper = this.range.window.width;
+      s.reper = s.width;
       s.target = 'right';
     }
     let lx = left.left - dw;
     let lrx = left.right + dw;
     if (lx < x && x < lrx) {
       s.mouseXStart = x;
-      // s.reper = {'total': this.range.window.left + this.range.window.width, 'left': this.range.window.left};
+      s.reper = {x: s.x, w: s.width};
       s.target = 'left';
     }
     if (lrx < x && x < rlx) {

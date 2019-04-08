@@ -199,15 +199,34 @@ class TeleChart20 {
   onMove(x) {
     let s = this.panel.scrollBox;
     if (undefined != s.target) {
+      let dx = x - s.mouseXStart;
+      let mw = Math.floor(this.panel.width * 0.25);
       if ('mid' == s.target) {
-        s.x = s.reper + x - s.mouseXStart;
+        s.x = s.reper + dx;
         if (s.x + s.width > this.panel.width) {
           s.x = this.panel.width - s.width;
         } else if (s.x < 0) {
           s.x = 0;
         }
-        requestAnimationFrame(() => this.requestExec(this.drawScroll));
+      } else if ('right' == s.target) {
+        s.width = s.reper + dx;
+        if (s.x + s.width > this.panel.width) {
+          s.width = this.panel.width - s.x;
+        } else if (s.width < mw) {
+          s.width = mw;
+        }
+      } else if ('left' == s.target) {
+        s.width = s.reper.w - dx;
+        s.x = s.reper.x + dx;
+        if (s.x < 0) {
+          s.x = 0;
+          s.width = s.reper.w + s.reper.x;
+        } else if (s.width < mw) {
+          s.width = mw;
+          s.x = s.reper.x + s.reper.w - s.width
+        }
       }
+      requestAnimationFrame(() => this.requestExec(this.drawScroll));
     }
     // console.log(x, s.target);
   }
@@ -221,14 +240,14 @@ class TeleChart20 {
     let rx = right.right + dw;
     if (rlx < x && x < rx) {
       s.mouseXStart = x;
-      // s.reper = this.range.window.width;
+      s.reper = s.width;
       s.target = 'right';
     }
     let lx = left.left - dw;
     let lrx = left.right + dw;
     if (lx < x && x < lrx) {
       s.mouseXStart = x;
-      // s.reper = {'total': this.range.window.left + this.range.window.width, 'left': this.range.window.left};
+      s.reper = {x: s.x, w: s.width};
       s.target = 'left';
     }
     if (lrx < x && x < rlx) {
