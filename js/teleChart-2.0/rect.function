@@ -1,5 +1,5 @@
   static rect(x, y, width, height, options = {}) {
     let element = TeleChart.createSVG('rect');
-    TeleChart.setAttribute(element, Object.assign({'x': x, 'y': y, 'width': width, 'height': height}, options));
+    TeleChart20.setA(element, Object.assign({'x': x, 'y': y, 'width': width, 'height': height}, options));
     return element;
   }

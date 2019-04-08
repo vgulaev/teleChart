@@ -15,18 +15,20 @@
       scrollBox: {
         width: Math.floor(width * 0.25),
         x: Math.floor(width * 0.2),
-        h1: Math.floor(options['heightPanel'] * 0.03)
+        h1: Math.floor(options['heightPanel'] * 0.03),
+        w1: Math.min(Math.floor(width * 0.03), 30)
       }
     };
 
-    this.svgPanel = TeleChart.createSVG('svg');
-    TeleChart.setAttribute(this.svgPanel, {height: options['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
+    this.svgPanel = TeleChart20.createSVG('svg');
+    TeleChart20.setA(this.svgPanel, {height: options['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
 
     this.divRoot.append(this.svgPanel);
 
     this.width = this.svgPanel.width.animVal.value;
     this.height = this.svgPanel.height.animVal.value;
     this.animationStack = new Set();
+    this.semafors = {};
     this.prepareData(data);
     this.render();
     this.statusTag = document.getElementById('Status');
