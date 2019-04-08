@@ -79,6 +79,7 @@ class TeleChart20 {
       // console.log(dx);
       this.c.setAttributeNS(null, 'cx', (x + dx) % this.width);
       yield true;
+      // setTimeou(200, () => );
     }
   }
 

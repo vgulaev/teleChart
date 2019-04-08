@@ -103,6 +103,8 @@ class TeleChart {
     this.makeWellStructuredData();
     this.xLength = this.data.x.length;
     this.width = this.svgRoot.width.animVal.value;
+
+
     this.height = this.svgRoot.height.animVal.value;
     this.range = {
       left: 0,
@@ -327,13 +329,13 @@ class TeleChart {
         callNextStep = this.animationStepPanel(this.animationTime, rightProgres, leftProgres);
       }
 
-      if (this.animationLayers.has('graph')) {
-        callNextStep |=  this.animationStepGraph(this.animationTime, rightProgres, leftProgres);
-      }
+      // if (this.animationLayers.has('graph')) {
+      //   callNextStep |=  this.animationStepGraph(this.animationTime, rightProgres, leftProgres);
+      // }
 
-      if (this.animationLayers.has('YAxis')) {
-        callNextStep |=  this.animationStepYAxis(this.animationTime, rightProgres, leftProgres);
-      }
+      // if (this.animationLayers.has('YAxis')) {
+      //   callNextStep |=  this.animationStepYAxis(this.animationTime, rightProgres, leftProgres);
+      // }
     }
 
     if (this.animationStack.size > 0) {
