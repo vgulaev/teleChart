@@ -24,7 +24,7 @@ function remote_cmd(cmd, async = false) {
 function test() {
   [
     'git add .',
-    'git commit -m "test"',
+    "git commit -m 'test'",
     'git push',
     'node deploy.js fast'
   ].forEach((cmd) => {
