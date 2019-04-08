@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-http-server -c-1 >/dev/null 2>&1 &
+http-server -c-1 -p 63674 >/dev/null 2>&1 &
 echo $! > logs/teleChart.pid
 echo "start complete"

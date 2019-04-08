@@ -73,7 +73,8 @@ class TeleChart {
       width = document.body.clientWidth - 10 + 'px';
     }
 
-    this.axisColor = '#96a2aa';
+    // this.axisColor = '#96a2aa';
+    this.axisColor = '#182d3b';
     this.divRoot = document.getElementById(tagID);
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
@@ -743,7 +744,7 @@ class TeleChart {
     svg.wBorder = 10;
     svg.hBorder = Math.round(svg.wBorder * 0.25);
 
-    let windowStyle = {'stroke-width': 0, 'fill': 'black', 'opacity': '0.15'};
+    let windowStyle = {'stroke-width': 0, 'fill': '#c0d1e1', 'opacity': '1'};
 
     svg.top = TeleChart.rect(this.range.window.left + svg.wBorder, 0, this.range.window.width - 2 * svg.wBorder, svg.hBorder, windowStyle);
     svg.bottom = TeleChart.rect(this.range.window.left + svg.wBorder, this.heightPanel - svg.hBorder, this.range.window.width - 2 * svg.wBorder, svg.hBorder, windowStyle);
@@ -753,7 +754,7 @@ class TeleChart {
     svg.right = TeleChart.rect(this.range.window.left + this.range.window.width - 10, 0, 10, this.heightPanel, windowStyle);
     svg.left = TeleChart.rect(this.range.window.left, 0, 10, this.heightPanel, windowStyle);
 
-    windowStyle = { 'stroke-width': 0, 'fill': 'black', 'opacity': '0.3'};
+    windowStyle = { 'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
     svg.rightBox = TeleChart.rect(this.range.window.left + this.range.window.width, 0, this.width - this.range.window.left - this.range.window.width, this.heightPanel, windowStyle);
     svg.leftBox = TeleChart.rect(0, 0, this.range.window.left, this.heightPanel, windowStyle);
 
@@ -836,7 +837,7 @@ class TeleChart {
     let g = {
       viewY: viewY,
       g: TeleChart.createSVG('g'),
-      line: TeleChart.path({d: this.pointsToD([[0, viewY], [this.width, viewY]]),'fill': this.axisColor, 'stroke-width': 2, 'stroke': this.axisColor}),
+      line: TeleChart.path({d: this.pointsToD([[0, viewY], [this.width, viewY]]),'fill': this.axisColor, 'stroke-width': 2, 'stroke': this.axisColor, 'opacity': '0.1'}),
       text: TeleChart.text({x: 4, y: viewY - 3, innerHTML: y, fill: this.axisColor, style: 'font-size: 10px'})
     }
     g.g.setAttributeNS(null, 'opacity', opacity);

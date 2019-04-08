@@ -4,60 +4,492 @@
 		"selected_items":
 		[
 			[
-				"se",
-				"setAttribute"
+				"fun",
+				"function"
 			],
 			[
-				"set",
+				"in",
+				"input\tTag"
+			],
+			[
+				"di",
+				"div\tTag"
+			],
+			[
+				"wi",
+				"width"
+			],
+			[
+				"ami",
+				"animationLayers"
+			],
+			[
+				"anns",
+				"animationStepGraph"
+			],
+			[
+				"animate",
+				"animateYAxis"
+			],
+			[
+				"sca",
+				"scaleYAxis"
+			],
+			[
+				"re",
+				"requestExec"
+			],
+			[
+				"op",
+				"options"
+			],
+			[
+				"vi",
+				"viewItems"
+			],
+			[
+				"qu",
+				"querySelectorAll"
+			],
+			[
+				"s",
+				"style"
+			],
+			[
+				"he",
+				"header"
+			],
+			[
+				"st",
+				"style"
+			],
+			[
+				"ba",
+				"backgroundColor"
+			],
+			[
+				"co",
+				"color"
+			],
+			[
+				"cli",
+				"click"
+			],
+			[
+				"add",
+				"addEventListener"
+			],
+			[
+				"butt",
+				"button"
+			],
+			[
+				"colo",
+				"color"
+			],
+			[
+				"the",
+				"themeLabel"
+			],
+			[
+				"th",
+				"themes"
+			],
+			[
+				"pa",
+				"pageY"
+			],
+			[
+				"anla",
+				"animationLayers"
+			],
+			[
+				"new",
+				"newViewY"
+			],
+			[
+				"poit",
+				"points"
+			],
+			[
+				"gets",
+				"getYSieve"
+			],
+			[
+				"se",
 				"setAttributeNS"
 			],
 			[
-				"fa",
-				"fastCalcLineCoord"
+				"lef",
+				"leftProgres"
 			],
 			[
 				"le",
 				"length"
 			],
 			[
+				"vie",
+				"viewY"
+			],
+			[
+				"ren",
+				"renderPanelMove"
+			],
+			[
 				"ma",
-				"maxy"
+				"maxx"
+			],
+			[
+				"poi",
+				"pointsToD"
+			],
+			[
+				"get",
+				"getViewY"
+			],
+			[
+				"ie",
+				"item"
+			],
+			[
+				"ri",
+				"right"
+			],
+			[
+				"key",
+				"keys"
+			],
+			[
+				"point",
+				"points"
+			],
+			[
+				"ge",
+				"getViewY"
+			],
+			[
+				"min",
+				"miny"
+			],
+			[
+				"cu",
+				"curY"
+			],
+			[
+				"ne",
+				"newSieve"
+			],
+			[
+				"h",
+				"height"
+			],
+			[
+				"rig",
+				"rightProgres"
+			],
+			[
+				"del",
+				"delta"
+			],
+			[
+				"dr",
+				"drawYLine"
+			],
+			[
+				"animationStep",
+				"animationStepYAxis"
+			],
+			[
+				"ani",
+				"animationStepGraph"
+			],
+			[
+				"te",
+				"tempPoints"
+			],
+			[
+				"dra",
+				"drawYLine"
+			],
+			[
+				"sta",
+				"staff"
+			],
+			[
+				"raw",
+				"rawMiny"
+			],
+			[
+				"up",
+				"updateYSieve"
+			],
+			[
+				"getb",
+				"getBoundingClientRect"
+			],
+			[
+				"cl",
+				"clientY"
+			],
+			[
+				"r",
+				"return"
+			],
+			[
+				"viw",
+				"viewItems"
+			],
+			[
+				"ti",
+				"divTile"
+			],
+			[
+				"cre",
+				"createElement"
+			],
+			[
+				"sv",
+				"svgCoord"
+			],
+			[
+				"draw",
+				"drawDateAndY"
+			],
+			[
+				"whi",
+				"white"
+			],
+			[
+				"dat",
+				"data"
+			],
+			[
+				"ww",
+				"wwMMDD"
+			],
+			[
+				"it",
+				"item"
+			],
+			[
+				"tou",
+				"touchstart"
+			],
+			[
+				"po",
+				"pointsToD"
+			],
+			[
+				"set",
+				"setAttributeNS"
+			],
+			[
+				"da",
+				"eventData"
+			],
+			[
+				"svg",
+				"svgRoot"
+			],
+			[
+				"rec",
+				"recall"
+			],
+			[
+				"req",
+				"requestScaleXAxisLeft"
+			],
+			[
+				"inde",
+				"indexOf"
+			],
+			[
+				"con",
+				"console"
+			],
+			[
+				"pro",
+				"progres"
+			],
+			[
+				"anis",
+				"animationStack"
+			],
+			[
+				"anima",
+				"animateLabelRemove"
+			],
+			[
+				"an",
+				"animateCircleInButton"
+			],
+			[
+				"geta",
+				"getXAxisPoints"
+			],
+			[
+				"x",
+				"viewX"
+			],
+			[
+				"M",
+				"Math"
+			],
+			[
+				"ra",
+				"range"
+			],
+			[
+				"no",
+				"none"
+			],
+			[
+				"pr",
+				"progres"
+			],
+			[
+				"ta",
+				"target"
+			],
+			[
+				"anim",
+				"animationStep"
+			],
+			[
+				"el",
+				"else"
+			],
+			[
+				"ite",
+				"iterY"
+			],
+			[
+				"n",
+				"newY"
 			],
 			[
 				"mi",
 				"miny"
 			],
 			[
-				"na",
-				"name"
+				"cons",
+				"console"
 			],
 			[
-				"get",
-				"getElementById"
+				"temp",
+				"tempY"
+			],
+			[
+				"v",
+				"viewY"
+			],
+			[
+				"Y",
+				"YAxis"
+			],
+			[
+				"rou",
+				"roundFactor"
+			],
+			[
+				"c",
+				"clientY"
+			],
+			[
+				"win",
+				"windowStyle"
+			],
+			[
+				"w",
+				"width"
+			],
+			[
+				"wh",
+				"whiteBox"
+			],
+			[
+				"to",
+				"top"
+			],
+			[
+				"de",
+				"delta"
+			],
+			[
+				"on",
+				"onMove"
+			],
+			[
+				"nw",
+				"newW"
+			],
+			[
+				"do",
+				"doAnimation"
+			],
+			[
+				"g",
+				"getUrl"
+			],
+			[
+				"mo",
+				"mouseXoffset"
+			],
+			[
+				"e",
+				"eventData"
+			],
+			[
+				"l",
+				"left"
+			],
+			[
+				"or",
+				"render-order"
+			],
+			[
+				"fro",
+				"fromY"
+			],
+			[
+				"fo",
+				"for\tfor (…) {…}"
+			],
+			[
+				"fa",
+				"false"
+			],
+			[
+				"max",
+				"maxy"
+			],
+			[
+				"m",
+				"miny"
+			],
+			[
+				"al",
+				"allItems"
+			],
+			[
+				"a",
+				"animationTime"
+			],
+			[
+				"U",
+				"updateMinMax"
+			],
+			[
+				"na",
+				"name"
 			],
 			[
 				"col",
 				"colors"
 			],
 			[
-				"pa",
-				"path"
-			],
-			[
 				"inn",
 				"innerHTML"
-			],
-			[
-				"cre",
-				"createElementNS"
-			],
-			[
-				"co",
-				"console"
-			],
-			[
-				"he",
-				"height"
 			],
 			[
 				"heigh",
@@ -68,32 +500,8 @@
 				"fromY"
 			],
 			[
-				"m",
-				"maxy"
-			],
-			[
-				"fro",
-				"fromX"
-			],
-			[
-				"x",
-				"xLength"
-			],
-			[
-				"sv",
-				"svgRoot"
-			],
-			[
-				"te",
-				"TeleChart"
-			],
-			[
 				"for",
 				"forEach"
-			],
-			[
-				"to",
-				"toFixed"
 			],
 			[
 				"ava",
@@ -104,378 +512,18 @@
 				"resolve"
 			],
 			[
-				"re",
-				"return"
-			],
-			[
 				"tot",
 				"totalUnits"
-			],
-			[
-				"f",
-				"fix"
-			],
-			[
-				"a",
-				"allCmd"
-			],
-			[
-				"pr",
-				"private"
-			],
-			[
-				"cons",
-				"console"
-			],
-			[
-				"con",
-				"console"
-			],
-			[
-				"e",
-				"empty_res"
-			],
-			[
-				"s",
-				"shift"
-			],
-			[
-				"req",
-				"reqcounter"
-			],
-			[
-				"de",
-				"default"
-			],
-			[
-				"lo",
-				"load_layout"
-			],
-			[
-				"no",
-				"nonsense"
-			],
-			[
-				"err",
-				"error_callback"
-			],
-			[
-				"pro",
-				"process"
-			],
-			[
-				"sta",
-				"stack"
-			],
-			[
-				"c",
-				"client"
-			],
-			[
-				"nod",
-				"node"
-			],
-			[
-				"fo",
-				"folder"
-			],
-			[
-				"loa",
-				"load_page"
-			],
-			[
-				"ti",
-				"title"
-			],
-			[
-				"po",
-				"post"
-			],
-			[
-				"pos",
-				"posts"
-			],
-			[
-				"fun",
-				"function"
-			],
-			[
-				"conn",
-				"connections"
-			],
-			[
-				"onc",
-				"onclick\tAttr"
-			],
-			[
-				"ur",
-				"uri"
-			],
-			[
-				"ht",
-				"html"
-			],
-			[
-				"conte",
-				"content_type"
-			],
-			[
-				"in",
-				"input\tTag"
-			],
-			[
-				"tr",
-				"trial"
-			],
-			[
-				"sh",
-				"sheet_name"
-			],
-			[
-				"aw",
-				"aws_id"
-			],
-			[
-				"Fil",
-				"File\tFile.open(\"..\") { |file| .. }"
-			],
-			[
-				"ke",
-				"key"
-			],
-			[
-				"Fi",
-				"File\tFile.open(\"..\") { |file| .. }"
-			],
-			[
-				"ssh",
-				"ssh_key"
-			],
-			[
-				"use",
-				"user_host"
-			],
-			[
-				"dd",
-				"dbcred"
-			],
-			[
-				"aws",
-				"aws_cred"
-			],
-			[
-				"new",
-				"new_keys"
-			],
-			[
-				"ro",
-				"rotate_credentials"
-			],
-			[
-				"prov",
-				"provider_id"
-			],
-			[
-				"cred",
-				"credentials"
-			],
-			[
-				"key",
-				"key_for_remove"
-			],
-			[
-				"Re",
-				"remote_query"
-			],
-			[
-				"db",
-				"dbname"
-			],
-			[
-				"ra",
-				"range_name"
-			],
-			[
-				"va",
-				"values"
-			],
-			[
-				"pus",
-				"push_to_gs"
-			],
-			[
-				"range",
-				"range_name"
-			],
-			[
-				"pu",
-				"push"
-			],
-			[
-				"sel",
-				"self"
-			],
-			[
-				"els",
-				"else"
-			],
-			[
-				"del",
-				"deleted"
-			],
-			[
-				"su",
-				"sum"
-			],
-			[
-				"ca",
-				"category1"
-			],
-			[
-				"comm",
-				"commit"
-			],
-			[
-				"ty",
-				"type"
-			],
-			[
-				"typ",
-				"types"
-			],
-			[
-				"st",
-				"staging_aws"
-			],
-			[
-				"acc",
-				"account_id"
-			],
-			[
-				"eac",
-				"each"
-			],
-			[
-				"da",
-				"dailycost"
-			],
-			[
-				"tota",
-				"Total"
-			],
-			[
-				"cat",
-				"category3"
-			],
-			[
-				"com",
-				"common"
-			],
-			[
-				"k",
-				"keys"
-			],
-			[
-				"det",
-				"detect_stagings"
-			],
-			[
-				"ss",
-				"ssh_key"
-			],
-			[
-				"ho",
-				"host"
-			],
-			[
-				"el",
-				"elb"
-			],
-			[
-				"ber",
-				"berkeley"
-			],
-			[
-				"fil",
-				"file_name"
-			],
-			[
-				"qu",
-				"quote"
-			],
-			[
-				"zo",
-				"zone"
-			],
-			[
-				"zon",
-				"zone_mask"
-			],
-			[
-				"stat",
-				"status"
-			],
-			[
-				"wh",
-				"whois"
-			],
-			[
-				"whe",
-				"where"
-			],
-			[
-				"si",
-				"silent_mode"
-			],
-			[
-				"ta",
-				"table_name"
-			],
-			[
-				"z",
-				"zone"
-			],
-			[
-				"lam",
-				"lambda"
-			],
-			[
-				"fi",
-				"File"
-			],
-			[
-				"nam",
-				"name"
-			],
-			[
-				"q",
-				"query"
-			],
-			[
-				"op",
-				"opt\toption(..)"
-			],
-			[
-				"dep",
-				"deploy_path"
-			],
-			[
-				"li",
-				"link\tTag"
-			],
-			[
-				"di",
-				"div\tTag"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "index.html",
+			"file": "js/index.js",
 			"settings":
 			{
-				"buffer_size": 680,
+				"buffer_size": 500,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -484,16 +532,7 @@
 			"file": "js/teleChart.js",
 			"settings":
 			{
-				"buffer_size": 7282,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "test.html",
-			"settings":
-			{
-				"buffer_size": 996,
+				"buffer_size": 34897,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -502,16 +541,44 @@
 			"file": "logs/tmp/chart_data.js",
 			"settings":
 			{
-				"buffer_size": 58029,
+				"buffer_size": 59712,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "js/index.js",
+			"file": "hw.js",
 			"settings":
 			{
-				"buffer_size": 636,
+				"buffer_size": 1102,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "teleChart.sublime-project",
+			"settings":
+			{
+				"buffer_size": 138,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 100 files for \"prom\"\n\n/home/vgulaev/workspaces/saasjs/aws-describeInstances.js:\n   54  }\n   55  \n   56: Promise.all(\n   57  regions.map((region) => {\n   58:   return new Promise(function(resolve, reject) {\n   59      var ec2 = new AWS.EC2({region: region});\n   60      ec2.describeInstances({}, function(err, data) {\n\n/home/vgulaev/workspaces/saasjs/aws-ri.js:\n   48  \n   49  function query(session, query) {\n   50:   return new Promise(function(resolve, reject) {\n   51      // console.log('query:' + query.length);\n   52      session.sql(query)\n   ..\n   78  \n   79  function pushToDB(session, data) {\n   80:   return new Promise(function(resolve, reject) {\n   81      let ins = [];\n   82      while (data.length != 0) {\n   ..\n   89        ins.push(q);\n   90      }\n   91:     ins.reduce((p, f) => p.then(() => query(session, f)), Promise.resolve())\n   92        .then(() => resolve());\n   93    });\n   ..\n   95  \n   96  function dataAWS(session) {\n   97:   return new Promise(function(resolve, reject) {\n   98  \n   99    period = {'start': '2018-06-01', 'end': '2019-01-01' }\n  ...\n  158  \n  159    function queryAws(aws_id, purchaseType) {\n  160:     return new Promise(function(resolve, reject) {\n  161        console.log('Proccess: ' + aws_id + purchaseType)\n  162        var aws_cred = JSON.parse(fs.readFileSync(`../work_in_XO/secrets/${aws_id}.json`));\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/about.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(async function (resolve, reject) {\n    3  var content = \"\";\n    4  if (undefined == res.sessionId) {\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/access.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(async function (resolve, reject) {\n    3  var content = \"\";\n    4  const fs = require('fs');\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/cost-account.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(async function (resolve, reject) {\n    3  var content = \"\";\n    4  const roleMng = require('../../../role-mng');\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/cost-staging.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(async function (resolve, reject) {\n    3  var content = \"\";\n    4  let {acc} = require('../../../lib/staging-accounts.js');\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/cost-weekly.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(async function (resolve, reject) {\n    3  var content = \"\";\n    4  const roleMng = require('../../../role-mng');\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/dashboard.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(async function (resolve, reject) {\n    3  var content = \"\";\n    4  const roleMng = require('../../../role-mng');\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/index.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(async function (resolve, reject) {\n    3  var content = \"\";\n    4  const {oauthlink} = require(`${data.env.rootpath}/custom-oauth`);\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/jarvis.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(async function (resolve, reject) {\n    3  var content = \"\";\n    4  content +=`<!DOCTYPE html>\\n`;\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/jira-crs.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(function (resolve, reject) {\n    3  var content = \"\";\n    4  content +=`<!DOCTYPE html>\\n`;\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/jira.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(async function (resolve, reject) {\n    3  var content = \"\";\n    4  content +=`<!DOCTYPE html>\\n`;\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/sql-console.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(async function (resolve, reject) {\n    3  var content = \"\";\n    4  const roleMng = require('../../../role-mng');\n\n/home/vgulaev/workspaces/saasjs/content/htmljs/compiled/unauthorized.html.js:\n    1  exports.build = function (res, data) { \n    2: return new Promise(async function (resolve, reject) {\n    3  var content = \"\";\n    4  content +=`<!DOCTYPE html>\\n`;\n\n/home/vgulaev/workspaces/saasjs/content/js/common.js:\n   10  \n   11  function httpPostAsync(theUrl, data) {\n   12:   return new Promise(function (resolve, reject) {\n   13      var xmlHttp = new XMLHttpRequest();\n   14      xmlHttp.onload = function() {\n\n/home/vgulaev/workspaces/saasjs/content/js/jarvis.js:\n   45  \n   46  function typeMsg(form) {\n   47:   return new Promise(function(resolve, reject) {\n   48      keyChain(form, 0, resolve);\n   49    });\n\n/home/vgulaev/workspaces/saasjs/cost-data-account.js:\n   38  \n   39  function report(params) {\n   40:   return new Promise(function (resolve, reject) {\n   41       mysqlx\n   42        .getSession(config.mysqlxCred)\n\n/home/vgulaev/workspaces/saasjs/cost-data-staging.js:\n   42  \n   43  function requestDataFromAWS(res) {\n   44:   return new Promise(function (resolve, reject) {\n   45      let filename = `./log/consoleOutput/${(new Date).toISOString().replace(/[:, \\.]/g, '-')}-${uuidv4()}.txt`;\n   46  \n\n/home/vgulaev/workspaces/saasjs/cost-data-weekly.js:\n   53  \n   54  function exportToFile(session, granularity) {\n   55:   return new Promise(function(resolve, reject) {\n   56    var q = query(granularity);\n   57    var rows = [];\n   ..\n   79      .getSession(config.mysqlxCred)\n   80      .then(session => {\n   81:       Promise.all(granularity.map(e => exportToFile(session, e)))\n   82          .then(() => {\n   83            session.close();\n\n/home/vgulaev/workspaces/saasjs/easy-db.js:\n   24  \n   25  exports.query = function(q, resultCallback, metaCallback) {\n   26:   return new Promise(function (resolve, reject) {\n   27      mysqlx\n   28        .getSession(config.mysqlxCred)\n   ..\n   84  \n   85    this.query = (q, resultCallback, metaCallback) => {\n   86:     return new Promise((resolve, reject) => {\n   87        this.resultCallback   = resultCallback;\n   88        this.metaCallback     = metaCallback;\n\n/home/vgulaev/workspaces/saasjs/htmljs.js:\n   11  \n   12    fs.writeFileSync(fileout, '');\n   13:   append(`exports.build = function (res, data) { \\nreturn new Promise(async function (resolve, reject) {\\nvar content = \"\";\\n`);\n   14  \n   15    var content = fs.readFileSync(filename, 'utf-8');\n\n/home/vgulaev/workspaces/saasjs/jira.js:\n    6  \n    7  function getJiraLogin(username, password) {\n    8:   return new Promise(function (resolve, reject) {\n    9      client = new Client();\n   10      var loginArgs = {\n   ..\n   36  \n   37  function requestData(session, jql, filename) {\n   38:   return new Promise(function(resolve, reject) {\n   39      var searchArgs = {\n   40        headers: {\n\n/home/vgulaev/workspaces/saasjs/lib/sql/db-creation.js:\n   21  \n   22  function query(session, query) {\n   23:   return new Promise(function(resolve, reject) {\n   24      session.sql(query)\n   25        .execute(result => {\n   ..\n   34    .then(session => {\n   35      let q = queue();\n   36:     let p = Promise.resolve();\n   37      for (let i = 0; i < queries.length; i++) {\n   38        p = p.then(() => query(session, q.next().value));\n\n/home/vgulaev/workspaces/saasjs/saas.js:\n  131  \n  132  function getBody(req) {\n  133:   return new Promise(function (resolve, reject) {\n  134      let body = [];\n  135      req.on('data', (chunk) => {\n\n33 matches across 24 files\n",
+			"settings":
+			{
+				"buffer_size": 7686,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "index.html",
+			"settings":
+			{
+				"buffer_size": 1042,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -528,6 +595,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"js",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
 			[
 				"wra",
 				"Word Wrap: Toggle"
@@ -555,10 +626,6 @@
 			[
 				"WRAP",
 				"Word Wrap: Toggle"
-			],
-			[
-				"js",
-				"Pretty JSON: Format (Pretty Print) JSON"
 			],
 			[
 				"wrap",
@@ -604,13 +671,28 @@
 	"expanded_folders":
 	[
 		"/home/vgulaev/workspaces/teleChart",
-		"/home/vgulaev/workspaces/teleChart/js",
 		"/home/vgulaev/workspaces/teleChart/logs",
 		"/home/vgulaev/workspaces/teleChart/logs/tmp"
 	],
 	"file_history":
 	[
+		"/home/vgulaev/workspaces/teleChart/logs/tmp/chart_data.json",
 		"/home/vgulaev/workspaces/teleChart/js/teleChart.js",
+		"/home/vgulaev/workspaces/teleChart/index.html",
+		"/home/vgulaev/workspaces/teleChart/js/loader.js",
+		"/home/vgulaev/workspaces/teleChart/.gitignore",
+		"/home/vgulaev/workspaces/teleChart/logs/tmp/chart_data.js",
+		"/home/vgulaev/workspaces/teleChart/hw.js",
+		"/home/vgulaev/workspaces/teleChart/js/index.js",
+		"/home/vgulaev/workspaces/OpenPianoJS/js/index.js",
+		"/home/vgulaev/workspaces/OpenPianoJS/js/classes/svgBuilder.js",
+		"/home/vgulaev/workspaces/OpenPianoJS/js/classes/chord.js",
+		"/home/vgulaev/workspaces/teleChart/deploy.js",
+		"/home/vgulaev/workspaces/teleChart/teleChart-run",
+		"/home/vgulaev/workspaces/teleChart/teleChart.sublime-project",
+		"/home/vgulaev/workspaces/OpenPianoJS/js/classes/piano.js",
+		"/home/vgulaev/workspaces/teleChart/test.html",
+		"/home/vgulaev/workspaces/teleChart/js/tmp.js",
 		"/home/vgulaev/workspaces/ftjs/.gitignore",
 		"/home/vgulaev/workspaces/jarvis/jarvis.sublime-project",
 		"/home/vgulaev/workspaces/jarvis/deploy.js",
@@ -721,23 +803,7 @@
 		"/home/vgulaev/workspaces/work_in_XO/aws_query_mysql_ssh.rb",
 		"/home/vgulaev/workspaces/work_in_XO/tmp/out.csv",
 		"/home/vgulaev/workspaces/work_in_XO/lib/remote_query.rb",
-		"/home/vgulaev/workspaces/_del/customers.sql",
-		"/home/vgulaev/workspaces/_del/providers.sql",
-		"/home/vgulaev/workspaces/work_in_XO/aws_cost_tracker.rb",
-		"/home/vgulaev/workspaces/work_in_XO/ans/out.json",
-		"/home/vgulaev/workspaces/work_in_XO/secrets/tocken.yaml",
-		"/home/vgulaev/workspaces/work_in_XO/secrets/google_sheet.json",
-		"/home/vgulaev/workspaces/work_in_XO/secrets/mysql_cred.json",
-		"/home/vgulaev/workspaces/work_in_XO/input/aws_cred.input",
-		"/home/vgulaev/workspaces/work_in_XO/aws_list_billable.rb",
-		"/home/vgulaev/workspaces/work_in_XO/aws_clean_up.rb",
-		"/home/vgulaev/workspaces/work_in_XO/secrets/berkeley.json",
-		"/home/vgulaev/workspaces/work_in_XO/aws_list_instances.rb",
-		"/home/vgulaev/workspaces/work_in_XO/{\"credentials\"=>\"{\\\"aws_secret_id\\\"",
-		"/home/vgulaev/workspaces/saas_center/hw.rb",
-		"/home/vgulaev/workspaces/ey-awsm/cookbooks/node_8_9_4/recipes/default.rb",
-		"/home/vgulaev/workspaces/ey-awsm/cookbooks/node_8_9_4/files/default/nodejs-bin-generic.ebuild",
-		"/home/vgulaev/workspaces/ey-awsm/cookbooks/main/recipes/default.rb"
+		"/home/vgulaev/workspaces/_del/customers.sql"
 	],
 	"find":
 	{
@@ -748,6 +814,8 @@
 		"height": 116.0,
 		"where_history":
 		[
+			"/home/vgulaev/workspaces/saasjs",
+			"/home/vgulaev/workspaces/OpenPianoJS/js"
 		]
 	},
 	"find_state":
@@ -755,15 +823,134 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"{ opacity: 1; }",
-			".",
-			"element",
-			"inner",
-			"Math.round",
-			"><",
-			"'y0'",
-			"row",
-			" - dy"
+			"options['width']",
+			"doAnimation",
+			"animationLa",
+			"scaleYAxis",
+			"requestScaleYAxis",
+			"this.scaleXAxis()",
+			"reqestEx",
+			"requestScaleXAxis",
+			"scaleXAxis",
+			"'scaleYAxis'",
+			"prom",
+			"Math.floo",
+			"pointsToD",
+			"this.svgRoot",
+			"TeleChart.path",
+			".rect",
+			".line",
+			"innerTile",
+			"'date'",
+			"buttonCo\t",
+			"\" styl",
+			"scaleXAxis",
+			"scaleYAxis",
+			"scaleXAxis",
+			"drawYLine",
+			"varia",
+			"g.text",
+			"this.targetLine",
+			"drawYAxis",
+			"renderPanelMove",
+			"requestRenderPanelMove",
+			"scaleXAxis",
+			"updateMinMaxInRange",
+			"graph",
+			"updateMinMaxInRange",
+			"points",
+			"this.animationTime",
+			"drawYLine",
+			"animation",
+			"doAnimation",
+			"animateOpacity",
+			"animateLabelRemove",
+			"animateOpacity",
+			"getViewY",
+			"drawYLine",
+			"teleChart.js:251:7",
+			"scaleYAxis",
+			"drawXAxis",
+			"conso",
+			"oldDelta",
+			"[i]",
+			"i",
+			"getViewY",
+			"YAxis",
+			"drawYAxis",
+			"drawLabel",
+			"i",
+			"divTile",
+			" ",
+			"monday tuesday",
+			" ",
+			"color",
+			"circle",
+			"newViewPoint",
+			"createTile",
+			"TeleChart.path",
+			"addEventListener",
+			"svgRoot",
+			"axisColor",
+			"color",
+			"semafors",
+			"scaleXAxis",
+			"getViewX",
+			"animateCircleInButton",
+			"obj.",
+			"obj.animationTime",
+			"obj.",
+			"updateMinMaxInRange",
+			"onMove",
+			"msg",
+			"YAxis",
+			"whiteCir",
+			"animateCircleInButton",
+			"\"",
+			"date",
+			"animateCircleInButton",
+			"animationTime",
+			"animationDuration",
+			"line",
+			"butt",
+			"bott",
+			"    \n",
+			"updateMinMaxInRange",
+			"tempY",
+			"this.YAxis.curViewCoord",
+			"const",
+			"render-order",
+			"fastCalcLineCoord",
+			"yax",
+			"miny",
+			"pageY",
+			"addE",
+			",",
+			"createSVG",
+			"tenli",
+			"svg",
+			"=\"",
+			"range.left",
+			"tx",
+			"window.width",
+			"render()",
+			"this.range.window.width",
+			"this.range.window.left",
+			"conso",
+			"svg.wBorder",
+			"clientX",
+			"clientY",
+			"window.wi",
+			"console",
+			"doAnimation",
+			"width",
+			"this.range.window.width",
+			"this.fastCalcLineCoord",
+			"doAn",
+			"('",
+			"js'",
+			"');",
+			"let "
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -781,141 +968,24 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 6,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "index.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 680,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								680,
-								680
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "js/teleChart.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7282,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3667,
-								3667
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true,
-							"word_wrap": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2458.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "test.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 996,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								543,
-								543
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "logs/tmp/chart_data.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 58029,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								442,
-								442
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 92.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
 					"file": "js/index.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 636,
+						"buffer_size": 500,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								163,
-								163
+								345,
+								345
 							]
 						],
 						"settings":
@@ -926,7 +996,348 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "js/teleChart.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 34897,
+						"regions":
+						{
+							"bookmarks":
+							{
+								"flags": 144,
+								"icon": "bookmark",
+								"regions":
+								[
+									[
+										3643,
+										3643
+									],
+									[
+										13759,
+										13759
+									],
+									[
+										32964,
+										32976
+									]
+								],
+								"scope": "bookmarks"
+							}
+						},
+						"selection":
+						[
+							[
+								5403,
+								5403
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3588.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "logs/tmp/chart_data.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 59712,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								26302,
+								26302
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1698.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "hw.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1102,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								720,
+								720
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 161.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "teleChart.sublime-project",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 138,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								124,
+								124
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7686,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										114,
+										118
+									],
+									[
+										180,
+										184
+									],
+									[
+										439,
+										443
+									],
+									[
+										633,
+										637
+									],
+									[
+										842,
+										846
+									],
+									[
+										980,
+										984
+									],
+									[
+										1175,
+										1179
+									],
+									[
+										1508,
+										1512
+									],
+									[
+										1755,
+										1759
+									],
+									[
+										2000,
+										2004
+									],
+									[
+										2265,
+										2269
+									],
+									[
+										2540,
+										2544
+									],
+									[
+										2802,
+										2806
+									],
+									[
+										3060,
+										3064
+									],
+									[
+										3339,
+										3343
+									],
+									[
+										3585,
+										3589
+									],
+									[
+										3821,
+										3825
+									],
+									[
+										4070,
+										4074
+									],
+									[
+										4335,
+										4339
+									],
+									[
+										4570,
+										4574
+									],
+									[
+										4810,
+										4814
+									],
+									[
+										5014,
+										5018
+									],
+									[
+										5239,
+										5243
+									],
+									[
+										5537,
+										5541
+									],
+									[
+										5725,
+										5729
+									],
+									[
+										5988,
+										5992
+									],
+									[
+										6184,
+										6188
+									],
+									[
+										6480,
+										6484
+									],
+									[
+										6735,
+										6739
+									],
+									[
+										6923,
+										6927
+									],
+									[
+										7138,
+										7142
+									],
+									[
+										7319,
+										7323
+									],
+									[
+										7556,
+										7560
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1042,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								322,
+								322
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 23.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -986,7 +1397,19 @@
 		[
 			[
 				"ind",
-				"js/index.js"
+				"teleChart/index.html"
+			],
+			[
+				"ch",
+				"teleChart/logs/tmp/chart_data.js"
+			],
+			[
+				"dep",
+				"teleChart/deploy.js"
+			],
+			[
+				"cha",
+				"teleChart/logs/tmp/chart_data.js"
 			],
 			[
 				"tele",
