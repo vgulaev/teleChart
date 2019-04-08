@@ -1,0 +1,3 @@
+  static createSVG(tag) {
+    return document.createElementNS(TeleChart.xmlns, tag);
+  }

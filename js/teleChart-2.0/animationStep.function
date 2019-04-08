@@ -1,0 +1,15 @@
+  animationStep() {
+    this.animationTime = performance.now();
+    let callNextStep = false;
+    if (this.animationStack.size > 0) {
+      callNextStep = true;
+      for (let [key, value] of this.animationStack.entries()) {
+        let cont = key.next();
+        if (undefined == cont.value) this.animationStack.delete(key);
+      }
+    }
+
+    if (callNextStep) {
+      requestAnimationFrame(() => this.animationStep())
+    };
+  }

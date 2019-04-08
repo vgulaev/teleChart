@@ -1,28 +1,31 @@
 class TeleChart20 {
-  static get xmlns() {
-    return "http://www.w3.org/2000/svg";
+
+  *moveCircle() {
+    let startTime = performance.now();
+    let x = this.c.getBBox().x;
+    console.log(this.width);
+    yield 'start';
+    while (true) {
+      let dx = (this.animationTime - startTime) / 1000 * 150;
+      this.c.setAttributeNS(null, 'cx', (x + dx) % this.width);
+      yield true;
+    }
   }
 
-  static createSVG(tag) {
-    return document.createElementNS(TeleChart.xmlns, tag);
-  }
+  animationStep() {
+    this.animationTime = performance.now();
+    let callNextStep = false;
+    if (this.animationStack.size > 0) {
+      callNextStep = true;
+      for (let [key, value] of this.animationStack.entries()) {
+        let cont = key.next();
+        if (undefined == cont.value) this.animationStack.delete(key);
+      }
+    }
 
-  static setAttribute(element, atts) {
-    Object.keys(atts).map(key => {
-      element.setAttributeNS(null, key, atts[key]);
-    });
-  }
-
-  static rect(x, y, width, height, options = {}) {
-    let element = TeleChart.createSVG('rect');
-    TeleChart.setAttribute(element, Object.assign({'x': x, 'y': y, 'width': width, 'height': height}, options));
-    return element;
-  }
-
-  static path(options = {}) {
-    let element = TeleChart.createSVG('path');
-    TeleChart.setAttribute(element, options);
-    return element;
+    if (callNextStep) {
+      requestAnimationFrame(() => this.animationStep())
+    };
   }
 
   static circle(cx, cy, r, options = {}) {
@@ -42,45 +45,18 @@ class TeleChart20 {
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
 
-    this.svgRoot = TeleChart.createSVG('svg');
-    TeleChart.setAttribute(this.svgRoot, {height: options['height'], width: width});
+    this.svgPanel = TeleChart.createSVG('svg');
+    TeleChart.setAttribute(this.svgPanel, {height: options['heightPanel'], width: width});
 
-    this.divRoot.append(this.svgRoot);
+    this.divRoot.append(this.svgPanel);
 
-    this.width = this.svgRoot.width.animVal.value;
+    this.width = this.svgPanel.width.animVal.value;
     this.animationStack = new Set();
     this.render();
   }
 
-  animationStep() {
-    this.animationTime = performance.now();
-    let callNextStep = false;
-    if (this.animationStack.size > 0) {
-      callNextStep = true;
-      for (let [key, value] of this.animationStack.entries()) {
-        let cont = key.next();
-        if (undefined == cont.value) this.animationStack.delete(key);
-      }
-    }
-
-    if (callNextStep) {
-      requestAnimationFrame(() => this.animationStep())
-    };
-  }
-
-  *moveCircle() {
-    let startTime = performance.now();
-    let x = this.c.getBBox().x;
-    console.log(this.width);
-    yield 'start';
-    while (true) {
-    // for (let i = 0; i < 200; i++) {
-      let dx = (this.animationTime - startTime) / 1000 * 150;
-      // console.log(dx);
-      this.c.setAttributeNS(null, 'cx', (x + dx) % this.width);
-      yield true;
-      // setTimeou(200, () => );
-    }
+  static createSVG(tag) {
+    return document.createElementNS(TeleChart.xmlns, tag);
   }
 
   doAnimation(animation) {
@@ -92,6 +68,17 @@ class TeleChart20 {
     requestAnimationFrame(() => this.animationStep());
   }
 
+  static path(options = {}) {
+    let element = TeleChart.createSVG('path');
+    TeleChart.setAttribute(element, options);
+    return element;
+  }
+
+  static rect(x, y, width, height, options = {}) {
+    let element = TeleChart.createSVG('rect');
+    TeleChart.setAttribute(element, Object.assign({'x': x, 'y': y, 'width': width, 'height': height}, options));
+    return element;
+  }
 
   render() {
     this.c = TeleChart20.circle(100, 100, 20, {'fill': '#E8AF14'});
@@ -101,6 +88,15 @@ class TeleChart20 {
     this.doAnimation(a);
     console.log('Hello');
   }
-}
 
-// alert('TeleChart20 here');
+  static setAttribute(element, atts) {
+    Object.keys(atts).map(key => {
+      element.setAttributeNS(null, key, atts[key]);
+    });
+  }
+
+  static get xmlns() {
+    return "http://www.w3.org/2000/svg";
+  }
+
+}

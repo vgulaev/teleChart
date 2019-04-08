@@ -1,0 +1,20 @@
+  constructor(tagID, data, options = {}) {
+    let width = options['width'];
+
+    if (true == options['widthToPage']) {
+      width = document.body.clientWidth - 10 + 'px';
+    }
+
+    this.divRoot = document.getElementById(tagID);
+    this.divRoot.innerHTML = '';
+    this.divRoot.style.width = width;
+
+    this.svgPanel = TeleChart.createSVG('svg');
+    TeleChart.setAttribute(this.svgPanel, {height: options['heightPanel'], width: width});
+
+    this.divRoot.append(this.svgPanel);
+
+    this.width = this.svgPanel.width.animVal.value;
+    this.animationStack = new Set();
+    this.render();
+  }

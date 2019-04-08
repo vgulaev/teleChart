@@ -1,0 +1,5 @@
+  static setAttribute(element, atts) {
+    Object.keys(atts).map(key => {
+      element.setAttributeNS(null, key, atts[key]);
+    });
+  }
