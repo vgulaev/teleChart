@@ -1,14 +1,42 @@
   addEventListenerToPanel() {
-    let svg = this.panel.scrollBox;
+    let s = this.panel.scrollBox;
 
     this.svgPanel.addEventListener('mousedown', (eventData) => {
-      let right = svg.rightBox.getBoundingClientRect();
-      let left = svg.leftBox.getBoundingClientRect();
+      let right = s.rightBox.getBoundingClientRect();
+      let left = s.leftBox.getBoundingClientRect();
       if (right.top < eventData.clientY && eventData.clientY < right.bottom) {
         if (left.right < eventData.pageX && eventData.pageX < right.left) {
-          svg.mouseXStart = eventData.clientX;
-          svg.reper = this.panel.scrollBox.x;
-          svg.target = 'mid';
+          s.mouseXStart = eventData.clientX;
+          s.reper = s.x;
+          s.target = 'mid';
+        }
+      }
+    });
+
+    this.svgPanel.addEventListener('touchstart', (eventData) => {
+      let right = s.rightBox.getBoundingClientRect();
+      let left = s.leftBox.getBoundingClientRect();
+      if (right.top < eventData.touches[0].clientY && eventData.touches[0].clientY < right.bottom) {
+        let tx = Math.round(eventData.touches[0].pageX);
+        let dw = s.width * 0.1;
+        let rlx = right.left - dw;
+        let rx = right.right + dw;
+        if (rlx < eventData.touches[0].pageX && eventData.touches[0].pageX < rx) {
+          s.mouseXStart = tx;
+          // s.reper = this.range.window.width;
+          s.target = 'right';
+        }
+        let lx = left.left - dw;
+        let lrx = left.right + dw;
+        if (lx < eventData.touches[0].pageX && eventData.touches[0].pageX < lrx) {
+          s.mouseXStart = tx;
+          // s.reper = {'total': this.range.window.left + this.range.window.width, 'left': this.range.window.left};
+          s.target = 'left';
+        }
+        if (lrx < eventData.touches[0].pageX && eventData.touches[0].pageX < rlx) {
+          s.mouseXStart = tx;
+          s.reper = s.x;
+          s.target = 'mid';
         }
       }
     });
@@ -17,7 +45,20 @@
       this.onMove(Math.round(eventData.pageX));
     });
 
+    this.svgPanel.addEventListener('touchmove', (eventData) => {
+      this.onMove(Math.round(eventData.touches[0].pageX));
+    });
+
     this.svgPanel.addEventListener('mouseup', (eventData) => {
-      svg.target = undefined;
+      s.target = undefined;
+    });
+
+    this.svgPanel.addEventListener('mouseleave', (eventData) => {
+      console.log('mouseleave');
+      s.target = undefined;
+    });
+
+    document.addEventListener('touchend', (eventData) => {
+      s.target = undefined;
     });
   }

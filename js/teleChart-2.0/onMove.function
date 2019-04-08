@@ -4,7 +4,7 @@
       if ('mid' == s.target) {
         this.panel.scrollBox.x = s.reper + x - s.mouseXStart;
         requestAnimationFrame(() => this.requestExec(this.drawScroll));
-        // console.log(x, s.mouseXStart);
       }
     }
+    // console.log(x, s.target);
   }
