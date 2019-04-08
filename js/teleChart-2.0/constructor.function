@@ -27,4 +27,5 @@
     this.animationStack = new Set();
     this.prepareData(data);
     this.render();
+    this.statusTag = document.getElementById('Status');
   }

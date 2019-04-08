@@ -62,6 +62,7 @@ class TeleChart20 {
     this.animationStack = new Set();
     this.prepareData(data);
     this.render();
+    this.statusTag = document.getElementById('Status');
   }
 
   static createSVG(tag) {
@@ -139,6 +140,10 @@ class TeleChart20 {
     callBack.call(this);
     let e = performance.now();
     console.log(callBack.name, 'time is: ', e - s);
+  }
+
+  msg(text) {
+    this.statusTag.innerHTML = text;
   }
 
   panelBracket(x, k) {

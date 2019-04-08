@@ -18,13 +18,14 @@ function drawCharts() {
         animationDuration: dur
       });
 
-  new TeleChart20('chart0', chartData[0], {
+  var c = new TeleChart20('chart0', chartData[0], {
         width: 500,
         height: '1000px',
         widthToPage: document.getElementById('widthToPage').checked,
         heightPanel: 120,
         animationDuration: dur
       });
+  c.msg("TeleChart20 I'm work");
 }
 
 window.addEventListener('load', async function( event ) {
