@@ -27,6 +27,7 @@ function test() {
     'git commit -m "test"',
     'git push'
   ].forEach((cmd) => {
+    console.log(cmd);
     try {
       let res = execSync(cmd, {shell: true});
       console.log(res.toString());
@@ -56,4 +57,4 @@ if (3 == process.argv.length) {
 }
 // remote_run();
 // deploy();
-test();
+// test();
