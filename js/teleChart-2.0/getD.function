@@ -3,7 +3,6 @@
     let scaleY = dy / (maxY - minY);
     let x = x0;
     let y = height - y0 - (data[a] - minY) * scaleY;
-    console.log(height, y0, data[a], minY, scaleY, y);
     let res = `M${x},${y} `;
     for (let i = a + 1; i < b; i++){
       x = Math.floor(x0 + scaleX * i);

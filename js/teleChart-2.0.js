@@ -2,11 +2,11 @@ class TeleChart20 {
 
   *moveCircle() {
     let startTime = performance.now();
-    let x = this.c.getBBox().x;
+    let x = 100;
     yield 'start';
     while (true) {
       let dx = (this.animationTime - startTime) / 1000 * 150;
-      this.c.setAttributeNS(null, 'cx', (x + dx) % this.width);
+      this.panel.scrollBox.leftBox.setAttributeNS(null, 'd', this.panelBracket((x + dx) % this.width, 1));
       yield true;
     }
   }
@@ -35,26 +35,30 @@ class TeleChart20 {
 
   constructor(tagID, data, options = {}) {
     let width = options['width'];
-
     if (true == options['widthToPage']) {
-      width = document.body.clientWidth - 10 + 'px';
+      width = document.body.clientWidth - 10;
     }
 
     this.divRoot = document.getElementById(tagID);
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
 
+    this.panel = {
+      width: width,
+      height: options['heightPanel'],
+      radius: Math.floor(options['heightPanel'] * 0.1),
+      scrollBox: {
+        width: Math.floor(width * 0.2)
+      }
+    };
+
     this.svgPanel = TeleChart.createSVG('svg');
-    TeleChart.setAttribute(this.svgPanel, {height: options['heightPanel'], width: width});
+    TeleChart.setAttribute(this.svgPanel, {height: options['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
 
     this.divRoot.append(this.svgPanel);
 
     this.width = this.svgPanel.width.animVal.value;
     this.height = this.svgPanel.height.animVal.value;
-    this.panel = {
-      width: this.svgPanel.width.animVal.value,
-      height: this.svgPanel.height.animVal.value
-    };
     this.animationStack = new Set();
     this.prepareData(data);
     this.render();
@@ -75,8 +79,9 @@ class TeleChart20 {
 
   drawLinesOnPanel() {
     let mm = this.getMinMax(0, this.data.length - 1);
+    this.panel.border = Math.floor(this.panel.height * 0.025);
     for (let item of this.allItems) {
-      let d = this.getD(0, 2, this.panel.width, this.panel.height - 2, this.panel.height, mm.min, mm.max, this.data.y[item], 0, this.data.length);
+      let d = this.getD(0, this.panel.border, this.panel.width, this.panel.height - 2 * this.panel.border, this.panel.height, mm.min, mm.max, this.data.y[item], 0, this.data.length);
       this.panel[item] = TeleChart20.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[item], 'fill': 'none'});
       this.svgPanel.append(this.panel[item]);
     }
@@ -84,6 +89,19 @@ class TeleChart20 {
 
   drawPanel() {
     this.drawLinesOnPanel();
+    this.drawScroll();
+  }
+
+  drawScroll() {
+    // let style = { 'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
+    let style = {'stroke-width': 0, 'fill': '#C0D1E1', 'opacity': '0.9'};
+    this.panel.scrollBox.w1 = Math.floor(this.panel.width * 0.03);
+    // this.panel.scrollBox.box = TeleChart20.rect(0, 0, this.panel.width, this.panel.height, style);
+    // this.svgPanel.append(this.panel.scrollBox.box);
+    this.panel.scrollBox.leftBox = TeleChart20.path(Object.assign({d: this.panelBracket(100, 1)}, style));
+    this.panel.scrollBox.rightBox = TeleChart20.path(Object.assign({d: this.panelBracket(200, -1)}, style));
+    this.svgPanel.append(this.panel.scrollBox.leftBox);
+    this.svgPanel.append(this.panel.scrollBox.rightBox);
   }
 
   getD(x0, y0, dx, dy, height, minY, maxY, data, a, b) {
@@ -91,7 +109,6 @@ class TeleChart20 {
     let scaleY = dy / (maxY - minY);
     let x = x0;
     let y = height - y0 - (data[a] - minY) * scaleY;
-    console.log(height, y0, data[a], minY, scaleY, y);
     let res = `M${x},${y} `;
     for (let i = a + 1; i < b; i++){
       x = Math.floor(x0 + scaleX * i);
@@ -119,6 +136,17 @@ class TeleChart20 {
     callBack.call(this);
     let e = performance.now();
     console.log(callBack.name, 'time is: ', e - s);
+  }
+
+  panelBracket(x, k) {
+    let h1 = this.panel.height;
+    let r1 = this.panel.radius;
+    let dx1 = this.panel.scrollBox.w1 - r1;
+    // 1 => 0
+    // -1 => 1
+    // -0.5 * (x) + 1
+
+    return `M${x},0 h${-dx1 * k} a${r1},${r1},0,0,${1 == k ? 0 : 1},${-r1 * k},${r1} l0,${h1 - 2 * r1} a${r1},${r1},0,0,${1 == k ? 0 : 1},${r1 * k},${r1} h${dx1 * k} z`;
   }
 
   static path(options = {}) {

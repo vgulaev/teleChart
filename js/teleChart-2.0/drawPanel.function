@@ -1,3 +1,4 @@
   drawPanel() {
     this.drawLinesOnPanel();
+    this.drawScroll();
   }
