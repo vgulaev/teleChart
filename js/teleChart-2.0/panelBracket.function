@@ -2,9 +2,5 @@
     let h1 = this.panel.height;
     let r1 = this.panel.radius;
     let dx1 = this.panel.scrollBox.w1 - r1;
-    // 1 => 0
-    // -1 => 1
-    // -0.5 * (x) + 1
-
     return `M${x},0 h${-dx1 * k} a${r1},${r1},0,0,${1 == k ? 0 : 1},${-r1 * k},${r1} l0,${h1 - 2 * r1} a${r1},${r1},0,0,${1 == k ? 0 : 1},${r1 * k},${r1} h${dx1 * k} z`;
   }

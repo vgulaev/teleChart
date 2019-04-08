@@ -38,17 +38,17 @@ function split() {
   });
 }
 
-fs.watch('teleChart-2.0.edit.js', { encoding: 'utf-8' }, (eventType, filename) => {
-  split();
-  compile(undefined, 'teleChart-2.0.js', '\n');
-});
+function startWatch() {
+  fs.watch('teleChart-2.0.edit.js', { encoding: 'utf-8' }, (eventType, filename) => {
+    split();
+    compile(undefined, 'teleChart-2.0.js', '\n');
+  });
+}
 
-// fs.watch(, { encoding: 'utf-8' }, (eventType, filename) => {
-//   if (filename) {
-//     console.log(`${filename} is changed will recompile`);
-//     compile();
-//   }
-// });
-
-// compile(undefined, 'teleChart-2.0.edit.js');
-// split();
+if (3 == process.argv.length) {
+  if ('init' == process.argv[2]) {
+      compile(undefined, 'teleChart-2.0.edit.js', spliter);
+  } else {
+    startWatch();
+  }
+}

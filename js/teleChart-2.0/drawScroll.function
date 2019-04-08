@@ -6,6 +6,7 @@
     // this.svgPanel.append(this.panel.scrollBox.box);
     this.panel.scrollBox.leftBox = TeleChart20.path(Object.assign({d: this.panelBracket(100, 1)}, style));
     this.panel.scrollBox.rightBox = TeleChart20.path(Object.assign({d: this.panelBracket(200, -1)}, style));
-    this.svgPanel.append(this.panel.scrollBox.leftBox);
-    this.svgPanel.append(this.panel.scrollBox.rightBox);
+    this.panel.scrollBox.top = TeleChart20.rect(100, 0, 100, this.panel.scrollBox.w1, style);
+    ['top', 'leftBox', 'rightBox']
+      .forEach(item => this.svgPanel.append(this.panel.scrollBox[item]));
   }

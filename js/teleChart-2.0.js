@@ -100,8 +100,9 @@ class TeleChart20 {
     // this.svgPanel.append(this.panel.scrollBox.box);
     this.panel.scrollBox.leftBox = TeleChart20.path(Object.assign({d: this.panelBracket(100, 1)}, style));
     this.panel.scrollBox.rightBox = TeleChart20.path(Object.assign({d: this.panelBracket(200, -1)}, style));
-    this.svgPanel.append(this.panel.scrollBox.leftBox);
-    this.svgPanel.append(this.panel.scrollBox.rightBox);
+    this.panel.scrollBox.top = TeleChart20.rect(100, 0, 100, this.panel.scrollBox.w1, style);
+    ['top', 'leftBox', 'rightBox']
+      .forEach(item => this.svgPanel.append(this.panel.scrollBox[item]));
   }
 
   getD(x0, y0, dx, dy, height, minY, maxY, data, a, b) {
@@ -142,10 +143,6 @@ class TeleChart20 {
     let h1 = this.panel.height;
     let r1 = this.panel.radius;
     let dx1 = this.panel.scrollBox.w1 - r1;
-    // 1 => 0
-    // -1 => 1
-    // -0.5 * (x) + 1
-
     return `M${x},0 h${-dx1 * k} a${r1},${r1},0,0,${1 == k ? 0 : 1},${-r1 * k},${r1} l0,${h1 - 2 * r1} a${r1},${r1},0,0,${1 == k ? 0 : 1},${r1 * k},${r1} h${dx1 * k} z`;
   }
 
@@ -179,16 +176,16 @@ class TeleChart20 {
   }
 
   render() {
-    this.c = TeleChart20.circle(100, 100, 20, {'fill': '#E8AF14'});
-    this.svgPanel.append(this.c);
-    let a = this.moveCircle();
     // this.getTime(() => {
     //   for (let i = 0; i < 1000; i++) {
     //   this.getMinMax(0, this.data.length - 1)
     //   }
     // });
+    this.c = TeleChart20.circle(100, 100, 20, {'fill': '#E8AF14'});
+    this.svgPanel.append(this.c);
     this.drawPanel();
-    this.doAnimation(a);
+    // let a = this.moveCircle();
+    // this.doAnimation(a);
   }
 
   static setAttribute(element, atts) {
