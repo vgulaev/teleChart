@@ -95,13 +95,15 @@ class TeleChart20 {
   drawScroll() {
     // let style = { 'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
     let style = {'stroke-width': 0, 'fill': '#C0D1E1', 'opacity': '0.9'};
-    this.panel.scrollBox.w1 = Math.floor(this.panel.width * 0.03);
+    this.panel.scrollBox.w1 = Math.min(Math.floor(this.panel.width * 0.03), 25);
+    this.panel.scrollBox.h1 = Math.floor(this.panel.height * 0.03);
     // this.panel.scrollBox.box = TeleChart20.rect(0, 0, this.panel.width, this.panel.height, style);
     // this.svgPanel.append(this.panel.scrollBox.box);
     this.panel.scrollBox.leftBox = TeleChart20.path(Object.assign({d: this.panelBracket(100, 1)}, style));
     this.panel.scrollBox.rightBox = TeleChart20.path(Object.assign({d: this.panelBracket(200, -1)}, style));
-    this.panel.scrollBox.top = TeleChart20.rect(100, 0, 100, this.panel.scrollBox.w1, style);
-    ['top', 'leftBox', 'rightBox']
+    this.panel.scrollBox.top = TeleChart20.rect(100, 0, 100, this.panel.scrollBox.h1, style);
+    this.panel.scrollBox.bottom = TeleChart20.rect(100, this.height - this.panel.scrollBox.h1, 100, this.panel.scrollBox.h1, style);
+    ['top', 'leftBox', 'rightBox', 'bottom']
       .forEach(item => this.svgPanel.append(this.panel.scrollBox[item]));
   }
 
