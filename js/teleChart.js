@@ -329,13 +329,13 @@ class TeleChart {
         callNextStep = this.animationStepPanel(this.animationTime, rightProgres, leftProgres);
       }
 
-      // if (this.animationLayers.has('graph')) {
-      //   callNextStep |=  this.animationStepGraph(this.animationTime, rightProgres, leftProgres);
-      // }
+      if (this.animationLayers.has('graph')) {
+        callNextStep |=  this.animationStepGraph(this.animationTime, rightProgres, leftProgres);
+      }
 
-      // if (this.animationLayers.has('YAxis')) {
-      //   callNextStep |=  this.animationStepYAxis(this.animationTime, rightProgres, leftProgres);
-      // }
+      if (this.animationLayers.has('YAxis')) {
+        callNextStep |=  this.animationStepYAxis(this.animationTime, rightProgres, leftProgres);
+      }
     }
 
     if (this.animationStack.size > 0) {
