@@ -26,7 +26,7 @@ function test() {
     'git add .',
     'git commit -m "test"',
     'git push',
-    // 'node deploy.js fast'
+    'node deploy.js fast'
   ].forEach((cmd) => {
     try {
       let res = execSync(cmd, {shell: true});
