@@ -24,12 +24,16 @@ function remote_cmd(cmd, async = false) {
 function test() {
   [
     'git add .',
-    "git commit -m 'test'",
-    'git push',
-    'node deploy.js fast'
+    'git commit -m "test"'
+    // 'git push',
+    // 'node deploy.js fast'
   ].forEach((cmd) => {
-    let res = execSync(cmd);
-    console.log(res.toString());
+    try {
+      let res = execSync(cmd, {shell: true});
+      console.log(res.toString());
+    } catch (err) {
+      console.log(err.stdout.toString());
+    }
   });
 }
 
