@@ -1,0 +1,25 @@
+  onStart(x, k) {
+    let s = this.panel.scrollBox;
+    let right = s.rightBox.getBoundingClientRect();
+    let left = s.leftBox.getBoundingClientRect();
+    let dw = s.width * k;
+    let rlx = right.left - dw;
+    let rx = right.right + dw;
+    if (rlx < x && x < rx) {
+      s.mouseXStart = x;
+      // s.reper = this.range.window.width;
+      s.target = 'right';
+    }
+    let lx = left.left - dw;
+    let lrx = left.right + dw;
+    if (lx < x && x < lrx) {
+      s.mouseXStart = x;
+      // s.reper = {'total': this.range.window.left + this.range.window.width, 'left': this.range.window.left};
+      s.target = 'left';
+    }
+    if (lrx < x && x < rlx) {
+      s.mouseXStart = x;
+      s.reper = s.x;
+      s.target = 'mid';
+    }
+  }

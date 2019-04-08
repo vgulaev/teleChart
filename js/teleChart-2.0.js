@@ -15,43 +15,11 @@ class TeleChart20 {
     let s = this.panel.scrollBox;
 
     this.svgPanel.addEventListener('mousedown', (eventData) => {
-      let right = s.rightBox.getBoundingClientRect();
-      let left = s.leftBox.getBoundingClientRect();
-      if (right.top < eventData.clientY && eventData.clientY < right.bottom) {
-        if (left.right < eventData.pageX && eventData.pageX < right.left) {
-          s.mouseXStart = eventData.clientX;
-          s.reper = s.x;
-          s.target = 'mid';
-        }
-      }
+      this.onStart(eventData.pageX, 0);
     });
 
     this.svgPanel.addEventListener('touchstart', (eventData) => {
-      let right = s.rightBox.getBoundingClientRect();
-      let left = s.leftBox.getBoundingClientRect();
-      if (right.top < eventData.touches[0].clientY && eventData.touches[0].clientY < right.bottom) {
-        let tx = Math.round(eventData.touches[0].pageX);
-        let dw = s.width * 0.1;
-        let rlx = right.left - dw;
-        let rx = right.right + dw;
-        if (rlx < eventData.touches[0].pageX && eventData.touches[0].pageX < rx) {
-          s.mouseXStart = tx;
-          // s.reper = this.range.window.width;
-          s.target = 'right';
-        }
-        let lx = left.left - dw;
-        let lrx = left.right + dw;
-        if (lx < eventData.touches[0].pageX && eventData.touches[0].pageX < lrx) {
-          s.mouseXStart = tx;
-          // s.reper = {'total': this.range.window.left + this.range.window.width, 'left': this.range.window.left};
-          s.target = 'left';
-        }
-        if (lrx < eventData.touches[0].pageX && eventData.touches[0].pageX < rlx) {
-          s.mouseXStart = tx;
-          s.reper = s.x;
-          s.target = 'mid';
-        }
-      }
+      this.onStart(Math.round(eventData.touches[0].pageX), 0.1);
     });
 
     this.svgPanel.addEventListener('mousemove', (eventData) => {
@@ -232,11 +200,42 @@ class TeleChart20 {
     let s = this.panel.scrollBox;
     if (undefined != s.target) {
       if ('mid' == s.target) {
-        this.panel.scrollBox.x = s.reper + x - s.mouseXStart;
+        s.x = s.reper + x - s.mouseXStart;
+        if (s.x + s.width > this.panel.width) {
+          s.x = this.panel.width - s.width;
+        } else if (s.x < 0) {
+          s.x = 0;
+        }
         requestAnimationFrame(() => this.requestExec(this.drawScroll));
       }
     }
     // console.log(x, s.target);
+  }
+
+  onStart(x, k) {
+    let s = this.panel.scrollBox;
+    let right = s.rightBox.getBoundingClientRect();
+    let left = s.leftBox.getBoundingClientRect();
+    let dw = s.width * k;
+    let rlx = right.left - dw;
+    let rx = right.right + dw;
+    if (rlx < x && x < rx) {
+      s.mouseXStart = x;
+      // s.reper = this.range.window.width;
+      s.target = 'right';
+    }
+    let lx = left.left - dw;
+    let lrx = left.right + dw;
+    if (lx < x && x < lrx) {
+      s.mouseXStart = x;
+      // s.reper = {'total': this.range.window.left + this.range.window.width, 'left': this.range.window.left};
+      s.target = 'left';
+    }
+    if (lrx < x && x < rlx) {
+      s.mouseXStart = x;
+      s.reper = s.x;
+      s.target = 'mid';
+    }
   }
 
   panelBracket(x, k) {

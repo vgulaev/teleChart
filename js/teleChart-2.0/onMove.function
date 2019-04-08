@@ -2,7 +2,12 @@
     let s = this.panel.scrollBox;
     if (undefined != s.target) {
       if ('mid' == s.target) {
-        this.panel.scrollBox.x = s.reper + x - s.mouseXStart;
+        s.x = s.reper + x - s.mouseXStart;
+        if (s.x + s.width > this.panel.width) {
+          s.x = this.panel.width - s.width;
+        } else if (s.x < 0) {
+          s.x = 0;
+        }
         requestAnimationFrame(() => this.requestExec(this.drawScroll));
       }
     }
