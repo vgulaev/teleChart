@@ -18,10 +18,11 @@ function compile(items, fileOut, text) {
 }
 
 function getTitle(content) {
-  let first = content.
-    split('\n')[0].
-    split('(')[0].
-    split(' ').pop();
+  let first = content
+    .split('\n')[0]
+    .split('(')[0]
+    .split(' ')
+    .pop();
 
   return first;
 }

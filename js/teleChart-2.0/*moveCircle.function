@@ -1,7 +1,6 @@
   *moveCircle() {
     let startTime = performance.now();
     let x = this.c.getBBox().x;
-    console.log(this.width);
     yield 'start';
     while (true) {
       let dx = (this.animationTime - startTime) / 1000 * 150;

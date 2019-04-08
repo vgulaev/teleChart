@@ -1,0 +1,14 @@
+  getD(x0, y0, dx, dy, height, minY, maxY, data, a, b) {
+    let scaleX = dx / (b - a - 1);
+    let scaleY = dy / (maxY - minY);
+    let x = x0;
+    let y = height - y0 - (data[a] - minY) * scaleY;
+    console.log(height, y0, data[a], minY, scaleY, y);
+    let res = `M${x},${y} `;
+    for (let i = a + 1; i < b; i++){
+      x = Math.floor(x0 + scaleX * i);
+      y = Math.floor(height - y0 - (data[i] - minY) * scaleY);
+      res += `L${x},${y} `
+    }
+    return res;
+  }

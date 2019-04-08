@@ -10,7 +10,7 @@ function drawCharts() {
   //     animationDuration: dur
   //   }))
   //   );
-  new TeleChart('chart0', chartData[2], {
+  new TeleChart('chart0', chartData[0], {
         width: '500px',
         height: '200px',
         widthToPage: document.getElementById('widthToPage').checked,
@@ -18,7 +18,7 @@ function drawCharts() {
         animationDuration: dur
       });
 
-  new TeleChart20('chart1', chartData[2], {
+  new TeleChart20('chart1', chartData[0], {
         width: '500px',
         height: '200px',
         widthToPage: document.getElementById('widthToPage').checked,

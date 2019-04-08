@@ -3,7 +3,6 @@ class TeleChart20 {
   *moveCircle() {
     let startTime = performance.now();
     let x = this.c.getBBox().x;
-    console.log(this.width);
     yield 'start';
     while (true) {
       let dx = (this.animationTime - startTime) / 1000 * 150;
@@ -51,7 +50,13 @@ class TeleChart20 {
     this.divRoot.append(this.svgPanel);
 
     this.width = this.svgPanel.width.animVal.value;
+    this.height = this.svgPanel.height.animVal.value;
+    this.panel = {
+      width: this.svgPanel.width.animVal.value,
+      height: this.svgPanel.height.animVal.value
+    };
     this.animationStack = new Set();
+    this.prepareData(data);
     this.render();
   }
 
@@ -68,10 +73,75 @@ class TeleChart20 {
     requestAnimationFrame(() => this.animationStep());
   }
 
+  drawLinesOnPanel() {
+    let mm = this.getMinMax(0, this.data.length - 1);
+    for (let item of this.allItems) {
+      let d = this.getD(0, 2, this.panel.width, this.panel.height - 2, this.panel.height, mm.min, mm.max, this.data.y[item], 0, this.data.length);
+      this.panel[item] = TeleChart20.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[item], 'fill': 'none'});
+      this.svgPanel.append(this.panel[item]);
+    }
+  }
+
+  drawPanel() {
+    this.drawLinesOnPanel();
+  }
+
+  getD(x0, y0, dx, dy, height, minY, maxY, data, a, b) {
+    let scaleX = dx / (b - a - 1);
+    let scaleY = dy / (maxY - minY);
+    let x = x0;
+    let y = height - y0 - (data[a] - minY) * scaleY;
+    console.log(height, y0, data[a], minY, scaleY, y);
+    let res = `M${x},${y} `;
+    for (let i = a + 1; i < b; i++){
+      x = Math.floor(x0 + scaleX * i);
+      y = Math.floor(height - y0 - (data[i] - minY) * scaleY);
+      res += `L${x},${y} `
+    }
+    return res;
+  }
+
+  getMinMax(a, b) {
+    let min = Infinity;
+    let max = -Infinity;
+    for (let item of this.allItems) {
+      for (let i = a; i <= b; i++) {
+        let j = this.data.y[item][i];
+        if (j < min) min = j;
+        if (j > max) max = j;
+      }
+    }
+    return {min: min, max: max};
+  }
+
+  getTime(callBack) {
+    let s = performance.now();
+    callBack.call(this);
+    let e = performance.now();
+    console.log(callBack.name, 'time is: ', e - s);
+  }
+
   static path(options = {}) {
     let element = TeleChart.createSVG('path');
     TeleChart.setAttribute(element, options);
     return element;
+  }
+
+  prepareData(data) {
+    this.data = {x : [], y: {}, raw: data};
+    this.allItems = new Set(Object.keys(data.names));
+    for (let col of data.columns) {
+      if ('x' == col[0]) {
+        for (let i = 1; i < col.length; i++) {
+          this.data.x.push(new Date(col[i]));
+        }
+      } else {
+        let n = col[0];
+        this.data.y[n] = col.slice(1);
+      }
+    }
+    this.data.length = this.data.x.length;
+    delete this.data.raw.columns
   }
 
   static rect(x, y, width, height, options = {}) {
@@ -83,10 +153,14 @@ class TeleChart20 {
   render() {
     this.c = TeleChart20.circle(100, 100, 20, {'fill': '#E8AF14'});
     this.svgPanel.append(this.c);
-
     let a = this.moveCircle();
+    // this.getTime(() => {
+    //   for (let i = 0; i < 1000; i++) {
+    //   this.getMinMax(0, this.data.length - 1)
+    //   }
+    // });
+    this.drawPanel();
     this.doAnimation(a);
-    console.log('Hello');
   }
 
   static setAttribute(element, atts) {

@@ -1,8 +1,12 @@
   render() {
     this.c = TeleChart20.circle(100, 100, 20, {'fill': '#E8AF14'});
     this.svgPanel.append(this.c);
-
     let a = this.moveCircle();
+    // this.getTime(() => {
+    //   for (let i = 0; i < 1000; i++) {
+    //   this.getMinMax(0, this.data.length - 1)
+    //   }
+    // });
+    this.drawPanel();
     this.doAnimation(a);
-    console.log('Hello');
   }

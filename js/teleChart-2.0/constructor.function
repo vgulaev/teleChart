@@ -15,6 +15,12 @@
     this.divRoot.append(this.svgPanel);
 
     this.width = this.svgPanel.width.animVal.value;
+    this.height = this.svgPanel.height.animVal.value;
+    this.panel = {
+      width: this.svgPanel.width.animVal.value,
+      height: this.svgPanel.height.animVal.value
+    };
     this.animationStack = new Set();
+    this.prepareData(data);
     this.render();
   }
