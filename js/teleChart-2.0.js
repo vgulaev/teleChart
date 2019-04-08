@@ -48,7 +48,8 @@ class TeleChart20 {
       height: options['heightPanel'],
       radius: Math.floor(options['heightPanel'] * 0.1),
       scrollBox: {
-        width: Math.floor(width * 0.2)
+        width: Math.floor(width * 0.25),
+        x: Math.floor(width * 0.2)
       }
     };
 
@@ -96,15 +97,19 @@ class TeleChart20 {
   drawScroll() {
     // let style = { 'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
     let style = {'stroke-width': 0, 'fill': '#C0D1E1', 'opacity': '0.9'};
-    this.panel.scrollBox.w1 = Math.min(Math.floor(this.panel.width * 0.03), 25);
+    this.panel.scrollBox.w1 = Math.min(Math.floor(this.panel.width * 0.03), 30);
     this.panel.scrollBox.h1 = Math.floor(this.panel.height * 0.03);
-    // this.panel.scrollBox.box = TeleChart20.rect(0, 0, this.panel.width, this.panel.height, style);
-    // this.svgPanel.append(this.panel.scrollBox.box);
-    this.panel.scrollBox.leftBox = TeleChart20.path(Object.assign({d: this.panelBracket(100, 1)}, style));
-    this.panel.scrollBox.rightBox = TeleChart20.path(Object.assign({d: this.panelBracket(200, -1)}, style));
-    this.panel.scrollBox.top = TeleChart20.rect(100, 0, 100, this.panel.scrollBox.h1, style);
-    this.panel.scrollBox.bottom = TeleChart20.rect(100, this.height - this.panel.scrollBox.h1, 100, this.panel.scrollBox.h1, style);
-    ['top', 'leftBox', 'rightBox', 'bottom']
+    let x1 = this.panel.scrollBox.x + this.panel.scrollBox.w1;
+    let x2 = this.panel.scrollBox.x + this.panel.scrollBox.width - this.panel.scrollBox.w1;
+
+    this.panel.scrollBox.leftBox = TeleChart20.path(Object.assign({d: this.panelBracket(x1, 1)}, style));
+    this.panel.scrollBox.rightBox = TeleChart20.path(Object.assign({d: this.panelBracket(x2, -1)}, style));
+    this.panel.scrollBox.top = TeleChart20.rect(x1, 0, x2 - x1, this.panel.scrollBox.h1, style);
+    this.panel.scrollBox.bottom = TeleChart20.rect(x1, this.height - this.panel.scrollBox.h1, x2 - x1, this.panel.scrollBox.h1, style);
+    style = {'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
+    this.panel.scrollBox.leftMask = TeleChart20.rect(0, 0, x1, this.panel.height, style);
+    this.panel.scrollBox.rightMask = TeleChart20.rect(x2, 0, this.panel.width - x2, this.panel.height, style);
+    ['leftMask', 'rightMask', 'top', 'leftBox', 'rightBox', 'bottom']
       .forEach(item => this.svgPanel.append(this.panel.scrollBox[item]));
   }
 
