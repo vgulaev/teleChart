@@ -14,7 +14,8 @@
       radius: Math.floor(options['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.floor(width * 0.25),
-        x: Math.floor(width * 0.2)
+        x: Math.floor(width * 0.2),
+        h1: Math.floor(options['heightPanel'] * 0.03)
       }
     };
 
