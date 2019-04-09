@@ -10,13 +10,13 @@ function drawCharts() {
   //     animationDuration: dur
   //   }))
   //   );
-  // new TeleChart('chart1', chartData[0], {
-  //       width: '500px',
-  //       height: '200px',
-  //       widthToPage: document.getElementById('widthToPage').checked,
-  //       heightPanel: '100px',
-  //       animationDuration: dur
-  //     });
+  new TeleChart('chart1', chartData[2], {
+        width: '500px',
+        height: '300px',
+        widthToPage: document.getElementById('widthToPage').checked,
+        heightPanel: '120px',
+        animationDuration: dur
+      });
 
   c = new TC20('chart0', chartData[2], {
         width: 500,
