@@ -204,15 +204,6 @@ class TC20 {
     let max = -Infinity;
 
     for (let item of this.allItems) {
-      // [a, b].forEach(e => {
-      //   let k = Math.floor(e);
-      //   let j = Math.ceil(e)
-      //   if (Math.round(e) != e) {
-      //     let y = (this.data.y[item][j] - this.data.y[item][k]) * (e - k) + this.data.y[item][k];
-      //     max = Math.max(max, y);
-      //     min = Math.min(max, y);
-      //   }
-      // });
       for (let i = Math.ceil(a); i <= b; i++) {
         let j = this.data.y[item][i];
         if (j < min) min = j;
@@ -263,8 +254,10 @@ class TC20 {
           s.x = s.reper.x + s.reper.w - s.width
         }
       }
-      requestAnimationFrame(() => this.requestExec(this.drawScroll));
-      requestAnimationFrame(() => this.requestExec(this.drawLineChart));
+      requestAnimationFrame(() => {
+        this.requestExec(this.drawScroll);
+        this.requestExec(this.drawLineChart);
+      });
     }
   }
 

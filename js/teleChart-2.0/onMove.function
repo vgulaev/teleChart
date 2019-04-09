@@ -28,7 +28,9 @@
           s.x = s.reper.x + s.reper.w - s.width
         }
       }
-      requestAnimationFrame(() => this.requestExec(this.drawScroll));
-      requestAnimationFrame(() => this.requestExec(this.drawLineChart));
+      requestAnimationFrame(() => {
+        this.requestExec(this.drawScroll);
+        this.requestExec(this.drawLineChart);
+      });
     }
   }
