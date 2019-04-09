@@ -100,6 +100,7 @@ class TeleChart20 {
     this.prepareData(data);
     this.render();
     this.statusTag = document.getElementById('Status');
+    this.count = 0;
   }
 
   static createSVG(tag) {
@@ -228,7 +229,6 @@ class TeleChart20 {
       }
       requestAnimationFrame(() => this.requestExec(this.drawScroll));
     }
-    // console.log(x, s.target);
   }
 
   onStart(x, k) {
@@ -311,6 +311,8 @@ class TeleChart20 {
     if ('recall' == this.semafors[n]) return;
     if ('work' == this.semafors[n]) {
       this.semafors[n] = 'recall';
+      this.count += 1;
+      this.msg(this.count);
     } else {
       this.semafors[n] = 'work';
       new Promise((resolve, reject) => {

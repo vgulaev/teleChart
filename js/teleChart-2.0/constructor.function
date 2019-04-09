@@ -32,4 +32,5 @@
     this.prepareData(data);
     this.render();
     this.statusTag = document.getElementById('Status');
+    this.count = 0;
   }

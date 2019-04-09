@@ -13,8 +13,62 @@ function compile(items, fileOut, text) {
       pieces.push(content);
     });
   }
-  pieces.push('}');
+  pieces.push('}\n');
   fs.writeFileSync(fileOut, pieces.join(_spliter));
+}
+
+function truncSpace(content) {
+  return content
+    .split('\n')
+    .map(e => e.trim())
+    .filter(e => '//' != e.substring(0, 2))
+    .filter(e => 'console.log(' != e.substring(0, 12))
+    .filter(e =>  0 != e.length)
+    .join(' ')
+    .replace(/  /g, ' ')
+    .replace(/ }/g, '}')
+    .replace(/ \/ /g, '/')
+    .replace(/\) /g, ')')
+    .replace(/} /g, '}')
+    .replace(/ = /g, '=')
+    .replace(/; /g, ';')
+    .replace(/\, /g, ',')
+    .replace(/ \+ /g, '+')
+    .replace(/ \* /g, '*')
+    .replace(/ => /g, '=>')
+    .replace(/ \./g, '.')
+    .replace(/: /g, ':')
+    .replace(/ \{/g, '{')
+    .replace(/ - /g, '-')
+    .replace(/ == /g, '==')
+    .replace(/ < /g, '<')
+    .replace(/ > /g, '>')
+    .replace(/ && /g, '&&')
+    .replace(/ != /g, '!=')
+    .replace(/ \(/g, '(')
+    .replace(/\{ /g, '{');
+}
+
+// function findValues(content) {
+//   return content
+//   .split('\n')
+//   .filter(e => -1 != e.indexOf('let'))
+//   .map(e => e.split('let')[1].);
+// }
+
+// function replaceLetVal(content) {
+//   console.log(findValues(content));
+//   return content;
+// }
+
+function min(fileOut) {
+  let pieces = ['class TeleChart20 {'];
+  fs.readdirSync(rootPath).forEach(item => {
+    let content = fs.readFileSync(`${rootPath}/${item}`, 'utf-8');
+    pieces.push(content);
+  });
+  pieces.push('}');
+  fs.writeFileSync(fileOut, truncSpace(pieces.join('')));
 }
 
 function getTitle(content) {
@@ -47,8 +101,12 @@ function startWatch() {
 
 if (3 == process.argv.length) {
   if ('init' == process.argv[2]) {
-      compile(undefined, 'teleChart-2.0.edit.js', spliter);
-  } else {
-    startWatch();
+    compile(undefined, 'teleChart-2.0.edit.js', spliter);
+  } else if ('min' == process.argv[2]) {
+    min('teleChart-2.0.min.js');
   }
+} else {
+  // startWatch();
 }
+
+min('teleChart-2.0.min.js');
