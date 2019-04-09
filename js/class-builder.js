@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { execSync } = require('child_process');
 
 let rootPath = './teleChart-2.0';
 let spliter = '//********//\n';
@@ -96,6 +97,7 @@ function startWatch() {
   fs.watch('teleChart-2.0.edit.js', { encoding: 'utf-8' }, (eventType, filename) => {
     split();
     compile(undefined, 'teleChart-2.0.js', '\n');
+    execSync('gzip -fk teleChart-2.0.js', {shell: true})
   });
 }
 
@@ -104,6 +106,8 @@ if (3 == process.argv.length) {
     compile(undefined, 'teleChart-2.0.edit.js', spliter);
   } else if ('min' == process.argv[2]) {
     min('teleChart-2.0.min.js');
+  } else if ('compile' == process.argv[2]) {
+    compile(undefined, 'teleChart-2.0.js', '\n');
   }
 } else {
   startWatch();
