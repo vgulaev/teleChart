@@ -1,0 +1,16 @@
+  prepareData(data) {
+    this.data = {x : [], y: {}, raw: data};
+    this.allItems = new Set(Object.keys(data.names));
+    for (let col of data.columns) {
+      if ('x' == col[0]) {
+        for (let i = 1; i < col.length; i++) {
+          this.data.x.push(new Date(col[i]));
+        }
+      } else {
+        let n = col[0];
+        this.data.y[n] = col.slice(1);
+      }
+    }
+    this.data.length = this.data.x.length;
+    delete this.data.raw.columns
+  }

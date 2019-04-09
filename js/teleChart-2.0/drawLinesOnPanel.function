@@ -1,0 +1,9 @@
+  drawLinesOnPanel() {
+    let mm = this.getMinMax(0, this.data.length - 1);
+    let h1 = this.panel.scrollBox.h1;
+    for (let item of this.allItems) {
+      let d = this.getD(0, h1 * 2, this.panel.width, this.panel.height - 4 * h1, this.panel.height, mm.min, mm.max, this.data.y[item], 0, this.data.length);
+      this.panel[item] = TeleChart20.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[item], 'fill': 'none'});
+      this.svgPanel.append(this.panel[item]);
+    }
+  }

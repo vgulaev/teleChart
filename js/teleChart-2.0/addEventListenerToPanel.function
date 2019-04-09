@@ -1,0 +1,32 @@
+  addEventListenerToPanel() {
+    let s = this.panel.scrollBox;
+
+    this.svgPanel.addEventListener('mousedown', (eventData) => {
+      this.onStart(eventData.pageX, 0);
+    });
+
+    this.svgPanel.addEventListener('touchstart', (eventData) => {
+      this.onStart(Math.round(eventData.touches[0].pageX), 0.1);
+    });
+
+    this.svgPanel.addEventListener('mousemove', (eventData) => {
+      this.onMove(Math.round(eventData.pageX));
+    });
+
+    this.svgPanel.addEventListener('touchmove', (eventData) => {
+      this.onMove(Math.round(eventData.touches[0].pageX));
+    });
+
+    this.svgPanel.addEventListener('mouseup', (eventData) => {
+      s.target = undefined;
+    });
+
+    this.svgPanel.addEventListener('mouseleave', (eventData) => {
+      console.log('mouseleave');
+      s.target = undefined;
+    });
+
+    document.addEventListener('touchend', (eventData) => {
+      s.target = undefined;
+    });
+  }

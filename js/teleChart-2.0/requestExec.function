@@ -1,0 +1,19 @@
+  requestExec(call) {
+    let n = call.name;
+    if ('recall' == this.semafors[n]) return;
+    if ('work' == this.semafors[n]) {
+      this.semafors[n] = 'recall';
+      this.count += 1;
+      this.msg(this.count);
+    } else {
+      this.semafors[n] = 'work';
+      new Promise((resolve, reject) => {
+        call.call(this);
+        resolve();
+      })
+        .then(() => {
+          this.semafors[n] = '';
+          if ('recall' == this.semafors[n]) this.requestExec(call);
+        });
+    }
+  }

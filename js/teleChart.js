@@ -103,6 +103,8 @@ class TeleChart {
     this.makeWellStructuredData();
     this.xLength = this.data.x.length;
     this.width = this.svgRoot.width.animVal.value;
+
+
     this.height = this.svgRoot.height.animVal.value;
     this.range = {
       left: 0,

@@ -1,0 +1,36 @@
+  constructor(tagID, data, options = {}) {
+    let width = options['width'];
+    if (true == options['widthToPage']) {
+      width = document.body.clientWidth - 10;
+    }
+
+    this.divRoot = document.getElementById(tagID);
+    this.divRoot.innerHTML = '';
+    this.divRoot.style.width = width;
+
+    this.panel = {
+      width: width,
+      height: options['heightPanel'],
+      radius: Math.floor(options['heightPanel'] * 0.1),
+      scrollBox: {
+        width: Math.floor(width * 0.25),
+        x: Math.floor(width * 0.2),
+        h1: Math.floor(options['heightPanel'] * 0.03),
+        w1: Math.min(Math.floor(width * 0.03), 30)
+      }
+    };
+
+    this.svgPanel = TeleChart20.createSVG('svg');
+    TeleChart20.setA(this.svgPanel, {height: options['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
+
+    this.divRoot.append(this.svgPanel);
+
+    this.width = this.svgPanel.width.animVal.value;
+    this.height = this.svgPanel.height.animVal.value;
+    this.animationStack = new Set();
+    this.semafors = {};
+    this.prepareData(data);
+    this.render();
+    this.statusTag = document.getElementById('Status');
+    this.count = 0;
+  }

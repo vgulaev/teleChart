@@ -1,0 +1,6 @@
+  getTime(callBack) {
+    let s = performance.now();
+    callBack.call(this);
+    let e = performance.now();
+    console.log(callBack.name, 'time is: ', e - s);
+  }

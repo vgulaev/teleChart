@@ -1,0 +1,5 @@
+  static circle(cx, cy, r, options = {}) {
+    let element = TeleChart.createSVG('circle');
+    TeleChart20.setA(element, Object.assign({'cx': cx, 'cy': cy, 'r': r}, options));
+    return element;
+  }

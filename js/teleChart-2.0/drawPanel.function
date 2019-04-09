@@ -1,0 +1,6 @@
+  drawPanel() {
+    this.drawLinesOnPanel();
+    this.createScrollElement();
+    this.drawScroll();
+    this.addEventListenerToPanel();
+  }
