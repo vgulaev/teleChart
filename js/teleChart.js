@@ -607,10 +607,10 @@ class TeleChart {
   }
 
   midMoveXAxis() {
-    for (let obj of this.XAxis.points) {
-      obj.viewX = this.getViewX(obj.x);
-      TeleChart.setAttribute(obj.text, {x: obj.viewX - obj.coord.width});
-    }
+    // for (let obj of this.XAxis.points) {
+    //   obj.viewX = this.getViewX(obj.x);
+    //   TeleChart.setAttribute(obj.text, {x: obj.viewX - obj.coord.width});
+    // }
   }
 
   *animateLabelRemove(target, duration, direction) {
@@ -850,11 +850,11 @@ class TeleChart {
   }
 
   drawYAxis() {
-    let ys = this.getYSieve();
-    this.YAxis.versions.push(ys);
-    for (let y of ys.points) {
-      this.drawYLine(y, ys);
-    }
+    // let ys = this.getYSieve();
+    // this.YAxis.versions.push(ys);
+    // for (let y of ys.points) {
+    //   this.drawYLine(y, ys);
+    // }
   }
 
   mmDD(date) {
@@ -896,7 +896,7 @@ class TeleChart {
   }
 
   drawXAxis() {
-    this.XAxis.points = this.getXAxisPoints().map(x => this.drawLabel(x));
+    // this.XAxis.points = this.getXAxisPoints().map(x => this.drawLabel(x));
   }
 
   hidePointer() {
