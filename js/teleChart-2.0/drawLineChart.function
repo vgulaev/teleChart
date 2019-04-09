@@ -1,9 +1,9 @@
   drawLineChart() {
     let [a, b] = this.getABfromScroll();
-    this.msg(a + ' ' + b);
     let mm = this.getMinMax(a, b);
+    this.msg(a + ' ' + b + ' :: ' + JSON.stringify(mm));
     console.log(this.width, this.height);
     for (let i of this.allItems) {
-      TC20.setA(this.graph[i], {d: this.getD(0, 0, this.width, this.height, this.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
+      TC20.setA(this.graph[i], {d: this.getD(0, 0, this.width, this.height, this.height, mm.min, mm.max, this.data.y[i], Math.floor(a), Math.ceil(b) + 1)});
     }
   }

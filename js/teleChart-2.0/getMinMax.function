@@ -1,8 +1,18 @@
   getMinMax(a, b) {
+    console.log(a, b);
     let min = Infinity;
     let max = -Infinity;
+
     for (let item of this.allItems) {
-      for (let i = a; i <= b; i++) {
+      let k = Math.floor(b);
+      let j = Math.ceil(b)
+      // if (Math.round(a) != a) {
+      //   min = (this.data.y[item][j] - this.data.y[item][j]) * (a - k);
+      // }
+      if (Math.round(b) != b) {
+        max = Math.max(max, (this.data.y[item][j] - this.data.y[item][k]) * (b - k) + this.data.y[item][k]);
+      }
+      for (let i = Math.ceil(a); i <= b; i++) {
         let j = this.data.y[item][i];
         if (j < min) min = j;
         if (j > max) max = j;

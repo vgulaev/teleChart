@@ -141,11 +141,11 @@ class TC20 {
 
   drawLineChart() {
     let [a, b] = this.getABfromScroll();
-    this.msg(a + ' ' + b);
     let mm = this.getMinMax(a, b);
+    this.msg(a + ' ' + b + ' :: ' + JSON.stringify(mm));
     console.log(this.width, this.height);
     for (let i of this.allItems) {
-      TC20.setA(this.graph[i], {d: this.getD(0, 0, this.width, this.height, this.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
+      TC20.setA(this.graph[i], {d: this.getD(0, 0, this.width, this.height, this.height, mm.min, mm.max, this.data.y[i], Math.floor(a), Math.ceil(b) + 1)});
     }
   }
 
@@ -181,8 +181,8 @@ class TC20 {
 
   getABfromScroll() {
     let s = this.panel.scrollBox;
-    let a = Math.floor(s.x / this.width * (this.data.length - 1));
-    let b = Math.floor((s.x + s.width) / this.width * (this.data.length - 1));
+    let a = s.x / this.width * (this.data.length - 1);
+    let b = (s.x + s.width) / this.width * (this.data.length - 1);
     return [a, b];
   }
 
@@ -201,10 +201,20 @@ class TC20 {
   }
 
   getMinMax(a, b) {
+    console.log(a, b);
     let min = Infinity;
     let max = -Infinity;
+
     for (let item of this.allItems) {
-      for (let i = a; i <= b; i++) {
+      let k = Math.floor(b);
+      let j = Math.ceil(b)
+      // if (Math.round(a) != a) {
+      //   min = (this.data.y[item][j] - this.data.y[item][j]) * (a - k);
+      // }
+      if (Math.round(b) != b) {
+        max = Math.max(max, (this.data.y[item][j] - this.data.y[item][k]) * (b - k) + this.data.y[item][k]);
+      }
+      for (let i = Math.ceil(a); i <= b; i++) {
         let j = this.data.y[item][i];
         if (j < min) min = j;
         if (j > max) max = j;
