@@ -5,8 +5,6 @@
     let dn = (t.min - f.min) / s;
     let dx = (t.max - f.max) / s;
     let c = {min: f.min, max: f.max};
-    // console.log('f::', f);
-    // console.log('c::', c, dn, dx);
     yield 'start';
     while (2 == this.graph.scales.length) {
       let l = this.graph.scales[1];
@@ -26,7 +24,6 @@
         c.max = t.max;
       }
       let [a, b] = this.getABfromScroll();
-      // console.log(c);
       this.drawLineChart(a, b, c);
       if (dx == 0 && dn == 0) {
         this.graph.scales.shift();

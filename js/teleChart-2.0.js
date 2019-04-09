@@ -18,8 +18,6 @@ class TC20 {
     let dn = (t.min - f.min) / s;
     let dx = (t.max - f.max) / s;
     let c = {min: f.min, max: f.max};
-    // console.log('f::', f);
-    // console.log('c::', c, dn, dx);
     yield 'start';
     while (2 == this.graph.scales.length) {
       let l = this.graph.scales[1];
@@ -39,7 +37,6 @@ class TC20 {
         c.max = t.max;
       }
       let [a, b] = this.getABfromScroll();
-      // console.log(c);
       this.drawLineChart(a, b, c);
       if (dx == 0 && dn == 0) {
         this.graph.scales.shift();
@@ -201,7 +198,7 @@ class TC20 {
     this.addEventListenerToPanel();
   }
 
-  drawScroll() {
+    drawScroll() {
     let x1 = this.panel.scrollBox.x + this.panel.scrollBox.w1;
     let x2 = this.panel.scrollBox.x + this.panel.scrollBox.width - this.panel.scrollBox.w1;
     let h1 = this.panel.scrollBox.h1;
@@ -209,7 +206,7 @@ class TC20 {
     TC20.setA(this.panel.scrollBox.leftBox, {d: this.panelBracket(x1, 1)});
     TC20.setA(this.panel.scrollBox.rightBox, {d: this.panelBracket(x2, -1)});
     TC20.setA(this.panel.scrollBox.top, {x: x1, y: 0, width: x2 - x1, height: this.panel.scrollBox.h1});
-    TC20.setA(this.panel.scrollBox.bottom, {x: x1, y: this.height - this.panel.scrollBox.h1, width: x2 - x1, height: this.panel.scrollBox.h1});
+    TC20.setA(this.panel.scrollBox.bottom, {x: x1, y: this.panel.height - this.panel.scrollBox.h1, width: x2 - x1, height: this.panel.scrollBox.h1});
     TC20.setA(this.panel.scrollBox.leftMask, {x:0, y: h1, width: x1, height: this.panel.height - 2 * h1});
     TC20.setA(this.panel.scrollBox.rightMask, {x: x2, y: h1, width: this.panel.width - x2, height: this.panel.height - 2 * h1});
   }
