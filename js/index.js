@@ -20,7 +20,18 @@ function drawCharts() {
             widthToPage: document.getElementById('widthToPage').checked,
             heightPanel: 120
           });
-    })
+    });
+  httpGetAsync('contest/3/overview.json')
+    .then(data => {
+      let d = JSON.parse(data);
+      d.caption = 'Followers';
+      new TC20('chart1', d, {
+            width: 500,
+            height: 300,
+            widthToPage: document.getElementById('widthToPage').checked,
+            heightPanel: 120
+          });
+    });
   // let dur = parseInt(document.getElementById('animationDuration').value);
 
   // document.querySelectorAll('.chart').forEach((el, index) =>

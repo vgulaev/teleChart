@@ -347,6 +347,8 @@ class TC20 {
       }
     }
     this.data.length = this.data.x.length;
+    this.type = data.types['y0'];
+    console.log(this.type);
     delete this.data.raw.columns
   }
 
