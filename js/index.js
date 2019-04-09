@@ -10,11 +10,22 @@ function httpGetAsync(theUrl) {
 }
 
 function drawCharts() {
-  httpGetAsync('contest/4/overview.json')
+  httpGetAsync('contest/5/overview.json')
     .then(data => {
       let d = JSON.parse(data);
       d.caption = 'Followers';
       new TC20('chart0', d, {
+            width: 500,
+            height: 300,
+            widthToPage: document.getElementById('widthToPage').checked,
+            heightPanel: 120
+          });
+    });
+  httpGetAsync('contest/4/overview.json')
+    .then(data => {
+      let d = JSON.parse(data);
+      d.caption = 'Followers';
+      new TC20('chart2', d, {
             width: 500,
             height: 300,
             widthToPage: document.getElementById('widthToPage').checked,

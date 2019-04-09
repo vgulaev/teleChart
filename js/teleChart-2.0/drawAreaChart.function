@@ -1,0 +1,3 @@
+  drawAreaChart(a, b) {
+    console.log('drawAreaChart');
+  }

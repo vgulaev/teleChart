@@ -8,9 +8,5 @@
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
     this.graph.scales.push(mm);
-    if ('line' == this.type) {
-      this.drawLineChart(a, b, mm);
-    } else if ('bar' == this.type){
-      this.drawBarChart(a, b, mm);
-    }
+    this.drawChart(a, b, mm);
   }

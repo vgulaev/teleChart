@@ -3,5 +3,7 @@
       this.drawBarChart(a, b, c);
     } else if ('line' == this.type) {
       this.drawLineChart(a, b, c);
+    } else if ('area' == this.type) {
+      this.drawAreaChart(a, b);
     }
   }
