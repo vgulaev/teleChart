@@ -5,7 +5,11 @@
     //   }
     // });
     this.drawPanel();
-    this.drawLineChart();
+    let [a, b] = this.getABfromScroll();
+    let mm = this.getMinMax(a, b);
+    this.graph.scales.push(mm);
+    // this.graph.scales.push({min: 50, max: 100});
+    this.drawLineChart(a, b, mm);
     // let a = this.moveCircle();
     // this.doAnimation(a);
   }

@@ -11,6 +11,44 @@ class TC20 {
     }
   }
 
+  *smothDrawLineChart() {
+    let f = this.graph.scales[0]
+    let t = this.graph.scales[1];
+    let s = 25;
+    let dn = (t.min - f.min) / s;
+    let dx = (t.max - f.max) / s;
+    let c = {min: f.min, max: f.max};
+    // console.log('f::', f);
+    // console.log('c::', c, dn, dx);
+    yield 'start';
+    while (2 == this.graph.scales.length) {
+      let l = this.graph.scales[1];
+      if (t.min != l.min || t.max != l.max) {
+        t = l;
+        dn = (t.min - c.min) / s;
+        dx = (t.max - c.max) / s;
+      }
+      c.min += dn;
+      c.max += dx;
+      if (Math.abs(c.min - t.min) < 2 * Math.abs(dn)) {
+        dn = 0;
+        c.min = t.min;
+      }
+      if (Math.abs(c.max - t.max) < 2 * Math.abs(dx)) {
+        dx = 0;
+        c.max = t.max;
+      }
+      let [a, b] = this.getABfromScroll();
+      // console.log(c);
+      this.drawLineChart(a, b, c);
+      if (dx == 0 && dn == 0) {
+        this.graph.scales.shift();
+        break;
+      }
+      yield true;
+    }
+  }
+
   addEventListenerToPanel() {
     let s = this.panel.scrollBox;
 
@@ -103,12 +141,13 @@ class TC20 {
     this.semafors = {};
     this.prepareData(data);
 
-    this.graph = {};
+    this.graph = {
+      scales: []
+    };
     for (let i of this.allItems) {
       this.graph[i] = TC20.path({'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'});
       this.svgRoot.append(this.graph[i]);
     }
-
     this.render();
     this.count = 0;
   }
@@ -139,10 +178,7 @@ class TC20 {
     requestAnimationFrame(() => this.animationStep());
   }
 
-  drawLineChart() {
-    let [a, b] = this.getABfromScroll();
-    let mm = this.getMinMax(a, b);
-    this.msg(a + ' ' + b + ' :: ' + JSON.stringify(mm));
+  drawLineChart(a, b, mm) {
     for (let i of this.allItems) {
       TC20.setA(this.graph[i], {d: this.getD(0, 0, this.width, this.height, this.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
     }
@@ -256,7 +292,7 @@ class TC20 {
       }
       requestAnimationFrame(() => {
         this.requestExec(this.drawScroll);
-        this.requestExec(this.drawLineChart);
+        this.requestDrawGraph();
       });
     }
   }
@@ -330,9 +366,25 @@ class TC20 {
     //   }
     // });
     this.drawPanel();
-    this.drawLineChart();
+    let [a, b] = this.getABfromScroll();
+    let mm = this.getMinMax(a, b);
+    this.graph.scales.push(mm);
+    // this.graph.scales.push({min: 50, max: 100});
+    this.drawLineChart(a, b, mm);
     // let a = this.moveCircle();
     // this.doAnimation(a);
+  }
+
+  requestDrawGraph() {
+    let [a, b] = this.getABfromScroll();
+    let mm = this.getMinMax(a, b);
+    if (2 == this.graph.scales.length) {
+      this.graph.scales[1] = mm;
+    } else {
+      this.graph.scales.push(mm);
+      let a = this.smothDrawLineChart();
+      this.doAnimation(a);
+    }
   }
 
   requestExec(call) {

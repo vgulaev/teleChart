@@ -18,7 +18,7 @@ function drawCharts() {
   //       animationDuration: dur
   //     });
 
-  var c = new TC20('chart0', chartData[2], {
+  c = new TC20('chart0', chartData[2], {
         width: 500,
         height: 300,
         widthToPage: document.getElementById('widthToPage').checked,

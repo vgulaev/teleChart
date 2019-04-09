@@ -36,12 +36,13 @@
     this.semafors = {};
     this.prepareData(data);
 
-    this.graph = {};
+    this.graph = {
+      scales: []
+    };
     for (let i of this.allItems) {
       this.graph[i] = TC20.path({'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'});
       this.svgRoot.append(this.graph[i]);
     }
-
     this.render();
     this.count = 0;
   }

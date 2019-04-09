@@ -30,7 +30,7 @@
       }
       requestAnimationFrame(() => {
         this.requestExec(this.drawScroll);
-        this.requestExec(this.drawLineChart);
+        this.requestDrawGraph();
       });
     }
   }
