@@ -21,20 +21,27 @@
       }
     };
 
-    this.svgRoot = TeleChart20.createSVG('svg');
-    TeleChart20.setA(this.svgRoot, {height: options['height'] + 'px', width: width + 'px'});
+    this.svgRoot = TC20.createSVG('svg');
+    TC20.setA(this.svgRoot, {height: options['height'] + 'px', width: width + 'px'});
     this.divRoot.append(this.svgRoot);
 
-    this.svgPanel = TeleChart20.createSVG('svg');
-    TeleChart20.setA(this.svgPanel, {height: options['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
+    this.svgPanel = TC20.createSVG('svg');
+    TC20.setA(this.svgPanel, {height: options['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
 
     this.divRoot.append(this.svgPanel);
 
     this.width = this.svgPanel.width.animVal.value;
-    this.height = this.svgPanel.height.animVal.value;
+    this.height = this.svgRoot.height.animVal.value;
     this.animationStack = new Set();
     this.semafors = {};
     this.prepareData(data);
+
+    this.graph = {};
+    for (let i of this.allItems) {
+      this.graph[i] = TC20.path({'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'});
+      this.svgRoot.append(this.graph[i]);
+    }
+
     this.render();
     this.count = 0;
   }

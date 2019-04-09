@@ -18,9 +18,9 @@ function drawCharts() {
   //       animationDuration: dur
   //     });
 
-  var c = new TeleChart20('chart0', chartData[2], {
+  var c = new TC20('chart0', chartData[2], {
         width: 500,
-        height: 400,
+        height: 300,
         widthToPage: document.getElementById('widthToPage').checked,
         heightPanel: 120,
         animationDuration: dur

@@ -5,7 +5,7 @@
     let y = height - y0 - (data[a] - minY) * scaleY;
     let res = `M${x},${y} `;
     for (let i = a + 1; i < b; i++){
-      x = Math.floor(x0 + scaleX * i);
+      x = Math.floor(x0 + scaleX * (i - a));
       y = Math.floor(height - y0 - (data[i] - minY) * scaleY);
       res += `L${x},${y} `
     }

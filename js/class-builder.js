@@ -6,7 +6,7 @@ let spliter = '//********//\n';
 function compile(items, fileOut, text) {
   let _spliter = text;
   if (text == undefined) _spliter = spliter;
-  let pieces = ['class TeleChart20 {\n'];
+  let pieces = ['class TC20 {\n'];
   if (items == undefined) {
     fs.readdirSync(rootPath).forEach(item => {
       let content = fs.readFileSync(`${rootPath}/${item}`, 'utf-8');

@@ -1,4 +1,4 @@
-class TeleChart20 {
+class TC20 {
 
   *moveCircle() {
     let startTime = performance.now();
@@ -61,7 +61,7 @@ class TeleChart20 {
 
   static circle(cx, cy, r, options = {}) {
     let element = TeleChart.createSVG('circle');
-    TeleChart20.setA(element, Object.assign({'cx': cx, 'cy': cy, 'r': r}, options));
+    TC20.setA(element, Object.assign({'cx': cx, 'cy': cy, 'r': r}, options));
     return element;
   }
 
@@ -88,20 +88,27 @@ class TeleChart20 {
       }
     };
 
-    this.svgRoot = TeleChart20.createSVG('svg');
-    TeleChart20.setA(this.svgRoot, {height: options['height'] + 'px', width: width + 'px'});
+    this.svgRoot = TC20.createSVG('svg');
+    TC20.setA(this.svgRoot, {height: options['height'] + 'px', width: width + 'px'});
     this.divRoot.append(this.svgRoot);
 
-    this.svgPanel = TeleChart20.createSVG('svg');
-    TeleChart20.setA(this.svgPanel, {height: options['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
+    this.svgPanel = TC20.createSVG('svg');
+    TC20.setA(this.svgPanel, {height: options['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
 
     this.divRoot.append(this.svgPanel);
 
     this.width = this.svgPanel.width.animVal.value;
-    this.height = this.svgPanel.height.animVal.value;
+    this.height = this.svgRoot.height.animVal.value;
     this.animationStack = new Set();
     this.semafors = {};
     this.prepareData(data);
+
+    this.graph = {};
+    for (let i of this.allItems) {
+      this.graph[i] = TC20.path({'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'});
+      this.svgRoot.append(this.graph[i]);
+    }
+
     this.render();
     this.count = 0;
   }
@@ -112,13 +119,13 @@ class TeleChart20 {
 
   createScrollElement() {
     let style = {'stroke-width': 0, 'fill': '#C0D1E1', 'opacity': '0.9'};
-    this.panel.scrollBox.leftBox = TeleChart20.path(style);
-    this.panel.scrollBox.rightBox = TeleChart20.path(style);
-    this.panel.scrollBox.top = TeleChart20.rect(0, 0, 0, 0, style);
-    this.panel.scrollBox.bottom = TeleChart20.rect(0, 0, 0, 0, style);
+    this.panel.scrollBox.leftBox = TC20.path(style);
+    this.panel.scrollBox.rightBox = TC20.path(style);
+    this.panel.scrollBox.top = TC20.rect(0, 0, 0, 0, style);
+    this.panel.scrollBox.bottom = TC20.rect(0, 0, 0, 0, style);
     style = {'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
-    this.panel.scrollBox.leftMask = TeleChart20.rect(0, 0, 0, 0, style);
-    this.panel.scrollBox.rightMask = TeleChart20.rect(0, 0, 0, 0, style);
+    this.panel.scrollBox.leftMask = TC20.rect(0, 0, 0, 0, style);
+    this.panel.scrollBox.rightMask = TC20.rect(0, 0, 0, 0, style);
     ['leftMask', 'rightMask', 'top', 'leftBox', 'rightBox', 'bottom']
       .forEach(item => this.svgPanel.append(this.panel.scrollBox[item]));
     }
@@ -135,6 +142,11 @@ class TeleChart20 {
   drawLineChart() {
     let [a, b] = this.getABfromScroll();
     this.msg(a + ' ' + b);
+    let mm = this.getMinMax(a, b);
+    console.log(this.width, this.height);
+    for (let i of this.allItems) {
+      TC20.setA(this.graph[i], {d: this.getD(0, 0, this.width, this.height, this.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
+    }
   }
 
   drawLinesOnPanel() {
@@ -142,7 +154,7 @@ class TeleChart20 {
     let h1 = this.panel.scrollBox.h1;
     for (let item of this.allItems) {
       let d = this.getD(0, h1 * 2, this.panel.width, this.panel.height - 4 * h1, this.panel.height, mm.min, mm.max, this.data.y[item], 0, this.data.length);
-      this.panel[item] = TeleChart20.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[item], 'fill': 'none'});
+      this.panel[item] = TC20.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[item], 'fill': 'none'});
       this.svgPanel.append(this.panel[item]);
     }
   }
@@ -159,12 +171,12 @@ class TeleChart20 {
     let x2 = this.panel.scrollBox.x + this.panel.scrollBox.width - this.panel.scrollBox.w1;
     let h1 = this.panel.scrollBox.h1;
 
-    TeleChart20.setA(this.panel.scrollBox.leftBox, {d: this.panelBracket(x1, 1)});
-    TeleChart20.setA(this.panel.scrollBox.rightBox, {d: this.panelBracket(x2, -1)});
-    TeleChart20.setA(this.panel.scrollBox.top, {x: x1, y: 0, width: x2 - x1, height: this.panel.scrollBox.h1});
-    TeleChart20.setA(this.panel.scrollBox.bottom, {x: x1, y: this.height - this.panel.scrollBox.h1, width: x2 - x1, height: this.panel.scrollBox.h1});
-    TeleChart20.setA(this.panel.scrollBox.leftMask, {x:0, y: h1, width: x1, height: this.panel.height - 2 * h1});
-    TeleChart20.setA(this.panel.scrollBox.rightMask, {x: x2, y: h1, width: this.panel.width - x2, height: this.panel.height - 2 * h1});
+    TC20.setA(this.panel.scrollBox.leftBox, {d: this.panelBracket(x1, 1)});
+    TC20.setA(this.panel.scrollBox.rightBox, {d: this.panelBracket(x2, -1)});
+    TC20.setA(this.panel.scrollBox.top, {x: x1, y: 0, width: x2 - x1, height: this.panel.scrollBox.h1});
+    TC20.setA(this.panel.scrollBox.bottom, {x: x1, y: this.height - this.panel.scrollBox.h1, width: x2 - x1, height: this.panel.scrollBox.h1});
+    TC20.setA(this.panel.scrollBox.leftMask, {x:0, y: h1, width: x1, height: this.panel.height - 2 * h1});
+    TC20.setA(this.panel.scrollBox.rightMask, {x: x2, y: h1, width: this.panel.width - x2, height: this.panel.height - 2 * h1});
   }
 
   getABfromScroll() {
@@ -181,7 +193,7 @@ class TeleChart20 {
     let y = height - y0 - (data[a] - minY) * scaleY;
     let res = `M${x},${y} `;
     for (let i = a + 1; i < b; i++){
-      x = Math.floor(x0 + scaleX * i);
+      x = Math.floor(x0 + scaleX * (i - a));
       y = Math.floor(height - y0 - (data[i] - minY) * scaleY);
       res += `L${x},${y} `
     }
@@ -282,7 +294,7 @@ class TeleChart20 {
 
   static path(options = {}) {
     let element = TeleChart.createSVG('path');
-    TeleChart20.setA(element, options);
+    TC20.setA(element, options);
     return element;
   }
 
@@ -304,8 +316,8 @@ class TeleChart20 {
   }
 
   static rect(x, y, width, height, options = {}) {
-    let element = TeleChart.createSVG('rect');
-    TeleChart20.setA(element, Object.assign({'x': x, 'y': y, 'width': width, 'height': height}, options));
+    let element = TC20.createSVG('rect');
+    TC20.setA(element, Object.assign({'x': x, 'y': y, 'width': width, 'height': height}, options));
     return element;
   }
 
@@ -315,7 +327,7 @@ class TeleChart20 {
     //   this.getMinMax(0, this.data.length - 1)
     //   }
     // });
-    this.c = TeleChart20.circle(100, 100, 20, {'fill': '#E8AF14'});
+    this.c = TC20.circle(100, 100, 20, {'fill': '#E8AF14'});
     this.svgPanel.append(this.c);
     this.drawPanel();
     this.drawLineChart();
