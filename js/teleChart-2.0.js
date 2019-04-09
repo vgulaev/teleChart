@@ -144,7 +144,7 @@ class TC20 {
     let mm = this.getMinMax(a, b);
     this.msg(a + ' ' + b + ' :: ' + JSON.stringify(mm));
     for (let i of this.allItems) {
-      TC20.setA(this.graph[i], {d: this.getD(0, 0, this.width, this.height, this.height, mm.min, mm.max, this.data.y[i], Math.floor(a), Math.ceil(b) + 1)});
+      TC20.setA(this.graph[i], {d: this.getD(0, 0, this.width, this.height, this.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
     }
   }
 
@@ -180,8 +180,8 @@ class TC20 {
 
   getABfromScroll() {
     let s = this.panel.scrollBox;
-    let a = s.x / this.width * (this.data.length - 1);
-    let b = (s.x + s.width) / this.width * (this.data.length - 1);
+    let a = Math.ceil(s.x / this.width * (this.data.length - 1));
+    let b = Math.floor((s.x + s.width) / this.width * (this.data.length - 1));
     return [a, b];
   }
 
@@ -204,15 +204,15 @@ class TC20 {
     let max = -Infinity;
 
     for (let item of this.allItems) {
-      [a, b].forEach(e => {
-        let k = Math.floor(e);
-        let j = Math.ceil(e)
-        if (Math.round(e) != e) {
-          let y = (this.data.y[item][j] - this.data.y[item][k]) * (e - k) + this.data.y[item][k];
-          max = Math.max(max, y);
-          min = Math.min(max, y);
-        }
-      });
+      // [a, b].forEach(e => {
+      //   let k = Math.floor(e);
+      //   let j = Math.ceil(e)
+      //   if (Math.round(e) != e) {
+      //     let y = (this.data.y[item][j] - this.data.y[item][k]) * (e - k) + this.data.y[item][k];
+      //     max = Math.max(max, y);
+      //     min = Math.min(max, y);
+      //   }
+      // });
       for (let i = Math.ceil(a); i <= b; i++) {
         let j = this.data.y[item][i];
         if (j < min) min = j;
