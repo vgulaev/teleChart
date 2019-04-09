@@ -4,6 +4,7 @@
       width = document.body.clientWidth - 10;
     }
 
+    this.statusTag = document.getElementById('Status');
     this.divRoot = document.getElementById(tagID);
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
@@ -20,6 +21,10 @@
       }
     };
 
+    this.svgRoot = TeleChart20.createSVG('svg');
+    TeleChart20.setA(this.svgRoot, {height: options['height'] + 'px', width: width + 'px'});
+    this.divRoot.append(this.svgRoot);
+
     this.svgPanel = TeleChart20.createSVG('svg');
     TeleChart20.setA(this.svgPanel, {height: options['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
 
@@ -31,6 +36,5 @@
     this.semafors = {};
     this.prepareData(data);
     this.render();
-    this.statusTag = document.getElementById('Status');
     this.count = 0;
   }

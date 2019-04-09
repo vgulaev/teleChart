@@ -106,7 +106,7 @@ if (3 == process.argv.length) {
     min('teleChart-2.0.min.js');
   }
 } else {
-  // startWatch();
+  startWatch();
 }
 
-min('teleChart-2.0.min.js');
+// min('teleChart-2.0.min.js');

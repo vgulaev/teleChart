@@ -10,17 +10,17 @@ function drawCharts() {
   //     animationDuration: dur
   //   }))
   //   );
-  new TeleChart('chart1', chartData[0], {
-        width: '500px',
-        height: '200px',
-        widthToPage: document.getElementById('widthToPage').checked,
-        heightPanel: '100px',
-        animationDuration: dur
-      });
+  // new TeleChart('chart1', chartData[0], {
+  //       width: '500px',
+  //       height: '200px',
+  //       widthToPage: document.getElementById('widthToPage').checked,
+  //       heightPanel: '100px',
+  //       animationDuration: dur
+  //     });
 
-  var c = new TeleChart20('chart0', chartData[0], {
+  var c = new TeleChart20('chart0', chartData[2], {
         width: 500,
-        height: '1000px',
+        height: 400,
         widthToPage: document.getElementById('widthToPage').checked,
         heightPanel: 120,
         animationDuration: dur

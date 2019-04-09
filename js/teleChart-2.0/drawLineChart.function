@@ -1,0 +1,4 @@
+  drawLineChart() {
+    let [a, b] = this.getABfromScroll();
+    this.msg(a + ' ' + b);
+  }

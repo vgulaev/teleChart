@@ -22,7 +22,6 @@
     });
 
     this.svgPanel.addEventListener('mouseleave', (eventData) => {
-      console.log('mouseleave');
       s.target = undefined;
     });
 

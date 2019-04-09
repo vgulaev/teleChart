@@ -29,5 +29,6 @@
         }
       }
       requestAnimationFrame(() => this.requestExec(this.drawScroll));
+      requestAnimationFrame(() => this.requestExec(this.drawLineChart));
     }
   }
