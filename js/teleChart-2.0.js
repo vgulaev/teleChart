@@ -46,8 +46,6 @@ class TC20 {
     }
   }
 
-
-
   addEventListenerToPanel() {
     let s = this.panel.scrollBox;
 
