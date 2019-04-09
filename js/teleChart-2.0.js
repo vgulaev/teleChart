@@ -143,7 +143,6 @@ class TC20 {
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
     this.msg(a + ' ' + b + ' :: ' + JSON.stringify(mm));
-    console.log(this.width, this.height);
     for (let i of this.allItems) {
       TC20.setA(this.graph[i], {d: this.getD(0, 0, this.width, this.height, this.height, mm.min, mm.max, this.data.y[i], Math.floor(a), Math.ceil(b) + 1)});
     }
@@ -201,19 +200,19 @@ class TC20 {
   }
 
   getMinMax(a, b) {
-    console.log(a, b);
     let min = Infinity;
     let max = -Infinity;
 
     for (let item of this.allItems) {
-      let k = Math.floor(b);
-      let j = Math.ceil(b)
-      // if (Math.round(a) != a) {
-      //   min = (this.data.y[item][j] - this.data.y[item][j]) * (a - k);
-      // }
-      if (Math.round(b) != b) {
-        max = Math.max(max, (this.data.y[item][j] - this.data.y[item][k]) * (b - k) + this.data.y[item][k]);
-      }
+      [a, b].forEach(e => {
+        let k = Math.floor(e);
+        let j = Math.ceil(e)
+        if (Math.round(e) != e) {
+          let y = (this.data.y[item][j] - this.data.y[item][k]) * (e - k) + this.data.y[item][k];
+          max = Math.max(max, y);
+          min = Math.min(max, y);
+        }
+      });
       for (let i = Math.ceil(a); i <= b; i++) {
         let j = this.data.y[item][i];
         if (j < min) min = j;
@@ -337,8 +336,6 @@ class TC20 {
     //   this.getMinMax(0, this.data.length - 1)
     //   }
     // });
-    this.c = TC20.circle(100, 100, 20, {'fill': '#E8AF14'});
-    this.svgPanel.append(this.c);
     this.drawPanel();
     this.drawLineChart();
     // let a = this.moveCircle();
