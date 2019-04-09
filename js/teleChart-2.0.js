@@ -37,7 +37,7 @@ class TC20 {
         c.max = t.max;
       }
       let [a, b] = this.getABfromScroll();
-      this.drawLineChart(a, b, c);
+      this.drawChart(a, b, c);
       if (dx == 0 && dn == 0) {
         this.graph.scales.shift();
         break;
@@ -117,7 +117,8 @@ class TC20 {
       radius: Math.floor(options['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.floor(width * 0.25),
-        x: Math.floor(width * 0.2),
+        x: 0,
+        // Math.floor(width * 0.2),
         h1: Math.floor(options['heightPanel'] * 0.03),
         w1: Math.min(Math.floor(width * 0.03), 30)
       }
@@ -173,6 +174,37 @@ class TC20 {
     }
 
     requestAnimationFrame(() => this.animationStep());
+  }
+
+  drawBarChart(a, b, mm) {
+    // let g = TeleChart.createSVG('g');
+    let dx = this.width / (b - a + 1);
+    let sy = this.height / mm.max;
+    let y = Math.floor(this.height - this.data.y['y0'][a] * sy);
+    let dy = 0;
+    let yy = 0
+    let d = `M0,${y}h${dx}`
+    for (let i = a + 1; i <= b; i++) {
+      yy = Math.floor(this.height - this.data.y['y0'][i] * sy);
+      dy = yy - y;
+      d += `v${dy}h${dx}`;
+      y = yy;
+      // break;
+      // let r = TC20.rect(Math.floor((i-a) * dx), this.height-100, dx, 100, {'fill': 'red'});
+      // g.append(r);
+    }
+    // let p = TC20.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors['y0'], 'fill': 'none'});
+    TC20.setA(this.graph['y0'], {d: d});
+    // this.svgRoot.append(p);
+    // console.log(a, b);
+  }
+
+  drawChart(a, b, c) {
+    if ('bar' == this.type) {
+      this.drawBarChart(a, b, c);
+    } else if ('line' == this.type) {
+      this.drawLineChart(a, b, c);
+    }
   }
 
   drawLineChart(a, b, mm) {
@@ -368,10 +400,11 @@ class TC20 {
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
     this.graph.scales.push(mm);
-    // this.graph.scales.push({min: 50, max: 100});
-    this.drawLineChart(a, b, mm);
-    // let a = this.moveCircle();
-    // this.doAnimation(a);
+    if ('line' == this.type) {
+      this.drawLineChart(a, b, mm);
+    } else if ('bar' == this.type){
+      this.drawBarChart(a, b, mm);
+    }
   }
 
   requestDrawGraph() {

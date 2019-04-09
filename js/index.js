@@ -10,7 +10,7 @@ function httpGetAsync(theUrl) {
 }
 
 function drawCharts() {
-  httpGetAsync('contest/1/overview.json')
+  httpGetAsync('contest/4/overview.json')
     .then(data => {
       let d = JSON.parse(data);
       d.caption = 'Followers';
@@ -21,7 +21,7 @@ function drawCharts() {
             heightPanel: 120
           });
     });
-  httpGetAsync('contest/3/overview.json')
+  httpGetAsync('contest/1/overview.json')
     .then(data => {
       let d = JSON.parse(data);
       d.caption = 'Followers';
