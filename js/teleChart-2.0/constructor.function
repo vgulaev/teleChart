@@ -1,4 +1,7 @@
   constructor(tagID, data, o = {}) {
+    TC20.monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    TC20.monthShort = ['Jan', 'Feb', 'Mar','Apr', 'May', 'Jun', 'Jul','Aug', 'Sep', 'Oct','Nov', 'Dec'];
+    TC20.dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     let width = o['width'];
     if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
@@ -28,6 +31,8 @@
       height: o['height']
     };
 
+    this.prepareData(data);
+    this.createHeader();
     this.svgRoot = TC20.createSVG('svg');
     TC20.setA(this.svgRoot, {height: o['height'] + 'px', width: width + 'px'});
     this.divRoot.append(this.svgRoot);
@@ -41,7 +46,6 @@
     this.height = this.svgRoot.height.animVal.value;
     this.animationStack = new Set();
     this.semafors = {};
-    this.prepareData(data);
 
     for (let i of this.allItems){
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};

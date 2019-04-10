@@ -31,6 +31,7 @@
       requestAnimationFrame(() => {
         this.requestExec(this.drawScroll);
         this.requestDrawGraph();
+        this.updateDateRange();
       });
     }
   }

@@ -88,6 +88,9 @@ class TC20 {
   }
 
   constructor(tagID, data, o = {}) {
+    TC20.monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    TC20.monthShort = ['Jan', 'Feb', 'Mar','Apr', 'May', 'Jun', 'Jul','Aug', 'Sep', 'Oct','Nov', 'Dec'];
+    TC20.dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     let width = o['width'];
     if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
@@ -117,6 +120,8 @@ class TC20 {
       height: o['height']
     };
 
+    this.prepareData(data);
+    this.createHeader();
     this.svgRoot = TC20.createSVG('svg');
     TC20.setA(this.svgRoot, {height: o['height'] + 'px', width: width + 'px'});
     this.divRoot.append(this.svgRoot);
@@ -130,7 +135,6 @@ class TC20 {
     this.height = this.svgRoot.height.animVal.value;
     this.animationStack = new Set();
     this.semafors = {};
-    this.prepareData(data);
 
     for (let i of this.allItems){
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
@@ -145,6 +149,13 @@ class TC20 {
     }
     this.render();
     this.count = 0;
+  }
+
+  createHeader() {
+    this.header = document.createElement('div');
+    this.header.innerHTML = `<h3 style='display: inline'>${this.data.raw.caption}</h3><span id='dateRange' style='float: right;'></span>`;
+    this.divRoot.append(this.header);
+    this.dateRange = this.header.querySelector('#dateRange');
   }
 
   static createSVG(tag) {
@@ -404,6 +415,7 @@ class TC20 {
       requestAnimationFrame(() => {
         this.requestExec(this.drawScroll);
         this.requestDrawGraph();
+        this.updateDateRange();
       });
     }
   }
@@ -479,6 +491,7 @@ class TC20 {
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
     this.graph.scales.push(mm);
+    this.updateDateRange();
     this.drawChart(a, b, mm, this.graph);
   }
 
@@ -518,6 +531,16 @@ class TC20 {
     Object.keys(a).map(k => {
       e.setAttributeNS(null, k, a[k]);
     });
+  }
+
+  updateDateRange() {
+    let [a, b] = this.getABfromScroll();
+    this.dateRange.innerHTML = this.wMMDD(this.data.x[a]) + ' - ' + this.wMMDD(this.data.x[b]);
+  }
+
+  wMMDD(d) {
+    return [d.getDate(), TC20.monthNames[d.getMonth()], d.getFullYear()].join(' ');
+    // return TC20.monthNames[date.getDay()] + ', ' + this.mmDD(date);
   }
 
   static get xmlns() {

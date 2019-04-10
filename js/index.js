@@ -10,11 +10,12 @@ function httpGetAsync(theUrl) {
 }
 
 function drawCharts() {
+  let c = ['Followers', 'Interactions', 'Messages', 'Views', 'Apps'];
   httpGetAsync('contest/3/overview.json')
     .then(data => {
       let d = JSON.parse(data);
       // d.columns = d.columns.map(e => e.slice(0, 100));
-      d.caption = 'Followers**';
+      d.caption = c[3];
       new TC20('chart0', d, {
             width: 500,
             height: 300,
@@ -26,7 +27,7 @@ function drawCharts() {
     httpGetAsync(`contest/${i}/overview.json`)
       .then(data => {
         let d = JSON.parse(data);
-        d.caption = i + 'Followers';
+        d.caption = c[i];
         c0 = new TC20(`chart${i}`, d, {
               width: 500,
               height: 300,
