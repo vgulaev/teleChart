@@ -143,7 +143,11 @@ class TC20 {
       scales: []
     };
     for (let i of this.allItems) {
-      this.graph[i] = TC20.path({'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'});
+      let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
+      if ('area' == this.type) {
+        o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': this.data.raw.colors[i]};
+      }
+      this.graph[i] = TC20.path(o);
       this.svgRoot.append(this.graph[i]);
     }
     this.render();
@@ -178,21 +182,47 @@ class TC20 {
 
   drawAreaChart(a, b) {
     let l = Array.from(this.allItems).sort();
-    let d = {};
-    let t = 0;
+    let t = 0, c = 0;
+    let d = {}, p = {}, vy = {};
     let y = this.data.y;
-    l.forEach(e => d[e] = []);
+    let h = this.height;
+    let dx = this.width / (b - a);
+    l.forEach(e => {p[e] = new Array(b - a + 1); d[e] = ''; vy[e] = new Array(b - a + 1)});
     for (let i = a; i <= b; i++) {
       t = 0;
       for (let e of l) {
         t += y[e][i];
       }
+      c = 0;
       for (let e of l) {
-        d[e].push(Math.round(y[e][i] / t * 100));
+        p[e][i - a] = Math.round(y[e][i] / t * 100);
+        c += p[e][i - a];
+        vy[e][i - a] = Math.round(h * c / 100);
       }
     }
-    console.log(d);
-    console.log('drawAreaChart', l);
+    // console.log(p);
+    // console.log(vy);
+    let f = [], m = vy[l[0]].length;
+    for (let e = 0; e < l.length; e++) {
+      let q = '', r = '';
+      for (let i = 0; i < m; i++) {
+        q += `L${Math.round(dx*i)},${vy[l[e]][i]}`;
+        r += `L${Math.round(dx*(m - i - 1))},${vy[l[e]][m - i - 1]}`
+        // q += (0 == e ? `M0,0L${this.width},0` : );
+        // r += (l.length - 1 == e ? `L${this.width},${h},L0,${h}`: );
+      }
+      f.push([q, r]);
+      if (0 == e) {
+        q = `M0,0L${this.width},0` + r;
+      } else if (l.length - 1 == e) {
+        q = f.shift()[0] + `L${this.width},${h}L0,${h}`;
+      } else {
+        q = f.shift()[0] + r;
+      }
+      // q += 'z';
+      TC20.setA(this.graph[l[e]], {d: 'M' + q.substring(1)});
+      // console.log(l[e], q);
+    }
   }
 
   drawBarChart(a, b, mm) {

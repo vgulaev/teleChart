@@ -14,7 +14,7 @@ function drawCharts() {
     .then(data => {
       let d = JSON.parse(data);
       d.caption = 'Followers';
-      new TC20('chart0', d, {
+      c0 = new TC20('chart0', d, {
             width: 500,
             height: 300,
             widthToPage: document.getElementById('widthToPage').checked,
