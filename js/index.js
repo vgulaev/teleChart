@@ -1,31 +1,74 @@
+function httpGetAsync(theUrl) {
+  return new Promise((resolve, reject) => {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+      if (xmlHttp.readyState == 4 && xmlHttp.status == 200) resolve(xmlHttp.responseText);
+    }
+    xmlHttp.open("GET", theUrl, true);
+    xmlHttp.send(null);
+  });
+}
+
 function drawCharts() {
-  craths = [];
-  let dur = parseInt(document.getElementById('animationDuration').value);
+  httpGetAsync('contest/5/overview.json')
+    .then(data => {
+      let d = JSON.parse(data);
+      d.caption = 'Followers';
+      new TC20('chart0', d, {
+            width: 500,
+            height: 300,
+            widthToPage: document.getElementById('widthToPage').checked,
+            heightPanel: 120
+          });
+    });
+  httpGetAsync('contest/4/overview.json')
+    .then(data => {
+      let d = JSON.parse(data);
+      d.caption = 'Followers';
+      new TC20('chart2', d, {
+            width: 500,
+            height: 300,
+            widthToPage: document.getElementById('widthToPage').checked,
+            heightPanel: 120
+          });
+    });
+  httpGetAsync('contest/1/overview.json')
+    .then(data => {
+      let d = JSON.parse(data);
+      d.caption = 'Followers';
+      new TC20('chart1', d, {
+            width: 500,
+            height: 300,
+            widthToPage: document.getElementById('widthToPage').checked,
+            heightPanel: 120
+          });
+    });
+  // let dur = parseInt(document.getElementById('animationDuration').value);
+
   // document.querySelectorAll('.chart').forEach((el, index) =>
-  //   craths.push(new TeleChart(el.id, chartData[index], {
-  //     width: '500px',
-  //     height: '200px',
+  //   craths.push(new TC20(el.id, chartData[index + 2], {
+  //     width: 500,
+  //     height: 300,
   //     widthToPage: document.getElementById('widthToPage').checked,
-  //     heightPanel: '100px',
-  //     animationDuration: dur
+  //     heightPanel: 120
   //   }))
   //   );
-  new TeleChart('chart1', chartData[0], {
-        width: '500px',
-        height: '200px',
-        widthToPage: document.getElementById('widthToPage').checked,
-        heightPanel: '100px',
-        animationDuration: dur
-      });
+  // new TeleChart('chart1', chartData[2], {
+  //       width: '500px',
+  //       height: '300px',
+  //       widthToPage: document.getElementById('widthToPage').checked,
+  //       heightPanel: '120px',
+  //       animationDuration: dur
+  //     });
 
-  var c = new TeleChart20('chart0', chartData[0], {
-        width: 500,
-        height: '1000px',
-        widthToPage: document.getElementById('widthToPage').checked,
-        heightPanel: 120,
-        animationDuration: dur
-      });
-  c.msg("TeleChart20 I'm work");
+  // c = new TC20('chart0', chartData[2], {
+  //       width: 500,
+  //       height: 300,
+  //       widthToPage: document.getElementById('widthToPage').checked,
+  //       heightPanel: 120,
+  //       animationDuration: dur
+  //     });
+  // c.msg("TeleChart20 I'm work");
 }
 
 window.addEventListener('load', async function( event ) {

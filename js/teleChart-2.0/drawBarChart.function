@@ -1,0 +1,15 @@
+  drawBarChart(a, b, mm) {
+    let dx = 'h' + (this.width / (b - a + 1)).toFixed(2);
+    let sy = this.height / mm.max;
+    let y = Math.floor(this.height - this.data.y['y0'][a] * sy);
+    let dy = 0;
+    let yy = 0
+    let d = `M0,${y}` + dx
+    for (let i = a + 1; i <= b; i++) {
+      yy = Math.floor(this.height - this.data.y['y0'][i] * sy);
+      dy = yy - y;
+      d += (`v${dy}` + dx);
+      y = yy;
+    }
+    TC20.setA(this.graph['y0'], {d: d});
+  }

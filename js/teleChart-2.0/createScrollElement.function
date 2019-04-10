@@ -1,12 +1,12 @@
   createScrollElement() {
     let style = {'stroke-width': 0, 'fill': '#C0D1E1', 'opacity': '0.9'};
-    this.panel.scrollBox.leftBox = TeleChart20.path(style);
-    this.panel.scrollBox.rightBox = TeleChart20.path(style);
-    this.panel.scrollBox.top = TeleChart20.rect(0, 0, 0, 0, style);
-    this.panel.scrollBox.bottom = TeleChart20.rect(0, 0, 0, 0, style);
+    this.panel.scrollBox.leftBox = TC20.path(style);
+    this.panel.scrollBox.rightBox = TC20.path(style);
+    this.panel.scrollBox.top = TC20.rect(0, 0, 0, 0, style);
+    this.panel.scrollBox.bottom = TC20.rect(0, 0, 0, 0, style);
     style = {'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
-    this.panel.scrollBox.leftMask = TeleChart20.rect(0, 0, 0, 0, style);
-    this.panel.scrollBox.rightMask = TeleChart20.rect(0, 0, 0, 0, style);
+    this.panel.scrollBox.leftMask = TC20.rect(0, 0, 0, 0, style);
+    this.panel.scrollBox.rightMask = TC20.rect(0, 0, 0, 0, style);
     ['leftMask', 'rightMask', 'top', 'leftBox', 'rightBox', 'bottom']
       .forEach(item => this.svgPanel.append(this.panel.scrollBox[item]));
     }

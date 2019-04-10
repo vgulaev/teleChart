@@ -1,0 +1,6 @@
+  getABfromScroll() {
+    let s = this.panel.scrollBox;
+    let a = Math.ceil(s.x / this.width * (this.data.length - 1));
+    let b = Math.floor((s.x + s.width) / this.width * (this.data.length - 1));
+    return [a, b];
+  }

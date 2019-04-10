@@ -12,5 +12,6 @@
       }
     }
     this.data.length = this.data.x.length;
+    this.type = data.types['y0'];
     delete this.data.raw.columns
   }

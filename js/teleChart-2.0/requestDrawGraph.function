@@ -1,0 +1,11 @@
+  requestDrawGraph() {
+    let [a, b] = this.getABfromScroll();
+    let mm = this.getMinMax(a, b);
+    if (2 == this.graph.scales.length) {
+      this.graph.scales[1] = mm;
+    } else {
+      this.graph.scales.push(mm);
+      let a = this.smothDrawLineChart();
+      this.doAnimation(a);
+    }
+  }
