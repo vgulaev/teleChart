@@ -10,5 +10,6 @@
       d += (`v${dy}` + dx);
       y = yy;
     }
+    d += `L${this.width},${s.height - s.yb}L${0},${s.height - s.yb}z`;
     TC20.setA(s['y0'], {d: d});
   }

@@ -70,6 +70,7 @@ function min(fileOut) {
   });
   pieces.push('}');
   fs.writeFileSync(fileOut, truncSpace(pieces.join('')));
+  execSync(`gzip -fk ${fileOut}`, {shell: true})
 }
 
 function getTitle(content) {

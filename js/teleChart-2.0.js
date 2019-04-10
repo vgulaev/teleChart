@@ -148,7 +148,7 @@ class TC20 {
 
     for (let i of this.allItems) {
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
-      if ('area' == this.type) {
+      if ('area' == this.type || 'bar' == this.type) {
         o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
       }
       this.graph[i] = TC20.path(o);
@@ -237,6 +237,7 @@ class TC20 {
       d += (`v${dy}` + dx);
       y = yy;
     }
+    d += `L${this.width},${s.height - s.yb}L${0},${s.height - s.yb}z`;
     TC20.setA(s['y0'], {d: d});
   }
 
