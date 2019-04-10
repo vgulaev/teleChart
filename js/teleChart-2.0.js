@@ -153,7 +153,7 @@ class TC20 {
 
   createHeader() {
     this.header = document.createElement('div');
-    this.header.innerHTML = `<h3 style='display: inline-block; margin: 0;'>${this.data.raw.caption}</h3><h5 id='dateRange' style='float: right; display: inline-block; margin: 0;'></h5>`;
+    this.header.innerHTML = `<h4 style='display: inline-block; margin: 0;'>${this.data.raw.caption}</h4><h5 id='dateRange' style='float: right; display: inline-block; margin: 0;'></h5>`;
     this.divRoot.append(this.header);
     this.dateRange = this.header.querySelector('#dateRange');
   }
@@ -539,7 +539,7 @@ class TC20 {
   }
 
   wMMDD(d) {
-    return [d.getDate(), TC20.monthNames[d.getMonth()], d.getFullYear()].join(' ');
+    return [d.getDate(), TC20.monthShort[d.getMonth()], d.getFullYear()].join(' ');
     // return TC20.monthNames[date.getDay()] + ', ' + this.mmDD(date);
   }
 

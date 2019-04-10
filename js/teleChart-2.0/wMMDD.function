@@ -1,4 +1,4 @@
   wMMDD(d) {
-    return [d.getDate(), TC20.monthNames[d.getMonth()], d.getFullYear()].join(' ');
+    return [d.getDate(), TC20.monthShort[d.getMonth()], d.getFullYear()].join(' ');
     // return TC20.monthNames[date.getDay()] + ', ' + this.mmDD(date);
   }
