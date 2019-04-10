@@ -283,7 +283,7 @@ class TC20 {
       for (let e of l) {
         p[e][i - a] = y[e][i];
         c += p[e][i - a];
-        vy[e][i - a] = h - Math.round(c * dy);
+        vy[e][i - a] = s.height - Math.round(c * dy) - s.yb;
       }
     }
     let f = [], m = vy[l[0]].length;
