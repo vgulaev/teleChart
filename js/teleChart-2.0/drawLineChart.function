@@ -1,5 +1,5 @@
-  drawLineChart(a, b, mm) {
+  drawLineChart(a, b, mm, s) {
     for (let i of this.allItems) {
-      TC20.setA(this.graph[i], {d: this.getD(0, 0, this.width, this.height, this.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
+      TC20.setA(s[i], {d: this.getD(0, 0, this.width, s.height, s.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
     }
   }

@@ -25,7 +25,7 @@
         c.max = t.max;
       }
       let [a, b] = this.getABfromScroll();
-      this.drawChart(a, b, c);
+      this.drawChart(a, b, c, this.graph);
       if (dx == 0 && dn == 0) {
         this.graph.scales.shift();
         break;

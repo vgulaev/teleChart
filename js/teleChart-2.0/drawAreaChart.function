@@ -1,9 +1,8 @@
-  drawAreaChart(a, b) {
+  drawAreaChart(a, b, s) {
     let l = Array.from(this.allItems).sort();
     let t = 0, c = 0;
     let d = {}, p = {}, vy = {};
-    let y = this.data.y;
-    let h = this.height;
+    let y = this.data.y, h = s.height;
     let dx = this.width / (b - a);
     l.forEach(e => {p[e] = new Array(b - a + 1); d[e] = ''; vy[e] = new Array(b - a + 1)});
     for (let i = a; i <= b; i++) {
@@ -18,16 +17,12 @@
         vy[e][i - a] = Math.round(h * c / 100);
       }
     }
-    // console.log(p);
-    // console.log(vy);
     let f = [], m = vy[l[0]].length;
     for (let e = 0; e < l.length; e++) {
       let q = '', r = '';
       for (let i = 0; i < m; i++) {
         q += `L${Math.round(dx*i)},${vy[l[e]][i]}`;
         r += `L${Math.round(dx*(m - i - 1))},${vy[l[e]][m - i - 1]}`
-        // q += (0 == e ? `M0,0L${this.width},0` : );
-        // r += (l.length - 1 == e ? `L${this.width},${h},L0,${h}`: );
       }
       f.push([q, r]);
       if (0 == e) {
@@ -37,8 +32,7 @@
       } else {
         q = f.shift()[0] + r;
       }
-      // q += 'z';
-      TC20.setA(this.graph[l[e]], {d: 'M' + q.substring(1)});
-      // console.log(l[e], q);
+      q += 'z';
+      TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
   }

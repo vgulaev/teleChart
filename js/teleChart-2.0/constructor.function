@@ -21,6 +21,10 @@
         w1: Math.min(Math.floor(width * 0.03), 30)
       }
     };
+    this.graph = {
+      scales: [],
+      height: options['height']
+    };
 
     this.svgRoot = TC20.createSVG('svg');
     TC20.setA(this.svgRoot, {height: options['height'] + 'px', width: width + 'px'});
@@ -37,9 +41,6 @@
     this.semafors = {};
     this.prepareData(data);
 
-    this.graph = {
-      scales: []
-    };
     for (let i of this.allItems) {
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
       if ('area' == this.type) {
@@ -47,6 +48,8 @@
       }
       this.graph[i] = TC20.path(o);
       this.svgRoot.append(this.graph[i]);
+      this.panel[i] = TC20.path(o);
+      this.svgPanel.append(this.panel[i]);
     }
     this.render();
     this.count = 0;

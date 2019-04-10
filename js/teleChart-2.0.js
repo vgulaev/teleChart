@@ -38,7 +38,7 @@ class TC20 {
         c.max = t.max;
       }
       let [a, b] = this.getABfromScroll();
-      this.drawChart(a, b, c);
+      this.drawChart(a, b, c, this.graph);
       if (dx == 0 && dn == 0) {
         this.graph.scales.shift();
         break;
@@ -124,6 +124,10 @@ class TC20 {
         w1: Math.min(Math.floor(width * 0.03), 30)
       }
     };
+    this.graph = {
+      scales: [],
+      height: options['height']
+    };
 
     this.svgRoot = TC20.createSVG('svg');
     TC20.setA(this.svgRoot, {height: options['height'] + 'px', width: width + 'px'});
@@ -140,9 +144,6 @@ class TC20 {
     this.semafors = {};
     this.prepareData(data);
 
-    this.graph = {
-      scales: []
-    };
     for (let i of this.allItems) {
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
       if ('area' == this.type) {
@@ -150,6 +151,8 @@ class TC20 {
       }
       this.graph[i] = TC20.path(o);
       this.svgRoot.append(this.graph[i]);
+      this.panel[i] = TC20.path(o);
+      this.svgPanel.append(this.panel[i]);
     }
     this.render();
     this.count = 0;
@@ -181,12 +184,11 @@ class TC20 {
     requestAnimationFrame(() => this.animationStep());
   }
 
-  drawAreaChart(a, b) {
+  drawAreaChart(a, b, s) {
     let l = Array.from(this.allItems).sort();
     let t = 0, c = 0;
     let d = {}, p = {}, vy = {};
-    let y = this.data.y;
-    let h = this.height;
+    let y = this.data.y, h = s.height;
     let dx = this.width / (b - a);
     l.forEach(e => {p[e] = new Array(b - a + 1); d[e] = ''; vy[e] = new Array(b - a + 1)});
     for (let i = a; i <= b; i++) {
@@ -201,16 +203,12 @@ class TC20 {
         vy[e][i - a] = Math.round(h * c / 100);
       }
     }
-    // console.log(p);
-    // console.log(vy);
     let f = [], m = vy[l[0]].length;
     for (let e = 0; e < l.length; e++) {
       let q = '', r = '';
       for (let i = 0; i < m; i++) {
         q += `L${Math.round(dx*i)},${vy[l[e]][i]}`;
         r += `L${Math.round(dx*(m - i - 1))},${vy[l[e]][m - i - 1]}`
-        // q += (0 == e ? `M0,0L${this.width},0` : );
-        // r += (l.length - 1 == e ? `L${this.width},${h},L0,${h}`: );
       }
       f.push([q, r]);
       if (0 == e) {
@@ -220,56 +218,50 @@ class TC20 {
       } else {
         q = f.shift()[0] + r;
       }
-      // q += 'z';
-      TC20.setA(this.graph[l[e]], {d: 'M' + q.substring(1)});
-      // console.log(l[e], q);
+      q += 'z';
+      TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
   }
 
-  drawBarChart(a, b, mm) {
+  drawBarChart(a, b, mm, s) {
     let dx = 'h' + (this.width / (b - a + 1)).toFixed(2);
-    let sy = this.height / mm.max;
-    let y = Math.floor(this.height - this.data.y['y0'][a] * sy);
+    let sy = s.height / mm.max;
+    let y = Math.floor(s.height - this.data.y['y0'][a] * sy);
     let dy = 0;
     let yy = 0
     let d = `M0,${y}` + dx
     for (let i = a + 1; i <= b; i++) {
-      yy = Math.floor(this.height - this.data.y['y0'][i] * sy);
+      yy = Math.floor(s.height - this.data.y['y0'][i] * sy);
       dy = yy - y;
       d += (`v${dy}` + dx);
       y = yy;
     }
-    TC20.setA(this.graph['y0'], {d: d});
+    TC20.setA(s['y0'], {d: d});
   }
 
-  drawChart(a, b, c) {
+  drawChart(a, b, c, s) {
     if ('bar' == this.type) {
-      this.drawBarChart(a, b, c);
+      this.drawBarChart(a, b, c, s);
     } else if ('line' == this.type) {
-      this.drawLineChart(a, b, c);
+      this.drawLineChart(a, b, c, s);
     } else if ('area' == this.type) {
-      this.drawAreaChart(a, b);
+      this.drawAreaChart(a, b, s);
     }
   }
 
-  drawLineChart(a, b, mm) {
+  drawChartOnPanel() {
+    let m = this.data.length - 1;
+    this.drawChart(0, m, this.getMinMax(0, m), this.panel);
+  }
+
+  drawLineChart(a, b, mm, s) {
     for (let i of this.allItems) {
-      TC20.setA(this.graph[i], {d: this.getD(0, 0, this.width, this.height, this.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
-    }
-  }
-
-  drawLinesOnPanel() {
-    let mm = this.getMinMax(0, this.data.length - 1);
-    let h1 = this.panel.scrollBox.h1;
-    for (let item of this.allItems) {
-      let d = this.getD(0, h1 * 2, this.panel.width, this.panel.height - 4 * h1, this.panel.height, mm.min, mm.max, this.data.y[item], 0, this.data.length);
-      this.panel[item] = TC20.path({'d': d, 'stroke-width': 2, 'stroke': this.data.raw.colors[item], 'fill': 'none'});
-      this.svgPanel.append(this.panel[item]);
+      TC20.setA(s[i], {d: this.getD(0, 0, this.width, s.height, s.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
     }
   }
 
   drawPanel() {
-    this.drawLinesOnPanel();
+    this.drawChartOnPanel();
     this.createScrollElement();
     this.drawScroll();
     this.addEventListenerToPanel();
@@ -444,7 +436,7 @@ class TC20 {
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
     this.graph.scales.push(mm);
-    this.drawChart(a, b, mm);
+    this.drawChart(a, b, mm, this.graph);
   }
 
   requestDrawGraph() {
