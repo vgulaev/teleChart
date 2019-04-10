@@ -1,7 +1,7 @@
-  doAnimation(animation) {
-    if (animation != undefined) {
-      this.animationStack.add(animation);
-      animation.next();
+  doAnimation(a) {
+    if (a != undefined) {
+      this.animationStack.add(a);
+      a.next();
     }
 
     requestAnimationFrame(() => this.animationStep());

@@ -1,24 +1,10 @@
 class TC20 {
 
-  *moveCircle() {
-    let startTime = performance.now();
-    let x = 100;
-    yield 'start';
-    while (true) {
-      let dx = (this.animationTime - startTime) / 1000 * 150;
-      this.panel.scrollBox.leftBox.setAttributeNS(null, 'd', this.panelBracket((x + dx) % this.width, 1));
-      yield true;
-    }
-  }
-
   *smothDrawLineChart() {
-    let f = this.graph.scales[0]
-    let t = this.graph.scales[1];
-    let s = 25;
+    let f = this.graph.scales[0], t = this.graph.scales[1];
+    let c = {min: f.min, max: f.max}, s = 25;
     if ('area' == this.type) s = 1;
-    let dn = (t.min - f.min) / s;
-    let dx = (t.max - f.max) / s;
-    let c = {min: f.min, max: f.max};
+    let dn = (t.min - f.min) / s, dx = (t.max - f.max) / s;
     yield 'start';
     while (2 == this.graph.scales.length) {
       let l = this.graph.scales[1];
@@ -48,57 +34,57 @@ class TC20 {
   }
 
   addEventListenerToPanel() {
-    let s = this.panel.scrollBox;
+    let s = this.panel.scrollBox, p = this.svgPanel;
 
-    this.svgPanel.addEventListener('mousedown', (eventData) => {
-      this.onStart(eventData.pageX, 0);
+    p.addEventListener('mousedown', (e) => {
+      this.onStart(e.pageX, 0);
     });
 
-    this.svgPanel.addEventListener('touchstart', (eventData) => {
-      this.onStart(Math.round(eventData.touches[0].pageX), 0.1);
+    p.addEventListener('touchstart', (e) => {
+      this.onStart(Math.round(e.touches[0].pageX), 0.1);
     });
 
-    this.svgPanel.addEventListener('mousemove', (eventData) => {
-      this.onMove(Math.round(eventData.pageX));
+    p.addEventListener('mousemove', (e) => {
+      this.onMove(Math.round(e.pageX));
     });
 
-    this.svgPanel.addEventListener('touchmove', (eventData) => {
-      this.onMove(Math.round(eventData.touches[0].pageX));
+    p.addEventListener('touchmove', (e) => {
+      this.onMove(Math.round(e.touches[0].pageX));
     });
 
-    this.svgPanel.addEventListener('mouseup', (eventData) => {
+    p.addEventListener('mouseup', (e) => {
       s.target = undefined;
     });
 
-    this.svgPanel.addEventListener('mouseleave', (eventData) => {
+    p.addEventListener('mouseleave', (e) => {
       s.target = undefined;
     });
 
-    document.addEventListener('touchend', (eventData) => {
+    document.addEventListener('touchend', (e) => {
       s.target = undefined;
     });
   }
 
   animationStep() {
     this.animationTime = performance.now();
-    let callNextStep = false;
+    let c = false;
     if (this.animationStack.size > 0) {
-      callNextStep = true;
-      for (let [key, value] of this.animationStack.entries()) {
-        let cont = key.next();
-        if (undefined == cont.value) this.animationStack.delete(key);
+      c = true;
+      for (let [k, v] of this.animationStack.entries()) {
+        let n = k.next();
+        if (undefined == n.value) this.animationStack.delete(k);
       }
     }
 
-    if (callNextStep) {
+    if (c) {
       requestAnimationFrame(() => this.animationStep())
     };
   }
 
-  static circle(cx, cy, r, options = {}) {
-    let element = TeleChart.createSVG('circle');
-    TC20.setA(element, Object.assign({'cx': cx, 'cy': cy, 'r': r}, options));
-    return element;
+  static circle(cx, cy, r, o = {}) {
+    let e = TeleChart.createSVG('circle');
+    TC20.setA(e, Object.assign({'cx': cx, 'cy': cy, 'r': r}, o));
+    return e;
   }
 
   constructor(tagID, data, options = {}) {
@@ -166,21 +152,22 @@ class TC20 {
 
   createScrollElement() {
     let style = {'stroke-width': 0, 'fill': '#C0D1E1', 'opacity': '0.9'};
-    this.panel.scrollBox.leftBox = TC20.path(style);
-    this.panel.scrollBox.rightBox = TC20.path(style);
-    this.panel.scrollBox.top = TC20.rect(0, 0, 0, 0, style);
-    this.panel.scrollBox.bottom = TC20.rect(0, 0, 0, 0, style);
+    let s = this.panel.scrollBox;
+    s.leftBox = TC20.path(style);
+    s.rightBox = TC20.path(style);
+    s.top = TC20.rect(0, 0, 0, 0, style);
+    s.bottom = TC20.rect(0, 0, 0, 0, style);
     style = {'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
-    this.panel.scrollBox.leftMask = TC20.rect(0, 0, 0, 0, style);
-    this.panel.scrollBox.rightMask = TC20.rect(0, 0, 0, 0, style);
+    s.leftMask = TC20.rect(0, 0, 0, 0, style);
+    s.rightMask = TC20.rect(0, 0, 0, 0, style);
     ['leftMask', 'rightMask', 'top', 'leftBox', 'rightBox', 'bottom']
-      .forEach(item => this.svgPanel.append(this.panel.scrollBox[item]));
+      .forEach(item => this.svgPanel.append(s[item]));
     }
 
-  doAnimation(animation) {
-    if (animation != undefined) {
-      this.animationStack.add(animation);
-      animation.next();
+  doAnimation(a) {
+    if (a != undefined) {
+      this.animationStack.add(a);
+      a.next();
     }
 
     requestAnimationFrame(() => this.animationStep());
@@ -271,9 +258,7 @@ class TC20 {
 
     drawScroll() {
     let s = this.panel.scrollBox;
-    let x1 = s.x + s.w1;
-    let x2 = s.x + s.width - s.w1;
-    let h1 = s.h1;
+    let x1 = s.x + s.w1, x2 = s.x + s.width - s.w1, h1 = s.h1;
     TC20.setA(s.leftBox, {d: this.panelBracket(x1, 1)});
     TC20.setA(s.rightBox, {d: this.panelBracket(x2, -1)});
     TC20.setA(s.top, {x: x1, y: 0, width: x2 - x1, height: s.h1});
@@ -289,23 +274,22 @@ class TC20 {
     return [a, b];
   }
 
-  getD(x0, y0, dx, dy, height, minY, maxY, data, a, b) {
+  getD(x0, y0, dx, dy, h, minY, maxY, d, a, b) {
     let scaleX = dx / (b - a - 1);
     let scaleY = dy / (maxY - minY);
     let x = x0;
-    let y = height - y0 - (data[a] - minY) * scaleY;
+    let y = h - y0 - (d[a] - minY) * scaleY;
     let res = `M${x},${y} `;
     for (let i = a + 1; i < b; i++){
       x = Math.floor(x0 + scaleX * (i - a));
-      y = Math.floor(height - y0 - (data[i] - minY) * scaleY);
+      y = Math.floor(h - y0 - (d[i] - minY) * scaleY);
       res += `L${x},${y} `
     }
     return res;
   }
 
   getMinMax(a, b) {
-    let min = Infinity;
-    let max = -Infinity;
+    let min = Infinity, max = -Infinity;
 
     for (let item of this.allItems) {
       for (let i = Math.ceil(a); i <= b; i++) {
@@ -329,21 +313,21 @@ class TC20 {
   }
 
   onMove(x) {
-    let s = this.panel.scrollBox;
+    let s = this.panel.scrollBox, w = this.panel.width;
     if (undefined != s.target) {
       let dx = x - s.mouseXStart;
-      let mw = Math.floor(this.panel.width * 0.25);
+      let mw = Math.floor(w * 0.25);
       if ('mid' == s.target) {
         s.x = s.reper + dx;
-        if (s.x + s.width > this.panel.width) {
-          s.x = this.panel.width - s.width;
+        if (s.x + s.width > w) {
+          s.x = w - s.width;
         } else if (s.x < 0) {
           s.x = 0;
         }
       } else if ('right' == s.target) {
         s.width = s.reper + dx;
-        if (s.x + s.width > this.panel.width) {
-          s.width = this.panel.width - s.x;
+        if (s.x + s.width > w) {
+          s.width = w - s.x;
         } else if (s.width < mw) {
           s.width = mw;
         }
@@ -396,10 +380,10 @@ class TC20 {
     return `M${x},0 h${-dx1 * k} a${r1},${r1},0,0,${1 == k ? 0 : 1},${-r1 * k},${r1} l0,${h1 - 2 * r1} a${r1},${r1},0,0,${1 == k ? 0 : 1},${r1 * k},${r1} h${dx1 * k} z`;
   }
 
-  static path(options = {}) {
-    let element = TeleChart.createSVG('path');
-    TC20.setA(element, options);
-    return element;
+  static path(o = {}) {
+    let e = TeleChart.createSVG('path');
+    TC20.setA(e, o);
+    return e;
   }
 
   prepareData(data) {
@@ -420,10 +404,10 @@ class TC20 {
     delete this.data.raw.columns
   }
 
-  static rect(x, y, width, height, options = {}) {
-    let element = TC20.createSVG('rect');
-    TC20.setA(element, Object.assign({'x': x, 'y': y, 'width': width, 'height': height}, options));
-    return element;
+  static rect(x, y, w, h, o = {}) {
+    let e = TC20.createSVG('rect');
+    TC20.setA(e, Object.assign({'x': x, 'y': y, 'width': w, 'height': h}, o));
+    return e;
   }
 
   render() {
@@ -471,9 +455,9 @@ class TC20 {
     }
   }
 
-  static setA(element, atts) {
-    Object.keys(atts).map(key => {
-      element.setAttributeNS(null, key, atts[key]);
+  static setA(e, a) {
+    Object.keys(a).map(k => {
+      e.setAttributeNS(null, k, a[k]);
     });
   }
 

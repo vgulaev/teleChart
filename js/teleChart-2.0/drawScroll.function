@@ -1,8 +1,6 @@
     drawScroll() {
     let s = this.panel.scrollBox;
-    let x1 = s.x + s.w1;
-    let x2 = s.x + s.width - s.w1;
-    let h1 = s.h1;
+    let x1 = s.x + s.w1, x2 = s.x + s.width - s.w1, h1 = s.h1;
     TC20.setA(s.leftBox, {d: this.panelBracket(x1, 1)});
     TC20.setA(s.rightBox, {d: this.panelBracket(x2, -1)});
     TC20.setA(s.top, {x: x1, y: 0, width: x2 - x1, height: s.h1});

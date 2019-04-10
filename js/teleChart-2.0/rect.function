@@ -1,5 +1,5 @@
-  static rect(x, y, width, height, options = {}) {
-    let element = TC20.createSVG('rect');
-    TC20.setA(element, Object.assign({'x': x, 'y': y, 'width': width, 'height': height}, options));
-    return element;
+  static rect(x, y, w, h, o = {}) {
+    let e = TC20.createSVG('rect');
+    TC20.setA(e, Object.assign({'x': x, 'y': y, 'width': w, 'height': h}, o));
+    return e;
   }

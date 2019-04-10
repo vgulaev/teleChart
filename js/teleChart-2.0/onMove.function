@@ -1,19 +1,19 @@
   onMove(x) {
-    let s = this.panel.scrollBox;
+    let s = this.panel.scrollBox, w = this.panel.width;
     if (undefined != s.target) {
       let dx = x - s.mouseXStart;
-      let mw = Math.floor(this.panel.width * 0.25);
+      let mw = Math.floor(w * 0.25);
       if ('mid' == s.target) {
         s.x = s.reper + dx;
-        if (s.x + s.width > this.panel.width) {
-          s.x = this.panel.width - s.width;
+        if (s.x + s.width > w) {
+          s.x = w - s.width;
         } else if (s.x < 0) {
           s.x = 0;
         }
       } else if ('right' == s.target) {
         s.width = s.reper + dx;
-        if (s.x + s.width > this.panel.width) {
-          s.width = this.panel.width - s.x;
+        if (s.x + s.width > w) {
+          s.width = w - s.x;
         } else if (s.width < mw) {
           s.width = mw;
         }

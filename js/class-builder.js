@@ -111,7 +111,8 @@ if (3 == process.argv.length) {
     compile(undefined, 'teleChart-2.0.js', '\n');
   }
 } else {
-  startWatch();
+  // startWatch();
 }
 
-// min('teleChart-2.0.min.js');
+min('teleChart-2.0.min.js');
+// compile(undefined, 'teleChart-2.0.edit.js', spliter);
