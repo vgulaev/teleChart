@@ -13,7 +13,8 @@ function drawCharts() {
   httpGetAsync('contest/3/overview.json')
     .then(data => {
       let d = JSON.parse(data);
-      d.caption = 'Followers';
+      // d.columns = d.columns.map(e => e.slice(0, 100));
+      d.caption = 'Followers**';
       new TC20('chart0', d, {
             width: 500,
             height: 300,
@@ -25,7 +26,7 @@ function drawCharts() {
     httpGetAsync(`contest/${i}/overview.json`)
       .then(data => {
         let d = JSON.parse(data);
-        d.caption = 'Followers';
+        d.caption = i + 'Followers';
         c0 = new TC20(`chart${i}`, d, {
               width: 500,
               height: 300,

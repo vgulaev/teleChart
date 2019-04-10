@@ -87,9 +87,9 @@ class TC20 {
     return e;
   }
 
-  constructor(tagID, data, options = {}) {
-    let width = options['width'];
-    if (true == options['widthToPage']) {
+  constructor(tagID, data, o = {}) {
+    let width = o['width'];
+    if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
     }
 
@@ -98,12 +98,12 @@ class TC20 {
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
 
-    let h1 = Math.floor(options['heightPanel'] * 0.03);
+    let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
       width: width,
-      height: options['heightPanel'],
+      height: o['heightPanel'],
       yb: h1,
-      radius: Math.floor(options['heightPanel'] * 0.1),
+      radius: Math.floor(o['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.floor(width * 0.25),
         x: 0,
@@ -114,15 +114,15 @@ class TC20 {
     };
     this.graph = {
       scales: [], yb: 0,
-      height: options['height']
+      height: o['height']
     };
 
     this.svgRoot = TC20.createSVG('svg');
-    TC20.setA(this.svgRoot, {height: options['height'] + 'px', width: width + 'px'});
+    TC20.setA(this.svgRoot, {height: o['height'] + 'px', width: width + 'px'});
     this.divRoot.append(this.svgRoot);
 
     this.svgPanel = TC20.createSVG('svg');
-    TC20.setA(this.svgPanel, {height: options['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
+    TC20.setA(this.svgPanel, {height: o['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
 
     this.divRoot.append(this.svgPanel);
 
@@ -132,9 +132,10 @@ class TC20 {
     this.semafors = {};
     this.prepareData(data);
 
-    for (let i of this.allItems) {
+    for (let i of this.allItems){
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
-      if ('area' == this.type || 'bar' == this.type) {
+      if ('area' == this.type || 'bar' == this.type){
+      // || 'bar' == this.type
         o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
       }
       this.graph[i] = TC20.path(o);
@@ -217,7 +218,7 @@ class TC20 {
     let sy = (s.height - 2 * s.yb) / mm.max;
     let y = Math.floor(s.height - this.data.y['y0'][a] * sy);
     let dy = 0, yy = s.yb;
-    let d = `M0,${y}` + dx
+    let d = `M0,${y}` + dx;
     for (let i = a + 1; i <= b; i++) {
       yy = Math.floor(s.height - this.data.y['y0'][i] * sy);
       dy = yy - y;
@@ -229,8 +230,10 @@ class TC20 {
   }
 
   drawChart(a, b, c, s) {
-    if ('bar' == this.type) {
+    if ('bar' == this.type && undefined == this.data.raw.stacked) {
       this.drawBarChart(a, b, c, s);
+    } else if ('bar' == this.type && true == this.data.raw.stacked) {
+      this.drawStackedBarChart(a, b, c, s);
     } else if ('line' == this.type) {
       this.drawLineChart(a, b, c, s);
     } else if ('area' == this.type) {
@@ -267,6 +270,41 @@ class TC20 {
     TC20.setA(s.rightMask, {x: x2, y: h1, width: this.panel.width - x2, height: this.panel.height - 2 * h1});
   }
 
+  drawStackedBarChart(a, b, mm, s) {
+    let l = Array.from(this.allItems).sort();
+    let t = 0, c = 0;
+    let d = {}, p = {}, vy = {};
+    let y = this.data.y, h = s.height - 2 * s.yb;
+    let dy = h / mm.max;
+    let dx = this.width / (b - a + 1);
+    l.forEach(e => {p[e] = new Array(b - a + 1); d[e] = ''; vy[e] = new Array(b - a + 1)});
+    for (let i = a; i <= b; i++) {
+      c = 0;
+      for (let e of l) {
+        p[e][i - a] = y[e][i];
+        c += p[e][i - a];
+        vy[e][i - a] = h - Math.round(c * dy);
+      }
+    }
+    let f = [], m = vy[l[0]].length;
+    for (let e = 0; e < l.length; e++) {
+      let q = '', r = '';
+      for (let i = 0; i < m; i++) {
+        let xx = Math.round(dx*i);
+        q += `L${xx},${vy[l[e]][i]}h${dx}`;
+        r += `L${Math.round(dx*(m - i))},${vy[l[e]][m - i - 1]}h${-dx}`
+      }
+      f.push([q, r]);
+      if (0 == e) {
+        q = q + `L${this.width},${s.height - s.yb}L0,${s.height - s.yb}`;
+      } else {
+        q = f.shift()[0] + r;
+      }
+      q += 'z';
+      TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
+    }
+  }
+
   getABfromScroll() {
     let s = this.panel.scrollBox;
     let a = Math.ceil(s.x / this.width * (this.data.length - 1));
@@ -289,8 +327,17 @@ class TC20 {
   }
 
   getMinMax(a, b) {
-    let min = Infinity, max = -Infinity;
+    let r;
+    if ('bar' == this.type && true == this.data.raw.stacked) {
+      r = this.getMinMaxForStackedBar(a, b);
+    } else {
+      r = this.getMinMaxElse(a, b);
+    }
+    return r;
+  }
 
+  getMinMaxElse(a, b) {
+    let min = Infinity, max = -Infinity;
     for (let item of this.allItems) {
       for (let i = Math.ceil(a); i <= b; i++) {
         let j = this.data.y[item][i];
@@ -299,6 +346,18 @@ class TC20 {
       }
     }
     return {min: min, max: max};
+  }
+
+  getMinMaxForStackedBar(a, b) {
+    let max = -Infinity, s = 0;
+    for (let i = Math.ceil(a); i <= b; i++) {
+      s = 0;
+      for (let e of this.allItems) {
+        s += this.data.y[e][i];
+      }
+      if (s > max) max = s;
+    }
+    return {min: 0, max: max};
   }
 
   getTime(callBack) {

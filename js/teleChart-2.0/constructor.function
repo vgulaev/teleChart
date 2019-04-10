@@ -1,6 +1,6 @@
-  constructor(tagID, data, options = {}) {
-    let width = options['width'];
-    if (true == options['widthToPage']) {
+  constructor(tagID, data, o = {}) {
+    let width = o['width'];
+    if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
     }
 
@@ -9,12 +9,12 @@
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
 
-    let h1 = Math.floor(options['heightPanel'] * 0.03);
+    let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
       width: width,
-      height: options['heightPanel'],
+      height: o['heightPanel'],
       yb: h1,
-      radius: Math.floor(options['heightPanel'] * 0.1),
+      radius: Math.floor(o['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.floor(width * 0.25),
         x: 0,
@@ -25,15 +25,15 @@
     };
     this.graph = {
       scales: [], yb: 0,
-      height: options['height']
+      height: o['height']
     };
 
     this.svgRoot = TC20.createSVG('svg');
-    TC20.setA(this.svgRoot, {height: options['height'] + 'px', width: width + 'px'});
+    TC20.setA(this.svgRoot, {height: o['height'] + 'px', width: width + 'px'});
     this.divRoot.append(this.svgRoot);
 
     this.svgPanel = TC20.createSVG('svg');
-    TC20.setA(this.svgPanel, {height: options['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
+    TC20.setA(this.svgPanel, {height: o['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
 
     this.divRoot.append(this.svgPanel);
 
@@ -43,9 +43,10 @@
     this.semafors = {};
     this.prepareData(data);
 
-    for (let i of this.allItems) {
+    for (let i of this.allItems){
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
-      if ('area' == this.type || 'bar' == this.type) {
+      if ('area' == this.type || 'bar' == this.type){
+      // || 'bar' == this.type
         o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
       }
       this.graph[i] = TC20.path(o);

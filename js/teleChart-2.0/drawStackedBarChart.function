@@ -1,0 +1,34 @@
+  drawStackedBarChart(a, b, mm, s) {
+    let l = Array.from(this.allItems).sort();
+    let t = 0, c = 0;
+    let d = {}, p = {}, vy = {};
+    let y = this.data.y, h = s.height - 2 * s.yb;
+    let dy = h / mm.max;
+    let dx = this.width / (b - a + 1);
+    l.forEach(e => {p[e] = new Array(b - a + 1); d[e] = ''; vy[e] = new Array(b - a + 1)});
+    for (let i = a; i <= b; i++) {
+      c = 0;
+      for (let e of l) {
+        p[e][i - a] = y[e][i];
+        c += p[e][i - a];
+        vy[e][i - a] = h - Math.round(c * dy);
+      }
+    }
+    let f = [], m = vy[l[0]].length;
+    for (let e = 0; e < l.length; e++) {
+      let q = '', r = '';
+      for (let i = 0; i < m; i++) {
+        let xx = Math.round(dx*i);
+        q += `L${xx},${vy[l[e]][i]}h${dx}`;
+        r += `L${Math.round(dx*(m - i))},${vy[l[e]][m - i - 1]}h${-dx}`
+      }
+      f.push([q, r]);
+      if (0 == e) {
+        q = q + `L${this.width},${s.height - s.yb}L0,${s.height - s.yb}`;
+      } else {
+        q = f.shift()[0] + r;
+      }
+      q += 'z';
+      TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
+    }
+  }

@@ -1,12 +1,9 @@
   getMinMax(a, b) {
-    let min = Infinity, max = -Infinity;
-
-    for (let item of this.allItems) {
-      for (let i = Math.ceil(a); i <= b; i++) {
-        let j = this.data.y[item][i];
-        if (j < min) min = j;
-        if (j > max) max = j;
-      }
+    let r;
+    if ('bar' == this.type && true == this.data.raw.stacked) {
+      r = this.getMinMaxForStackedBar(a, b);
+    } else {
+      r = this.getMinMaxElse(a, b);
     }
-    return {min: min, max: max};
+    return r;
   }
