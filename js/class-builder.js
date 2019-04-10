@@ -109,9 +109,9 @@ if (3 == process.argv.length) {
     min('teleChart-2.0.min.js');
   } else if ('compile' == process.argv[2]) {
     compile(undefined, 'teleChart-2.0.js', '\n');
+  } else if ('watch' == process.argv[2]) {
+    startWatch();
   }
-} else {
-  // startWatch();
 }
 
 min('teleChart-2.0.min.js');
