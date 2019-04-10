@@ -112,20 +112,22 @@ class TC20 {
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
 
+    let h1 = Math.floor(options['heightPanel'] * 0.03);
     this.panel = {
       width: width,
       height: options['heightPanel'],
+      yb: h1,
       radius: Math.floor(options['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.floor(width * 0.25),
         x: 0,
         // Math.floor(width * 0.2),
-        h1: Math.floor(options['heightPanel'] * 0.03),
+        h1: h1,
         w1: Math.min(Math.floor(width * 0.03), 30)
       }
     };
     this.graph = {
-      scales: [],
+      scales: [], yb: 0,
       height: options['height']
     };
 
@@ -147,7 +149,7 @@ class TC20 {
     for (let i of this.allItems) {
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
       if ('area' == this.type) {
-        o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': this.data.raw.colors[i]};
+        o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
       }
       this.graph[i] = TC20.path(o);
       this.svgRoot.append(this.graph[i]);
@@ -188,7 +190,7 @@ class TC20 {
     let l = Array.from(this.allItems).sort();
     let t = 0, c = 0;
     let d = {}, p = {}, vy = {};
-    let y = this.data.y, h = s.height;
+    let y = this.data.y, h = s.height - 2 * s.yb;
     let dx = this.width / (b - a);
     l.forEach(e => {p[e] = new Array(b - a + 1); d[e] = ''; vy[e] = new Array(b - a + 1)});
     for (let i = a; i <= b; i++) {
@@ -200,7 +202,7 @@ class TC20 {
       for (let e of l) {
         p[e][i - a] = Math.round(y[e][i] / t * 100);
         c += p[e][i - a];
-        vy[e][i - a] = Math.round(h * c / 100);
+        vy[e][i - a] = Math.round(h * c / 100) + s.yb;
       }
     }
     let f = [], m = vy[l[0]].length;
@@ -212,9 +214,9 @@ class TC20 {
       }
       f.push([q, r]);
       if (0 == e) {
-        q = `M0,0L${this.width},0` + r;
+        q = `M0,${s.yb}L${this.width},${s.yb}` + r;
       } else if (l.length - 1 == e) {
-        q = f.shift()[0] + `L${this.width},${h}L0,${h}`;
+        q = f.shift()[0] + `L${this.width},${s.height-s.yb}L0,${s.height-s.yb}`;
       } else {
         q = f.shift()[0] + r;
       }
@@ -225,10 +227,9 @@ class TC20 {
 
   drawBarChart(a, b, mm, s) {
     let dx = 'h' + (this.width / (b - a + 1)).toFixed(2);
-    let sy = s.height / mm.max;
+    let sy = (s.height - 2 * s.yb) / mm.max;
     let y = Math.floor(s.height - this.data.y['y0'][a] * sy);
-    let dy = 0;
-    let yy = 0
+    let dy = 0, yy = s.yb;
     let d = `M0,${y}` + dx
     for (let i = a + 1; i <= b; i++) {
       yy = Math.floor(s.height - this.data.y['y0'][i] * sy);
@@ -256,7 +257,7 @@ class TC20 {
 
   drawLineChart(a, b, mm, s) {
     for (let i of this.allItems) {
-      TC20.setA(s[i], {d: this.getD(0, 0, this.width, s.height, s.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
+      TC20.setA(s[i], {d: this.getD(0, 2 * s.yb, this.width, s.height - 3 * s.yb, s.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
     }
   }
 
@@ -268,16 +269,16 @@ class TC20 {
   }
 
     drawScroll() {
-    let x1 = this.panel.scrollBox.x + this.panel.scrollBox.w1;
-    let x2 = this.panel.scrollBox.x + this.panel.scrollBox.width - this.panel.scrollBox.w1;
-    let h1 = this.panel.scrollBox.h1;
-
-    TC20.setA(this.panel.scrollBox.leftBox, {d: this.panelBracket(x1, 1)});
-    TC20.setA(this.panel.scrollBox.rightBox, {d: this.panelBracket(x2, -1)});
-    TC20.setA(this.panel.scrollBox.top, {x: x1, y: 0, width: x2 - x1, height: this.panel.scrollBox.h1});
-    TC20.setA(this.panel.scrollBox.bottom, {x: x1, y: this.panel.height - this.panel.scrollBox.h1, width: x2 - x1, height: this.panel.scrollBox.h1});
-    TC20.setA(this.panel.scrollBox.leftMask, {x:0, y: h1, width: x1, height: this.panel.height - 2 * h1});
-    TC20.setA(this.panel.scrollBox.rightMask, {x: x2, y: h1, width: this.panel.width - x2, height: this.panel.height - 2 * h1});
+    let s = this.panel.scrollBox;
+    let x1 = s.x + s.w1;
+    let x2 = s.x + s.width - s.w1;
+    let h1 = s.h1;
+    TC20.setA(s.leftBox, {d: this.panelBracket(x1, 1)});
+    TC20.setA(s.rightBox, {d: this.panelBracket(x2, -1)});
+    TC20.setA(s.top, {x: x1, y: 0, width: x2 - x1, height: s.h1});
+    TC20.setA(s.bottom, {x: x1, y: this.panel.height - s.h1, width: x2 - x1, height: s.h1});
+    TC20.setA(s.leftMask, {x:0, y: h1, width: x1, height: this.panel.height - 2 * h1});
+    TC20.setA(s.rightMask, {x: x2, y: h1, width: this.panel.width - x2, height: this.panel.height - 2 * h1});
   }
 
   getABfromScroll() {
@@ -390,9 +391,7 @@ class TC20 {
   }
 
   panelBracket(x, k) {
-    let h1 = this.panel.height;
-    let r1 = this.panel.radius;
-    let dx1 = this.panel.scrollBox.w1 - r1;
+    let h1 = this.panel.height, r1 = this.panel.radius, dx1 = this.panel.scrollBox.w1 - r1;
     return `M${x},0 h${-dx1 * k} a${r1},${r1},0,0,${1 == k ? 0 : 1},${-r1 * k},${r1} l0,${h1 - 2 * r1} a${r1},${r1},0,0,${1 == k ? 0 : 1},${r1 * k},${r1} h${dx1 * k} z`;
   }
 

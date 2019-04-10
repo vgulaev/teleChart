@@ -9,20 +9,22 @@
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
 
+    let h1 = Math.floor(options['heightPanel'] * 0.03);
     this.panel = {
       width: width,
       height: options['heightPanel'],
+      yb: h1,
       radius: Math.floor(options['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.floor(width * 0.25),
         x: 0,
         // Math.floor(width * 0.2),
-        h1: Math.floor(options['heightPanel'] * 0.03),
+        h1: h1,
         w1: Math.min(Math.floor(width * 0.03), 30)
       }
     };
     this.graph = {
-      scales: [],
+      scales: [], yb: 0,
       height: options['height']
     };
 
@@ -44,7 +46,7 @@
     for (let i of this.allItems) {
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
       if ('area' == this.type) {
-        o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': this.data.raw.colors[i]};
+        o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
       }
       this.graph[i] = TC20.path(o);
       this.svgRoot.append(this.graph[i]);
