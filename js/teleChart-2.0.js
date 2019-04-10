@@ -177,7 +177,22 @@ class TC20 {
   }
 
   drawAreaChart(a, b) {
-    console.log('drawAreaChart');
+    let l = Array.from(this.allItems).sort();
+    let d = {};
+    let t = 0;
+    let y = this.data.y;
+    l.forEach(e => d[e] = []);
+    for (let i = a; i <= b; i++) {
+      t = 0;
+      for (let e of l) {
+        t += y[e][i];
+      }
+      for (let e of l) {
+        d[e].push(Math.round(y[e][i] / t * 100));
+      }
+    }
+    console.log(d);
+    console.log('drawAreaChart', l);
   }
 
   drawBarChart(a, b, mm) {
