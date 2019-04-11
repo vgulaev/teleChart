@@ -350,8 +350,10 @@ class TC20 {
     let [a, b] = this.getABfromScroll();
     let localX = x - coord.x;
     let dx = this.width / (b - a + 1);
-    let curX = a + Math.floor(localX / dx);
-    let p = TC20.path({'d': `M${(curX - a) * dx},50h${dx}v40,h${-dx}`, 'stroke-width': 0, 'fill': 'black'});
+    let k = Math.floor(localX / dx);
+    let curX = a + k;
+
+    let p = TC20.path({'d': `M${Math.floor((curX - a) * dx)},50H${Math.floor(dx * (k + 1))}v40,h${-dx}`, 'stroke-width': 0, 'fill': 'black'});
     //this.data.raw.colors[i]
     this.pointer.innerHTML = '';
     this.pointer.append(p);
