@@ -342,22 +342,21 @@ class TC20 {
   }
 
   drawStackedBarPoiner(x) {
+    let [a, b] = this.getABfromScroll();
+    let dx = this.width / (b - a + 1);
     let l = Array.from(this.allItems).sort();
     let coord = this.svgRoot.getBoundingClientRect();
-
-    for (let i of l) {
-      TC20.setA(this.graph[i], {opacity: 0.5});
-    };
-    let [a, b] = this.getABfromScroll();
     let localX = x - coord.x;
-    let dx = this.width / (b - a + 1);
     let k = Math.floor(localX / dx);
-    let curX = a + k;
+    if (this.pointer.curX == a + k) return;
+    console.log('drawStackedBarPoiner');
+    this.pointer.curX = a + k;
     this.pointer.innerHTML = '';
 
-    let sx = Math.floor((curX - a) * dx);
+    let sx = Math.floor((this.pointer.curX - a) * dx);
     let y = this.height;
     for (let e of l) {
+      TC20.setA(this.graph[e], {opacity: 0.5});
       let p = TC20.path({'d': `M${sx},${y}H${Math.floor(dx * (k + 1))}V${this.graph.y[e][k]}h${-dx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
       this.pointer.append(p);
       y = this.graph.y[e][k];
