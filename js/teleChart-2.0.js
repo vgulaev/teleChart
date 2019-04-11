@@ -349,18 +349,16 @@ class TC20 {
     let localX = x - coord.x;
     let k = Math.floor(localX / dx);
     if (this.pointer.curX == a + k) return;
-    console.log('drawStackedBarPoiner');
     this.pointer.curX = a + k;
-    this.pointer.innerHTML = '';
+    this.pointer.g.innerHTML = '';
 
     let sx = Math.floor((this.pointer.curX - a) * dx);
     let y = this.height;
     for (let e of l) {
       TC20.setA(this.graph[e], {opacity: 0.5});
       let p = TC20.path({'d': `M${sx},${y}H${Math.floor(dx * (k + 1))}V${this.graph.y[e][k]}H${sx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
-      this.pointer.append(p);
+      this.pointer.g.append(p);
       y = this.graph.y[e][k];
-      // console.log(e, this.graph.y[e][k]);
     }
   }
 
@@ -478,8 +476,8 @@ class TC20 {
       this.panel[i] = TC20.path(o);
       this.svgPanel.append(this.panel[i]);
     }
-    this.pointer = TC20.createSVG('g');
-    this.svgRoot.append(this.pointer);
+    this.pointer = {g: TC20.createSVG('g')};
+    this.svgRoot.append(this.pointer.g);
   }
 
   initSVG(o, width) {
@@ -609,9 +607,10 @@ class TC20 {
   }
 
   removePointer() {
-    // for (let i of this.allItems) {
-    //   TC20.setA(this.graph[i], {opacity: 1});
-    // }
+    for (let i of this.allItems) {
+      TC20.setA(this.graph[i], {opacity: 1});
+    }
+    this.pointer.g.innerHTML = '';
   }
 
   render() {

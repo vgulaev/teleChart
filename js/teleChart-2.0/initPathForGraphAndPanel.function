@@ -9,6 +9,6 @@
       this.panel[i] = TC20.path(o);
       this.svgPanel.append(this.panel[i]);
     }
-    this.pointer = TC20.createSVG('g');
-    this.svgRoot.append(this.pointer);
+    this.pointer = {g: TC20.createSVG('g')};
+    this.svgRoot.append(this.pointer.g);
   }

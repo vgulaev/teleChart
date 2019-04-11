@@ -1,5 +1,6 @@
   removePointer() {
-    // for (let i of this.allItems) {
-    //   TC20.setA(this.graph[i], {opacity: 1});
-    // }
+    for (let i of this.allItems) {
+      TC20.setA(this.graph[i], {opacity: 1});
+    }
+    this.pointer.g.innerHTML = '';
   }
