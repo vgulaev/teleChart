@@ -284,6 +284,7 @@ class TC20 {
   }
 
   drawPointer() {
+    if (undefined == this.pointer.status) return;
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
       // this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {
@@ -542,6 +543,7 @@ class TC20 {
   }
 
   onMoveGraph(x) {
+    this.pointer.status = 'draw';
     this.pointer.x = x;
     requestAnimationFrame(() => this.requestExec(this.drawPointer));
   }
@@ -608,6 +610,7 @@ class TC20 {
   }
 
   removePointer() {
+    this.pointer.status = undefined;
     for (let i of this.allItems) {
       TC20.setA(this.graph[i], {opacity: 1});
     }

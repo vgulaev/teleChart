@@ -1,4 +1,5 @@
   drawPointer() {
+    if (undefined == this.pointer.status) return;
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
       // this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {

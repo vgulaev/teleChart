@@ -1,4 +1,5 @@
   onMoveGraph(x) {
+    this.pointer.status = 'draw';
     this.pointer.x = x;
     requestAnimationFrame(() => this.requestExec(this.drawPointer));
   }
