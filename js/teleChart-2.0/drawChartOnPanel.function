@@ -1,4 +1,3 @@
   drawChartOnPanel() {
-    let m = this.data.length - 1;
-    this.drawChart(0, m, this.getMinMax(0, m), this.panel);
+    this.drawChart(0, this.data.length - 1, this.YAxis.mmOriginal, this.panel);
   }

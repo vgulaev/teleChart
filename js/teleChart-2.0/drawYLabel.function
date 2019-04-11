@@ -1,0 +1,13 @@
+  drawYLabel(y, viewY) {
+    let obj = {
+      y: y,
+      viewY: viewY,
+      innerHTML: y
+    };
+    obj.text = TC20.text({x: 10, y: obj.viewY, innerHTML: obj.innerHTML, fill: '#252529', style: 'font-size: 10px', opacity: 1});
+    this.svgRoot.append(obj.text);
+    // this.svgXAxis.append(obj.text);
+    // obj.coord = obj.text.getBBox();
+    // TC20.setA(obj.text, {x: obj.viewX - obj.coord.width, y: 10});
+    return obj;
+  }

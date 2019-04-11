@@ -1,0 +1,14 @@
+  recreateYALabel(c) {
+    let ya = this.YAxis;
+    let t1 = Math.floor(ya.mmOriginal.min / ya.step) * ya.step;
+    let yLevel = Math.floor((c.min - t1) / ya.step) * ya.step + t1;
+    let dy = this.height / (c.max - c.min);
+    for (let e of this.YAxis.point) {
+      e.text.remove();
+    }
+    this.YAxis.points = [];
+    while (yLevel < c.max + ya.step) {
+      this.YAxis.point.push(this.drawYLabel(yLevel, Math.floor(this.height - (yLevel - c.min) * dy)));
+      yLevel += ya.step;
+    }
+  }

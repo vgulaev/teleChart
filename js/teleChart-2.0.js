@@ -118,7 +118,6 @@ class TC20 {
     TC20.monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     TC20.monthShort = ['Jan', 'Feb', 'Mar','Apr', 'May', 'Jun', 'Jul','Aug', 'Sep', 'Oct','Nov', 'Dec'];
     TC20.dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    this.sieve = 0;
     let width = o['width'];
     if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
@@ -128,6 +127,7 @@ class TC20 {
     this.divRoot = document.getElementById(tagID);
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
+    this.prepareData(data);
 
     let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
@@ -147,9 +147,16 @@ class TC20 {
       scales: [], yb: 0, y: {},
       height: o['height']
     };
-    this.XAxis = {};
+    this.XAxis = {
+      sieve: 0
+    };
+    let mm = this.getMinMax(0, this.data.length - 1);
+    this.YAxis = {
+      point: [],
+      mmOriginal: mm,
+      dMax: mm.max - mm.min
+    };
 
-    this.prepareData(data);
     this.createHeader();
     this.initSVG(o, width);
 
@@ -265,12 +272,14 @@ class TC20 {
     } else if ('area' == this.type) {
       this.drawAreaChart(a, b, s);
     }
-    this.scaleXAxis();
+    if (s == this.graph) {
+      this.scaleXAxis();
+      this.scaleYAxis(c);
+    }
   }
 
   drawChartOnPanel() {
-    let m = this.data.length - 1;
-    this.drawChart(0, m, this.getMinMax(0, m), this.panel);
+    this.drawChart(0, this.data.length - 1, this.YAxis.mmOriginal, this.panel);
   }
 
   drawLineChart(a, b, mm, s) {
@@ -384,6 +393,20 @@ class TC20 {
     this.svgXAxis.append(obj.text);
     obj.coord = obj.text.getBBox();
     TC20.setA(obj.text, {x: obj.viewX - obj.coord.width, y: 10});
+    return obj;
+  }
+
+  drawYLabel(y, viewY) {
+    let obj = {
+      y: y,
+      viewY: viewY,
+      innerHTML: y
+    };
+    obj.text = TC20.text({x: 10, y: obj.viewY, innerHTML: obj.innerHTML, fill: '#252529', style: 'font-size: 10px', opacity: 1});
+    this.svgRoot.append(obj.text);
+    // this.svgXAxis.append(obj.text);
+    // obj.coord = obj.text.getBBox();
+    // TC20.setA(obj.text, {x: obj.viewX - obj.coord.width, y: 10});
     return obj;
   }
 
@@ -518,15 +541,19 @@ class TC20 {
         s.x = s.reper + dx;
         if (s.x + s.width > w) {
           s.x = w - s.width;
+          s.target = undefined;
         } else if (s.x < 0) {
           s.x = 0;
+          s.target = undefined;
         }
       } else if ('right' == s.target) {
         s.width = s.reper + dx;
         if (s.x + s.width > w) {
           s.width = w - s.x;
+          s.target = undefined;
         } else if (s.width < mw) {
           s.width = mw;
+          s.target = undefined;
         }
       } else if ('left' == s.target) {
         s.width = s.reper.w - dx;
@@ -534,9 +561,11 @@ class TC20 {
         if (s.x < 0) {
           s.x = 0;
           s.width = s.reper.w + s.reper.x;
+          s.target = undefined;
         } else if (s.width < mw) {
           s.width = mw;
           s.x = s.reper.x + s.reper.w - s.width
+          s.target = undefined;
         }
       }
       requestAnimationFrame(() => {
@@ -610,6 +639,21 @@ class TC20 {
     delete this.data.raw.columns
   }
 
+  recreateYALabel(c) {
+    let ya = this.YAxis;
+    let t1 = Math.floor(ya.mmOriginal.min / ya.step) * ya.step;
+    let yLevel = Math.floor((c.min - t1) / ya.step) * ya.step + t1;
+    let dy = this.height / (c.max - c.min);
+    for (let e of this.YAxis.point) {
+      e.text.remove();
+    }
+    this.YAxis.points = [];
+    while (yLevel < c.max + ya.step) {
+      this.YAxis.point.push(this.drawYLabel(yLevel, Math.floor(this.height - (yLevel - c.min) * dy)));
+      yLevel += ya.step;
+    }
+  }
+
   static rect(x, y, w, h, o = {}) {
     let e = TC20.createSVG('rect');
     TC20.setA(e, Object.assign({'x': x, 'y': y, 'width': w, 'height': h}, o));
@@ -674,16 +718,17 @@ class TC20 {
   scaleXAxis() {
     let visibleCount = 0;
     let count = 0;
+    let s = this.XAxis.sieve;
 
     for (let item of this.XAxis.points) {
       item.viewX = this.getViewX(item.x);
       TeleChart.setAttribute(item.text, {x: item.viewX - item.coord.width});
-      if (0 != count % (2 ** this.sieve) && 1 == item.visible) {
+      if (0 != count % (2 ** s) && 1 == item.visible) {
         // let a = this.animateLabelRemove(item, 400, -1);
         // this.doAnimation(a);
         item.text.style.display = 'none';
         item.visible = 0;
-      } else if (0 == count % (2 ** this.sieve) && 0 == item.visible) {
+      } else if (0 == count % (2 ** s) && 0 == item.visible) {
         // let a = this.animateLabelRemove(item, 400, 1);
         // this.doAnimation(a);
         item.text.style.display = 'inline';
@@ -692,14 +737,31 @@ class TC20 {
       count += 1;
     }
 
-    visibleCount = this.width / (this.XAxis.points[0].viewX - this.XAxis.points[2 ** this.sieve].viewX);
+    visibleCount = this.width / (this.XAxis.points[0].viewX - this.XAxis.points[2 ** s].viewX);
 
     if (visibleCount > 8) {
-      this.sieve += 1;
+      s += 1;
       this.requestExec(this.scaleXAxis);
-    } else if (visibleCount < 4 && this.sieve > 0)  {
-      this.sieve -= 1;
+    } else if (visibleCount < 4 && s > 0)  {
+      s -= 1;
       this.requestExec(this.scaleXAxis);
+    }
+  }
+
+  scaleYAxis(c) {
+    let step = (c.max - c.min) / 5.1;
+    step = 1.2 ** Math.floor(Math.log(step) / Math.log(1.2));
+    let p = 10 ** (Math.floor(Math.log10(step)) - 1);
+    step = Math.floor(step / p) * p;
+
+    if (this.YAxis.step != step) {
+      this.YAxis.step = step;
+      this.recreateYALabel(c);
+    } else {
+      let dy = this.height / (c.max - c.min);
+      for (let e of this.YAxis.point) {
+        TC20.setA(e.text, {y: Math.floor(this.height - (e.y - c.min) * dy)});
+      }
     }
   }
 
