@@ -1,10 +1,8 @@
   *smothDrawLineChart() {
-    let f = this.graph.scales[0]
-    let t = this.graph.scales[1];
-    let s = 25;
-    let dn = (t.min - f.min) / s;
-    let dx = (t.max - f.max) / s;
-    let c = {min: f.min, max: f.max};
+    let f = this.graph.scales[0], t = this.graph.scales[1];
+    let c = {min: f.min, max: f.max}, s = 25;
+    if ('area' == this.type) s = 1;
+    let dn = (t.min - f.min) / s, dx = (t.max - f.max) / s;
     yield 'start';
     while (2 == this.graph.scales.length) {
       let l = this.graph.scales[1];
@@ -24,7 +22,7 @@
         c.max = t.max;
       }
       let [a, b] = this.getABfromScroll();
-      this.drawChart(a, b, c);
+      this.drawChart(a, b, c, this.graph);
       if (dx == 0 && dn == 0) {
         this.graph.scales.shift();
         break;

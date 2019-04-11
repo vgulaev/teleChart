@@ -1,31 +1,31 @@
   addEventListenerToPanel() {
-    let s = this.panel.scrollBox;
+    let s = this.panel.scrollBox, p = this.svgPanel;
 
-    this.svgPanel.addEventListener('mousedown', (eventData) => {
-      this.onStart(eventData.pageX, 0);
+    p.addEventListener('mousedown', (e) => {
+      this.onStart(e.pageX, 0);
     });
 
-    this.svgPanel.addEventListener('touchstart', (eventData) => {
-      this.onStart(Math.round(eventData.touches[0].pageX), 0.1);
+    p.addEventListener('touchstart', (e) => {
+      this.onStart(Math.round(e.touches[0].pageX), 0.1);
     });
 
-    this.svgPanel.addEventListener('mousemove', (eventData) => {
-      this.onMove(Math.round(eventData.pageX));
+    p.addEventListener('mousemove', (e) => {
+      this.onMove(Math.round(e.pageX));
     });
 
-    this.svgPanel.addEventListener('touchmove', (eventData) => {
-      this.onMove(Math.round(eventData.touches[0].pageX));
+    p.addEventListener('touchmove', (e) => {
+      this.onMove(Math.round(e.touches[0].pageX));
     });
 
-    this.svgPanel.addEventListener('mouseup', (eventData) => {
+    p.addEventListener('mouseup', (e) => {
       s.target = undefined;
     });
 
-    this.svgPanel.addEventListener('mouseleave', (eventData) => {
+    p.addEventListener('mouseleave', (e) => {
       s.target = undefined;
     });
 
-    document.addEventListener('touchend', (eventData) => {
+    document.addEventListener('touchend', (e) => {
       s.target = undefined;
     });
   }

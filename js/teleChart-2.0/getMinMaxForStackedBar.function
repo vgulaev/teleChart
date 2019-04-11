@@ -1,0 +1,11 @@
+  getMinMaxForStackedBar(a, b) {
+    let max = -Infinity, s = 0;
+    for (let i = Math.ceil(a); i <= b; i++) {
+      s = 0;
+      for (let e of this.allItems) {
+        s += this.data.y[e][i];
+      }
+      if (s > max) max = s;
+    }
+    return {min: 0, max: max};
+  }

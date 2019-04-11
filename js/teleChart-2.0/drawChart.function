@@ -1,9 +1,11 @@
-  drawChart(a, b, c) {
-    if ('bar' == this.type) {
-      this.drawBarChart(a, b, c);
+  drawChart(a, b, c, s) {
+    if ('bar' == this.type && undefined == this.data.raw.stacked) {
+      this.drawBarChart(a, b, c, s);
+    } else if ('bar' == this.type && true == this.data.raw.stacked) {
+      this.drawStackedBarChart(a, b, c, s);
     } else if ('line' == this.type) {
-      this.drawLineChart(a, b, c);
+      this.drawLineChart(a, b, c, s);
     } else if ('area' == this.type) {
-      this.drawAreaChart(a, b);
+      this.drawAreaChart(a, b, s);
     }
   }

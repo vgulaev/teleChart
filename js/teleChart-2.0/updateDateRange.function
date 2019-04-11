@@ -1,0 +1,4 @@
+  updateDateRange() {
+    let [a, b] = this.getABfromScroll();
+    this.dateRange.innerHTML = this.wMMDD(this.data.x[a]) + ' - ' + this.wMMDD(this.data.x[b]);
+  }

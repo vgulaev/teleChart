@@ -1,0 +1,4 @@
+  drawChartOnPanel() {
+    let m = this.data.length - 1;
+    this.drawChart(0, m, this.getMinMax(0, m), this.panel);
+  }
