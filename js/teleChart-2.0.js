@@ -437,7 +437,6 @@ class TC20 {
       if (cur == points[points.length - 1]) break;
       points.push(cur);
     }
-    console.log(points);
     return points;
   }
 

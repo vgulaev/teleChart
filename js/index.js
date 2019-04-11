@@ -23,19 +23,19 @@ function drawCharts() {
             heightPanel: 120
           });
     });
-  // [1, 4, 5].forEach(i => {
-  //   httpGetAsync(`contest/${i}/overview.json`)
-  //     .then(data => {
-  //       let d = JSON.parse(data);
-  //       d.caption = c[i - 1];
-  //       c0 = new TC20(`chart${i}`, d, {
-  //             width: 500,
-  //             height: 300,
-  //             widthToPage: document.getElementById('widthToPage').checked,
-  //             heightPanel: 120
-  //           });
-  //     });
-  // });
+  [1, 4, 5].forEach(i => {
+    httpGetAsync(`contest/${i}/overview.json`)
+      .then(data => {
+        let d = JSON.parse(data);
+        d.caption = c[i - 1];
+        c0 = new TC20(`chart${i}`, d, {
+              width: 500,
+              height: 300,
+              widthToPage: document.getElementById('widthToPage').checked,
+              heightPanel: 120
+            });
+      });
+  });
   // let dur = parseInt(document.getElementById('animationDuration').value);
 
   // document.querySelectorAll('.chart').forEach((el, index) =>
