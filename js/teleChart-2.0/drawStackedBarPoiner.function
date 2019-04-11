@@ -14,7 +14,7 @@
     let y = this.height;
     for (let e of l) {
       TC20.setA(this.graph[e], {opacity: 0.5});
-      let p = TC20.path({'d': `M${sx},${y}H${Math.floor(dx * (k + 1))}V${this.graph.y[e][k]}h${-dx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
+      let p = TC20.path({'d': `M${sx},${y}H${Math.floor(dx * (k + 1))}V${this.graph.y[e][k]}H${sx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
       this.pointer.append(p);
       y = this.graph.y[e][k];
       // console.log(e, this.graph.y[e][k]);
