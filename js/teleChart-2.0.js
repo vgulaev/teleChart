@@ -433,8 +433,10 @@ class TC20 {
 
   getMinMax(a, b) {
     let r;
-    if ('bar' == this.type && true == this.data.raw.stacked) {
+    if ('bar' == this.type) {
       r = this.getMinMaxForStackedBar(a, b);
+    } else if ('area' == this.type) {
+      r = {min: 0, max: 100};
     } else {
       r = this.getMinMaxElse(a, b);
     }
