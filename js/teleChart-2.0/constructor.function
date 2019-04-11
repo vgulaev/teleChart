@@ -35,35 +35,14 @@
 
     this.prepareData(data);
     this.createHeader();
-    this.svgRoot = TC20.createSVG('svg');
-    TC20.setA(this.svgRoot, {height: o['height'] + 'px', width: width + 'px', style: 'display: block;'});
-    this.divRoot.append(this.svgRoot);
-
-    this.svgXAxis = TC20.createSVG('svg');
-    TC20.setA(this.svgXAxis, {height: '15px', width: width + 'px', style: 'display: block;'});
-    this.divRoot.append(this.svgXAxis);
-
-
-    this.svgPanel = TC20.createSVG('svg');
-    TC20.setA(this.svgPanel, {height: o['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px; display: block;`});
-    this.divRoot.append(this.svgPanel);
+    this.initSVG(o, width);
 
     this.width = this.svgPanel.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
     this.animationStack = new Set();
     this.semafors = {};
 
-    for (let i of this.allItems){
-      let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
-      if ('area' == this.type || 'bar' == this.type){
-      // || 'bar' == this.type
-        o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
-      }
-      this.graph[i] = TC20.path(o);
-      this.svgRoot.append(this.graph[i]);
-      this.panel[i] = TC20.path(o);
-      this.svgPanel.append(this.panel[i]);
-    }
+    this.initPathForGraphAndPanel();
     this.render();
     this.count = 0;
   }

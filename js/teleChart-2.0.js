@@ -77,6 +77,14 @@ class TC20 {
     document.addEventListener('touchend', (e) => {
       s.target = undefined;
     });
+
+    this.svgRoot.addEventListener('mousemove', e => {
+      this.onMoveGraph(Math.round(e.pageX));
+    })
+
+    this.svgRoot.addEventListener('mouseleave', (e) => {
+      this.removePointer();
+    });
   }
 
   animationStep() {
@@ -138,35 +146,14 @@ class TC20 {
 
     this.prepareData(data);
     this.createHeader();
-    this.svgRoot = TC20.createSVG('svg');
-    TC20.setA(this.svgRoot, {height: o['height'] + 'px', width: width + 'px', style: 'display: block;'});
-    this.divRoot.append(this.svgRoot);
-
-    this.svgXAxis = TC20.createSVG('svg');
-    TC20.setA(this.svgXAxis, {height: '15px', width: width + 'px', style: 'display: block;'});
-    this.divRoot.append(this.svgXAxis);
-
-
-    this.svgPanel = TC20.createSVG('svg');
-    TC20.setA(this.svgPanel, {height: o['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px; display: block;`});
-    this.divRoot.append(this.svgPanel);
+    this.initSVG(o, width);
 
     this.width = this.svgPanel.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
     this.animationStack = new Set();
     this.semafors = {};
 
-    for (let i of this.allItems){
-      let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
-      if ('area' == this.type || 'bar' == this.type){
-      // || 'bar' == this.type
-        o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
-      }
-      this.graph[i] = TC20.path(o);
-      this.svgRoot.append(this.graph[i]);
-      this.panel[i] = TC20.path(o);
-      this.svgPanel.append(this.panel[i]);
-    }
+    this.initPathForGraphAndPanel();
     this.render();
     this.count = 0;
   }
@@ -291,6 +278,18 @@ class TC20 {
     this.addEventListenerToPanel();
   }
 
+  drawPointer() {
+    if ('bar' == this.type && undefined == this.data.raw.stacked) {
+      // this.drawBarChart(a, b, c, s);
+    } else if ('bar' == this.type && true == this.data.raw.stacked) {
+      this.drawStackedBarPoiner(this.pointer.x);
+    } else if ('line' == this.type) {
+      // this.drawLineChart(a, b, c, s);
+    } else if ('area' == this.type) {
+      // this.drawAreaChart(a, b, s);
+    }
+  }
+
     drawScroll() {
     let s = this.panel.scrollBox;
     let x1 = s.x + s.w1, x2 = s.x + s.width - s.w1, h1 = s.h1;
@@ -335,6 +334,25 @@ class TC20 {
       q += 'z';
       TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
+  }
+
+  drawStackedBarPoiner(x) {
+    let coord = this.svgRoot.getBoundingClientRect();
+    // console.log(coord);
+    // console.log();
+
+    for (let i of this.allItems) {
+      TC20.setA(this.graph[i], {opacity: 0.5});
+    };
+    let [a, b] = this.getABfromScroll();
+    let localX = x - coord.x;
+    let dx = this.width / (b - a + 1);
+    let curX = a + Math.floor(localX / dx);
+    let p = TC20.path({'d': `M${(curX - a) * dx},50h${dx}v40,h${-dx}`, 'stroke-width': 0, 'fill': 'black'});
+    //this.data.raw.colors[i]
+    this.pointer.innerHTML = '';
+    this.pointer.append(p);
+    // console.log(x);
   }
 
   drawXAxis() {
@@ -440,6 +458,35 @@ class TC20 {
     return points;
   }
 
+  initPathForGraphAndPanel() {
+    for (let i of this.allItems){
+      let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
+      if ('area' == this.type || 'bar' == this.type){
+        o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
+      }
+      this.graph[i] = TC20.path(o);
+      this.svgRoot.append(this.graph[i]);
+      this.panel[i] = TC20.path(o);
+      this.svgPanel.append(this.panel[i]);
+    }
+    this.pointer = TC20.createSVG('g');
+    this.svgRoot.append(this.pointer);
+  }
+
+  initSVG(o, width) {
+    let style = [
+      {height: o['height'] + 'px', width: width + 'px', style: 'display: block;'},
+      {height: '15px', width: width + 'px', style: 'display: block;'},
+      {height: o['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px; display: block;`}
+    ];
+    ['svgRoot', 'svgXAxis', 'svgPanel'].forEach((e, i) => {
+      this[e] = TC20.createSVG('svg');
+      TC20.setA(this[e], style[i]);
+      this.divRoot.append(this[e]);
+    });
+  }
+
+
   mmDD(date) {
     return TC20.monthShort[date.getMonth()] + ' ' + date.getDate().toString();
   }
@@ -484,6 +531,11 @@ class TC20 {
         this.updateDateRange();
       });
     }
+  }
+
+  onMoveGraph(x) {
+    this.pointer.x = x;
+    requestAnimationFrame(() => this.requestExec(this.drawPointer));
   }
 
   onStart(x, k) {
@@ -545,6 +597,12 @@ class TC20 {
     let e = TC20.createSVG('rect');
     TC20.setA(e, Object.assign({'x': x, 'y': y, 'width': w, 'height': h}, o));
     return e;
+  }
+
+  removePointer() {
+    // for (let i of this.allItems) {
+    //   TC20.setA(this.graph[i], {opacity: 1});
+    // }
   }
 
   render() {

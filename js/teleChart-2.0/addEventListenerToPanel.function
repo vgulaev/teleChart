@@ -28,4 +28,12 @@
     document.addEventListener('touchend', (e) => {
       s.target = undefined;
     });
+
+    this.svgRoot.addEventListener('mousemove', e => {
+      this.onMoveGraph(Math.round(e.pageX));
+    })
+
+    this.svgRoot.addEventListener('mouseleave', (e) => {
+      this.removePointer();
+    });
   }

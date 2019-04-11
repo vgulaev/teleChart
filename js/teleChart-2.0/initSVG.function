@@ -1,0 +1,13 @@
+  initSVG(o, width) {
+    let style = [
+      {height: o['height'] + 'px', width: width + 'px', style: 'display: block;'},
+      {height: '15px', width: width + 'px', style: 'display: block;'},
+      {height: o['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px; display: block;`}
+    ];
+    ['svgRoot', 'svgXAxis', 'svgPanel'].forEach((e, i) => {
+      this[e] = TC20.createSVG('svg');
+      TC20.setA(this[e], style[i]);
+      this.divRoot.append(this[e]);
+    });
+  }
+
