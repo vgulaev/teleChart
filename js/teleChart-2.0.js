@@ -76,6 +76,7 @@ class TC20 {
 
     document.addEventListener('touchend', (e) => {
       s.target = undefined;
+      this.removePointer();
     });
 
     this.svgRoot.addEventListener('mousemove', e => {
