@@ -1,7 +1,8 @@
   drawStackedBarPoiner(x) {
+    let l = Array.from(this.allItems).sort();
     let coord = this.svgRoot.getBoundingClientRect();
 
-    for (let i of this.allItems) {
+    for (let i of l) {
       TC20.setA(this.graph[i], {opacity: 0.5});
     };
     let [a, b] = this.getABfromScroll();
@@ -9,10 +10,14 @@
     let dx = this.width / (b - a + 1);
     let k = Math.floor(localX / dx);
     let curX = a + k;
-
-    let p = TC20.path({'d': `M${Math.floor((curX - a) * dx)},50H${Math.floor(dx * (k + 1))}v40,h${-dx}`, 'stroke-width': 0, 'fill': 'black'});
-    //this.data.raw.colors[i]
     this.pointer.innerHTML = '';
-    this.pointer.append(p);
-    // console.log(x);
+
+    let sx = Math.floor((curX - a) * dx);
+    let y = this.height;
+    for (let e of l) {
+      let p = TC20.path({'d': `M${sx},${y}H${Math.floor(dx * (k + 1))}V${this.graph.y[e][k]}h${-dx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
+      this.pointer.append(p);
+      y = this.graph.y[e][k];
+      // console.log(e, this.graph.y[e][k]);
+    }
   }
