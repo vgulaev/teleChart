@@ -1,5 +1,19 @@
 class TC20 {
 
+  *animateXLabelRemove(target, duration, direction) {
+    let startTime = performance.now();
+    yield 'start';
+    while (true) {
+      if (startTime + duration > this.animationTime) {
+        let progres = direction * (-0.5 + (this.animationTime - startTime) / duration) + 0.5;
+        target.text.setAttributeNS(null, 'opacity',  progres);
+        yield performance.now()- startTime;
+      } else {
+        break;
+      }
+    }
+  }
+
   *smothDrawLineChart() {
     let f = this.graph.scales[0], t = this.graph.scales[1];
     let c = {min: f.min, max: f.max}, s = 25;
@@ -91,6 +105,7 @@ class TC20 {
     TC20.monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     TC20.monthShort = ['Jan', 'Feb', 'Mar','Apr', 'May', 'Jun', 'Jul','Aug', 'Sep', 'Oct','Nov', 'Dec'];
     TC20.dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    this.sieve = 0;
     let width = o['width'];
     if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
@@ -109,7 +124,7 @@ class TC20 {
       radius: Math.floor(o['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.floor(width * 0.25),
-        x: 0,
+        x: width - Math.floor(width * 0.25),
         // Math.floor(width * 0.2),
         h1: h1,
         w1: Math.min(Math.floor(width * 0.03), 30)
@@ -119,16 +134,21 @@ class TC20 {
       scales: [], yb: 0,
       height: o['height']
     };
+    this.XAxis = {};
 
     this.prepareData(data);
     this.createHeader();
     this.svgRoot = TC20.createSVG('svg');
-    TC20.setA(this.svgRoot, {height: o['height'] + 'px', width: width + 'px'});
+    TC20.setA(this.svgRoot, {height: o['height'] + 'px', width: width + 'px', style: 'display: block;'});
     this.divRoot.append(this.svgRoot);
 
-    this.svgPanel = TC20.createSVG('svg');
-    TC20.setA(this.svgPanel, {height: o['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
+    this.svgXAxis = TC20.createSVG('svg');
+    TC20.setA(this.svgXAxis, {height: '15px', width: width + 'px', style: 'display: block;'});
+    this.divRoot.append(this.svgXAxis);
 
+
+    this.svgPanel = TC20.createSVG('svg');
+    TC20.setA(this.svgPanel, {height: o['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px; display: block;`});
     this.divRoot.append(this.svgPanel);
 
     this.width = this.svgPanel.width.animVal.value;
@@ -153,7 +173,7 @@ class TC20 {
 
   createHeader() {
     this.header = document.createElement('div');
-    this.header.innerHTML = `<h4 style='display: inline-block; margin: 0;'>${this.data.raw.caption}</h4><h5 id='dateRange' style='float: right; display: inline-block; margin: 0;'></h5>`;
+    this.header.innerHTML = `<h4 style='display: inline-block; margin: 0;'>${this.data.raw.caption}</h4><h5 id='dateRange' style='float: right; display: inline-block; margin: 0; user-select: none;'></h5>`;
     this.divRoot.append(this.header);
     this.dateRange = this.header.querySelector('#dateRange');
   }
@@ -250,6 +270,7 @@ class TC20 {
     } else if ('area' == this.type) {
       this.drawAreaChart(a, b, s);
     }
+    this.scaleXAxis();
   }
 
   drawChartOnPanel() {
@@ -316,6 +337,24 @@ class TC20 {
     }
   }
 
+  drawXAxis() {
+    this.XAxis.points = this.getXAxisPoints().map(x => this.drawXLabel(x));
+  }
+
+  drawXLabel(x) {
+    let obj = {
+      x: x,
+      visible: 1,
+      viewX: this.getViewX(x),
+      innerHTML: this.mmDD(this.data.x[x])
+    };
+    obj.text = TC20.text({x: obj.viewX, y: 10, innerHTML: obj.innerHTML, fill: '#252529', style: 'font-size: 10px', opacity: 1});
+    this.svgXAxis.append(obj.text);
+    obj.coord = obj.text.getBBox();
+    TC20.setA(obj.text, {x: obj.viewX - obj.coord.width, y: 10});
+    return obj;
+  }
+
   getABfromScroll() {
     let s = this.panel.scrollBox;
     let a = Math.ceil(s.x / this.width * (this.data.length - 1));
@@ -376,6 +415,34 @@ class TC20 {
     callBack.call(this);
     let e = performance.now();
     console.log(callBack.name, 'time is: ', e - s);
+  }
+
+  getViewX(x) {
+    let [a, b] = this.getABfromScroll();
+    let scaleX = this.width / (b - a);
+    return scaleX * (x - a);
+  }
+
+  getXAxisPoints() {
+    let cur = this.data.length - 1;
+    let points = [cur];
+    let [a, b] = this.getABfromScroll();
+    let dx = (b - a) / 5.3;
+    while ((cur -= dx) > 0) {
+      if (Math.ceil(cur) == points[points.length - 1]) {
+        cur = Math.floor(cur);
+      } else {
+        cur = Math.ceil(cur);
+      }
+      if (cur == points[points.length - 1]) break;
+      points.push(cur);
+    }
+    console.log(points);
+    return points;
+  }
+
+  mmDD(date) {
+    return TC20.monthShort[date.getMonth()] + ' ' + date.getDate().toString();
   }
 
   msg(text) {
@@ -487,6 +554,7 @@ class TC20 {
     //   this.getMinMax(0, this.data.length - 1)
     //   }
     // });
+    this.drawXAxis();
     this.drawPanel();
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
@@ -527,10 +595,51 @@ class TC20 {
     }
   }
 
+  scaleXAxis() {
+    let visibleCount = 0;
+    let count = 0;
+
+    for (let item of this.XAxis.points) {
+      item.viewX = this.getViewX(item.x);
+      TeleChart.setAttribute(item.text, {x: item.viewX - item.coord.width});
+      if (0 != count % (2 ** this.sieve) && 1 == item.visible) {
+        // let a = this.animateLabelRemove(item, 400, -1);
+        // this.doAnimation(a);
+        item.text.style.display = 'none';
+        item.visible = 0;
+      } else if (0 == count % (2 ** this.sieve) && 0 == item.visible) {
+        // let a = this.animateLabelRemove(item, 400, 1);
+        // this.doAnimation(a);
+        item.text.style.display = 'inline';
+        item.visible = 1;
+      }
+      count += 1;
+    }
+
+    visibleCount = this.width / (this.XAxis.points[0].viewX - this.XAxis.points[2 ** this.sieve].viewX);
+
+    if (visibleCount > 8) {
+      this.sieve += 1;
+      this.requestExec(this.scaleXAxis);
+    } else if (visibleCount < 4 && this.sieve > 0)  {
+      this.sieve -= 1;
+      this.requestExec(this.scaleXAxis);
+    }
+  }
+
   static setA(e, a) {
     Object.keys(a).map(k => {
       e.setAttributeNS(null, k, a[k]);
     });
+  }
+
+  static text(o) {
+    let e = TC20.createSVG('text');
+    TC20.setA(e, o);
+    if ('innerHTML' in o) {
+      e.innerHTML = o.innerHTML;
+    }
+    return e;
   }
 
   updateDateRange() {

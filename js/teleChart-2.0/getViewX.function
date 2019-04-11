@@ -1,0 +1,5 @@
+  getViewX(x) {
+    let [a, b] = this.getABfromScroll();
+    let scaleX = this.width / (b - a);
+    return scaleX * (x - a);
+  }
