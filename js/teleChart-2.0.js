@@ -184,9 +184,12 @@ class TC20 {
     style = {'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
     s.leftMask = TC20.rect(0, 0, 0, 0, style);
     s.rightMask = TC20.rect(0, 0, 0, 0, style);
-    ['leftMask', 'rightMask', 'top', 'leftBox', 'rightBox', 'bottom']
+    style = {'d': '', 'stroke-width': 4, 'stroke': 'white', 'fill': 'none'};
+    s.leftLine = TC20.path(style);
+    s.rightLine = TC20.path(style);
+    ['leftMask', 'rightMask', 'top', 'leftBox', 'rightBox', 'bottom', 'leftLine', 'rightLine']
       .forEach(item => this.svgPanel.append(s[item]));
-    }
+  }
 
   doAnimation(a) {
     if (a != undefined) {
@@ -296,7 +299,7 @@ class TC20 {
     }
   }
 
-    drawScroll() {
+  drawScroll() {
     let s = this.panel.scrollBox;
     let x1 = s.x + s.w1, x2 = s.x + s.width - s.w1, h1 = s.h1;
     TC20.setA(s.leftBox, {d: this.panelBracket(x1, 1)});
@@ -305,6 +308,8 @@ class TC20 {
     TC20.setA(s.bottom, {x: x1, y: this.panel.height - s.h1, width: x2 - x1, height: s.h1});
     TC20.setA(s.leftMask, {x:0, y: h1, width: x1, height: this.panel.height - 2 * h1});
     TC20.setA(s.rightMask, {x: x2, y: h1, width: this.panel.width - x2, height: this.panel.height - 2 * h1});
+    TC20.setA(s.leftLine, {d: `M${s.x + s.w1 / 2},${(this.panel.height - s.w1) / 2}v${s.w1}`});
+    TC20.setA(s.rightLine, {d: `M${s.x + s.width - s.w1 / 2},${(this.panel.height - s.w1) / 2}v${s.w1}`});
   }
 
   drawStackedBarChart(a, b, mm, s) {
@@ -545,7 +550,9 @@ class TC20 {
   onMoveGraph(x) {
     this.pointer.status = 'draw';
     this.pointer.x = x;
-    requestAnimationFrame(() => this.requestExec(this.drawPointer));
+    requestAnimationFrame(() => {
+      this.drawPointer();
+    });
   }
 
   onStart(x, k) {

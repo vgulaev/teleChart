@@ -77,9 +77,9 @@ function replaceFunc(c, v) {
   let r = c;
   // let a = v[0];
   for (let a of v) {
-    if ('constructor' == a) continue;
+    if ('constructor' == a || '*' == a[0]) continue;
     let target1 = new RegExp(`this\.${a}`, 'g');
-    let target2 = new RegExp(`${a}`, 'g');
+    let target2 = new RegExp(a, 'g');
     let t = r.replace(target1, '@@@');
     if (1 == (t.match(target2) || []).length) {
       let nv = g.next();
