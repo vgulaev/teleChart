@@ -14,9 +14,10 @@ function drawCharts() {
   httpGetAsync('contest/3/overview.json')
     .then(data => {
       let d = JSON.parse(data);
-      // d.columns = d.columns.map(e => e.slice(0, 100));
+      //d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => ((i < 50 || (250 < i && i < 280)) && i != 0 ? i * 100 : e)));
+      d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => i > 0 ? Math.random() * 100 * i : e));
       d.caption = c[2];
-      new TC20('chart0', d, {
+      t = new TC20('chart0', d, {
             width: 500,
             height: 300,
             widthToPage: document.getElementById('widthToPage').checked,

@@ -28,7 +28,7 @@
       }
     };
     this.graph = {
-      scales: [], yb: 0,
+      scales: [], yb: 0, y: {},
       height: o['height']
     };
     this.XAxis = {};

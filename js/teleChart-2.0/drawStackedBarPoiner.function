@@ -1,7 +1,5 @@
   drawStackedBarPoiner(x) {
     let coord = this.svgRoot.getBoundingClientRect();
-    // console.log(coord);
-    // console.log();
 
     for (let i of this.allItems) {
       TC20.setA(this.graph[i], {opacity: 0.5});

@@ -80,7 +80,11 @@ class TC20 {
 
     this.svgRoot.addEventListener('mousemove', e => {
       this.onMoveGraph(Math.round(e.pageX));
-    })
+    });
+
+    this.svgRoot.addEventListener('touchmove', (e) => {
+      this.onMoveGraph(Math.round(e.touches[0].pageX));
+    });
 
     this.svgRoot.addEventListener('mouseleave', (e) => {
       this.removePointer();
@@ -139,7 +143,7 @@ class TC20 {
       }
     };
     this.graph = {
-      scales: [], yb: 0,
+      scales: [], yb: 0, y: {},
       height: o['height']
     };
     this.XAxis = {};
@@ -321,9 +325,9 @@ class TC20 {
     for (let e = 0; e < l.length; e++) {
       let q = '', r = '';
       for (let i = 0; i < m; i++) {
-        let xx = Math.round(dx*i);
-        q += `L${xx},${vy[l[e]][i]}h${dx}`;
-        r += `L${Math.round(dx*(m - i))},${vy[l[e]][m - i - 1]}h${-dx}`
+        let xx = Math.floor(dx*i);
+        q += `L${xx},${vy[l[e]][i]}H${Math.floor(dx * (i + 1))}`;
+        r += `L${Math.floor(dx*(m - i))},${vy[l[e]][m - i - 1]}H${Math.floor(this.width - dx * (i + 1))}`
       }
       f.push([q, r]);
       if (0 == e) {
@@ -334,12 +338,11 @@ class TC20 {
       q += 'z';
       TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
+    this.graph.y = vy;
   }
 
   drawStackedBarPoiner(x) {
     let coord = this.svgRoot.getBoundingClientRect();
-    // console.log(coord);
-    // console.log();
 
     for (let i of this.allItems) {
       TC20.setA(this.graph[i], {opacity: 0.5});
