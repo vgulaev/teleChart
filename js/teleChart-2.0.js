@@ -719,7 +719,6 @@ class TC20 {
     let visibleCount = 0;
     let count = 0;
     let s = this.XAxis.sieve;
-
     for (let item of this.XAxis.points) {
       item.viewX = this.getViewX(item.x);
       TeleChart.setAttribute(item.text, {x: item.viewX - item.coord.width});
@@ -740,10 +739,10 @@ class TC20 {
     visibleCount = this.width / (this.XAxis.points[0].viewX - this.XAxis.points[2 ** s].viewX);
 
     if (visibleCount > 8) {
-      s += 1;
+      this.XAxis.sieve += 1;
       this.requestExec(this.scaleXAxis);
     } else if (visibleCount < 4 && s > 0)  {
-      s -= 1;
+      this.XAxis.sieve -= 1;
       this.requestExec(this.scaleXAxis);
     }
   }
