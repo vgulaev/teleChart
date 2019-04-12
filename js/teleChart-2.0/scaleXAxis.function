@@ -1,0 +1,31 @@
+  scaleXAxis() {
+    let visibleCount = 0;
+    let count = 0;
+    let s = this.XAxis.sieve;
+    for (let item of this.XAxis.points) {
+      item.viewX = this.getViewX(item.x);
+      TeleChart.setAttribute(item.text, {x: item.viewX - item.coord.width});
+      if (0 != count % (2 ** s) && 1 == item.visible) {
+        // let a = this.animateLabelRemove(item, 400, -1);
+        // this.doAnimation(a);
+        item.text.style.display = 'none';
+        item.visible = 0;
+      } else if (0 == count % (2 ** s) && 0 == item.visible) {
+        // let a = this.animateLabelRemove(item, 400, 1);
+        // this.doAnimation(a);
+        item.text.style.display = 'inline';
+        item.visible = 1;
+      }
+      count += 1;
+    }
+
+    visibleCount = this.width / (this.XAxis.points[0].viewX - this.XAxis.points[2 ** s].viewX);
+
+    if (visibleCount > 8) {
+      this.XAxis.sieve += 1;
+      this.requestExec(this.scaleXAxis);
+    } else if (visibleCount < 4 && s > 0)  {
+      this.XAxis.sieve -= 1;
+      this.requestExec(this.scaleXAxis);
+    }
+  }

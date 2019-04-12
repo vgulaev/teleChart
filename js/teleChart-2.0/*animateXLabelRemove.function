@@ -1,0 +1,13 @@
+  *animateXLabelRemove(target, duration, direction) {
+    let startTime = performance.now();
+    yield 'start';
+    while (true) {
+      if (startTime + duration > this.animationTime) {
+        let progres = direction * (-0.5 + (this.animationTime - startTime) / duration) + 0.5;
+        target.text.setAttributeNS(null, 'opacity',  progres);
+        yield performance.now()- startTime;
+      } else {
+        break;
+      }
+    }
+  }

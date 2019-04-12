@@ -1,0 +1,16 @@
+  getXAxisPoints() {
+    let cur = this.data.length - 1;
+    let points = [cur];
+    let [a, b] = this.getABfromScroll();
+    let dx = (b - a) / 5.3;
+    while ((cur -= dx) > 0) {
+      if (Math.ceil(cur) == points[points.length - 1]) {
+        cur = Math.floor(cur);
+      } else {
+        cur = Math.ceil(cur);
+      }
+      if (cur == points[points.length - 1]) break;
+      points.push(cur);
+    }
+    return points;
+  }

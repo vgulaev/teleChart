@@ -1,0 +1,14 @@
+  initPathForGraphAndPanel() {
+    for (let i of this.allItems){
+      let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
+      if ('area' == this.type || 'bar' == this.type){
+        o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
+      }
+      this.graph[i] = TC20.path(o);
+      this.svgRoot.append(this.graph[i]);
+      this.panel[i] = TC20.path(o);
+      this.svgPanel.append(this.panel[i]);
+    }
+    this.pointer = {g: TC20.createSVG('g')};
+    this.svgRoot.append(this.pointer.g);
+  }

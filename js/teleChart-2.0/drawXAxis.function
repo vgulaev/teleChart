@@ -1,0 +1,3 @@
+  drawXAxis() {
+    this.XAxis.points = this.getXAxisPoints().map(x => this.drawXLabel(x));
+  }

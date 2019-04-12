@@ -1,0 +1,13 @@
+  drawXLabel(x) {
+    let obj = {
+      x: x,
+      visible: 1,
+      viewX: this.getViewX(x),
+      innerHTML: this.mmDD(this.data.x[x])
+    };
+    obj.text = TC20.text({x: obj.viewX, y: 10, innerHTML: obj.innerHTML, fill: '#252529', style: 'font-size: 10px', opacity: 1});
+    this.svgXAxis.append(obj.text);
+    obj.coord = obj.text.getBBox();
+    TC20.setA(obj.text, {x: obj.viewX - obj.coord.width, y: 10});
+    return obj;
+  }

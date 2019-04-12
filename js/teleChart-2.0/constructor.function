@@ -11,6 +11,7 @@
     this.divRoot = document.getElementById(tagID);
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
+    this.prepareData(data);
 
     let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
@@ -20,44 +21,35 @@
       radius: Math.floor(o['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.floor(width * 0.25),
-        x: 0,
+        x: width - Math.floor(width * 0.25),
         // Math.floor(width * 0.2),
         h1: h1,
         w1: Math.min(Math.floor(width * 0.03), 30)
       }
     };
     this.graph = {
-      scales: [], yb: 0,
+      scales: [], yb: 0, y: {},
       height: o['height']
     };
+    this.XAxis = {
+      sieve: 0
+    };
+    let mm = this.getMinMax(0, this.data.length - 1);
+    this.YAxis = {
+      point: [],
+      mmOriginal: mm,
+      dMax: mm.max - mm.min
+    };
 
-    this.prepareData(data);
     this.createHeader();
-    this.svgRoot = TC20.createSVG('svg');
-    TC20.setA(this.svgRoot, {height: o['height'] + 'px', width: width + 'px'});
-    this.divRoot.append(this.svgRoot);
-
-    this.svgPanel = TC20.createSVG('svg');
-    TC20.setA(this.svgPanel, {height: o['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
-
-    this.divRoot.append(this.svgPanel);
+    this.initSVG(o, width);
 
     this.width = this.svgPanel.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
     this.animationStack = new Set();
     this.semafors = {};
 
-    for (let i of this.allItems){
-      let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
-      if ('area' == this.type || 'bar' == this.type){
-      // || 'bar' == this.type
-        o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
-      }
-      this.graph[i] = TC20.path(o);
-      this.svgRoot.append(this.graph[i]);
-      this.panel[i] = TC20.path(o);
-      this.svgPanel.append(this.panel[i]);
-    }
+    this.initPathForGraphAndPanel();
     this.render();
     this.count = 0;
   }

@@ -1,0 +1,8 @@
+  static text(o) {
+    let e = TC20.createSVG('text');
+    TC20.setA(e, o);
+    if ('innerHTML' in o) {
+      e.innerHTML = o.innerHTML;
+    }
+    return e;
+  }

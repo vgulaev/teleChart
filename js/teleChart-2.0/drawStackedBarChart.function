@@ -18,9 +18,9 @@
     for (let e = 0; e < l.length; e++) {
       let q = '', r = '';
       for (let i = 0; i < m; i++) {
-        let xx = Math.round(dx*i);
-        q += `L${xx},${vy[l[e]][i]}h${dx}`;
-        r += `L${Math.round(dx*(m - i))},${vy[l[e]][m - i - 1]}h${-dx}`
+        let xx = Math.floor(dx*i);
+        q += `L${xx},${vy[l[e]][i]}H${Math.floor(dx * (i + 1))}`;
+        r += `L${Math.floor(dx*(m - i))},${vy[l[e]][m - i - 1]}H${Math.floor(this.width - dx * (i + 1))}`
       }
       f.push([q, r]);
       if (0 == e) {
@@ -31,4 +31,5 @@
       q += 'z';
       TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
+    this.graph.y = vy;
   }

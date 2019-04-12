@@ -27,5 +27,18 @@
 
     document.addEventListener('touchend', (e) => {
       s.target = undefined;
+      this.removePointer();
+    });
+
+    this.svgRoot.addEventListener('mousemove', e => {
+      this.onMoveGraph(Math.round(e.pageX));
+    });
+
+    this.svgRoot.addEventListener('touchmove', (e) => {
+      this.onMoveGraph(Math.round(e.touches[0].pageX));
+    });
+
+    this.svgRoot.addEventListener('mouseleave', (e) => {
+      this.removePointer();
     });
   }

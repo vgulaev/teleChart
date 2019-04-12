@@ -1,5 +1,19 @@
 class TC20 {
 
+  *animateXLabelRemove(target, duration, direction) {
+    let startTime = performance.now();
+    yield 'start';
+    while (true) {
+      if (startTime + duration > this.animationTime) {
+        let progres = direction * (-0.5 + (this.animationTime - startTime) / duration) + 0.5;
+        target.text.setAttributeNS(null, 'opacity',  progres);
+        yield performance.now()- startTime;
+      } else {
+        break;
+      }
+    }
+  }
+
   *smothDrawLineChart() {
     let f = this.graph.scales[0], t = this.graph.scales[1];
     let c = {min: f.min, max: f.max}, s = 25;
@@ -62,6 +76,19 @@ class TC20 {
 
     document.addEventListener('touchend', (e) => {
       s.target = undefined;
+      this.removePointer();
+    });
+
+    this.svgRoot.addEventListener('mousemove', e => {
+      this.onMoveGraph(Math.round(e.pageX));
+    });
+
+    this.svgRoot.addEventListener('touchmove', (e) => {
+      this.onMoveGraph(Math.round(e.touches[0].pageX));
+    });
+
+    this.svgRoot.addEventListener('mouseleave', (e) => {
+      this.removePointer();
     });
   }
 
@@ -100,6 +127,7 @@ class TC20 {
     this.divRoot = document.getElementById(tagID);
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
+    this.prepareData(data);
 
     let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
@@ -109,51 +137,42 @@ class TC20 {
       radius: Math.floor(o['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.floor(width * 0.25),
-        x: 0,
+        x: width - Math.floor(width * 0.25),
         // Math.floor(width * 0.2),
         h1: h1,
         w1: Math.min(Math.floor(width * 0.03), 30)
       }
     };
     this.graph = {
-      scales: [], yb: 0,
+      scales: [], yb: 0, y: {},
       height: o['height']
     };
+    this.XAxis = {
+      sieve: 0
+    };
+    let mm = this.getMinMax(0, this.data.length - 1);
+    this.YAxis = {
+      point: [],
+      mmOriginal: mm,
+      dMax: mm.max - mm.min
+    };
 
-    this.prepareData(data);
     this.createHeader();
-    this.svgRoot = TC20.createSVG('svg');
-    TC20.setA(this.svgRoot, {height: o['height'] + 'px', width: width + 'px'});
-    this.divRoot.append(this.svgRoot);
-
-    this.svgPanel = TC20.createSVG('svg');
-    TC20.setA(this.svgPanel, {height: o['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px;`});
-
-    this.divRoot.append(this.svgPanel);
+    this.initSVG(o, width);
 
     this.width = this.svgPanel.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
     this.animationStack = new Set();
     this.semafors = {};
 
-    for (let i of this.allItems){
-      let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
-      if ('area' == this.type || 'bar' == this.type){
-      // || 'bar' == this.type
-        o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
-      }
-      this.graph[i] = TC20.path(o);
-      this.svgRoot.append(this.graph[i]);
-      this.panel[i] = TC20.path(o);
-      this.svgPanel.append(this.panel[i]);
-    }
+    this.initPathForGraphAndPanel();
     this.render();
     this.count = 0;
   }
 
   createHeader() {
     this.header = document.createElement('div');
-    this.header.innerHTML = `<h4 style='display: inline-block; margin: 0;'>${this.data.raw.caption}</h4><h5 id='dateRange' style='float: right; display: inline-block; margin: 0;'></h5>`;
+    this.header.innerHTML = `<h4 style='display: inline-block; margin: 0;'>${this.data.raw.caption}</h4><h5 id='dateRange' style='float: right; display: inline-block; margin: 0; user-select: none;'></h5>`;
     this.divRoot.append(this.header);
     this.dateRange = this.header.querySelector('#dateRange');
   }
@@ -172,9 +191,12 @@ class TC20 {
     style = {'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
     s.leftMask = TC20.rect(0, 0, 0, 0, style);
     s.rightMask = TC20.rect(0, 0, 0, 0, style);
-    ['leftMask', 'rightMask', 'top', 'leftBox', 'rightBox', 'bottom']
+    style = {'d': '', 'stroke-width': 4, 'stroke': 'white', 'fill': 'none'};
+    s.leftLine = TC20.path(style);
+    s.rightLine = TC20.path(style);
+    ['leftMask', 'rightMask', 'top', 'leftBox', 'rightBox', 'bottom', 'leftLine', 'rightLine']
       .forEach(item => this.svgPanel.append(s[item]));
-    }
+  }
 
   doAnimation(a) {
     if (a != undefined) {
@@ -250,11 +272,14 @@ class TC20 {
     } else if ('area' == this.type) {
       this.drawAreaChart(a, b, s);
     }
+    if (s == this.graph) {
+      this.scaleXAxis();
+      this.scaleYAxis(c);
+    }
   }
 
   drawChartOnPanel() {
-    let m = this.data.length - 1;
-    this.drawChart(0, m, this.getMinMax(0, m), this.panel);
+    this.drawChart(0, this.data.length - 1, this.YAxis.mmOriginal, this.panel);
   }
 
   drawLineChart(a, b, mm, s) {
@@ -270,7 +295,20 @@ class TC20 {
     this.addEventListenerToPanel();
   }
 
-    drawScroll() {
+  drawPointer() {
+    if (undefined == this.pointer.status) return;
+    if ('bar' == this.type && undefined == this.data.raw.stacked) {
+      // this.drawBarChart(a, b, c, s);
+    } else if ('bar' == this.type && true == this.data.raw.stacked) {
+      this.drawStackedBarPoiner(this.pointer.x);
+    } else if ('line' == this.type) {
+      // this.drawLineChart(a, b, c, s);
+    } else if ('area' == this.type) {
+      // this.drawAreaChart(a, b, s);
+    }
+  }
+
+  drawScroll() {
     let s = this.panel.scrollBox;
     let x1 = s.x + s.w1, x2 = s.x + s.width - s.w1, h1 = s.h1;
     TC20.setA(s.leftBox, {d: this.panelBracket(x1, 1)});
@@ -279,6 +317,8 @@ class TC20 {
     TC20.setA(s.bottom, {x: x1, y: this.panel.height - s.h1, width: x2 - x1, height: s.h1});
     TC20.setA(s.leftMask, {x:0, y: h1, width: x1, height: this.panel.height - 2 * h1});
     TC20.setA(s.rightMask, {x: x2, y: h1, width: this.panel.width - x2, height: this.panel.height - 2 * h1});
+    TC20.setA(s.leftLine, {d: `M${s.x + s.w1 / 2},${(this.panel.height - s.w1) / 2}v${s.w1}`});
+    TC20.setA(s.rightLine, {d: `M${s.x + s.width - s.w1 / 2},${(this.panel.height - s.w1) / 2}v${s.w1}`});
   }
 
   drawStackedBarChart(a, b, mm, s) {
@@ -301,9 +341,9 @@ class TC20 {
     for (let e = 0; e < l.length; e++) {
       let q = '', r = '';
       for (let i = 0; i < m; i++) {
-        let xx = Math.round(dx*i);
-        q += `L${xx},${vy[l[e]][i]}h${dx}`;
-        r += `L${Math.round(dx*(m - i))},${vy[l[e]][m - i - 1]}h${-dx}`
+        let xx = Math.floor(dx*i);
+        q += `L${xx},${vy[l[e]][i]}H${Math.floor(dx * (i + 1))}`;
+        r += `L${Math.floor(dx*(m - i))},${vy[l[e]][m - i - 1]}H${Math.floor(this.width - dx * (i + 1))}`
       }
       f.push([q, r]);
       if (0 == e) {
@@ -314,6 +354,60 @@ class TC20 {
       q += 'z';
       TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
+    this.graph.y = vy;
+  }
+
+  drawStackedBarPoiner(x) {
+    let [a, b] = this.getABfromScroll();
+    let dx = this.width / (b - a + 1);
+    let l = Array.from(this.allItems).sort();
+    let coord = this.svgRoot.getBoundingClientRect();
+    let localX = x - coord.x;
+    let k = Math.floor(localX / dx);
+    if (this.pointer.curX == a + k) return;
+    this.pointer.curX = a + k;
+    this.pointer.g.innerHTML = '';
+
+    let sx = Math.floor((this.pointer.curX - a) * dx);
+    let y = this.height;
+    for (let e of l) {
+      TC20.setA(this.graph[e], {opacity: 0.5});
+      let p = TC20.path({'d': `M${sx},${y}H${Math.floor(dx * (k + 1))}V${this.graph.y[e][k]}H${sx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
+      this.pointer.g.append(p);
+      y = this.graph.y[e][k];
+    }
+  }
+
+  drawXAxis() {
+    this.XAxis.points = this.getXAxisPoints().map(x => this.drawXLabel(x));
+  }
+
+  drawXLabel(x) {
+    let obj = {
+      x: x,
+      visible: 1,
+      viewX: this.getViewX(x),
+      innerHTML: this.mmDD(this.data.x[x])
+    };
+    obj.text = TC20.text({x: obj.viewX, y: 10, innerHTML: obj.innerHTML, fill: '#252529', style: 'font-size: 10px', opacity: 1});
+    this.svgXAxis.append(obj.text);
+    obj.coord = obj.text.getBBox();
+    TC20.setA(obj.text, {x: obj.viewX - obj.coord.width, y: 10});
+    return obj;
+  }
+
+  drawYLabel(y, viewY) {
+    let obj = {
+      y: y,
+      viewY: viewY,
+      innerHTML: y
+    };
+    obj.text = TC20.text({x: 10, y: obj.viewY, innerHTML: obj.innerHTML, fill: '#252529', style: 'font-size: 10px', opacity: 1});
+    this.svgRoot.append(obj.text);
+    // this.svgXAxis.append(obj.text);
+    // obj.coord = obj.text.getBBox();
+    // TC20.setA(obj.text, {x: obj.viewX - obj.coord.width, y: 10});
+    return obj;
   }
 
   getABfromScroll() {
@@ -339,8 +433,10 @@ class TC20 {
 
   getMinMax(a, b) {
     let r;
-    if ('bar' == this.type && true == this.data.raw.stacked) {
+    if ('bar' == this.type) {
       r = this.getMinMaxForStackedBar(a, b);
+    } else if ('area' == this.type) {
+      r = {min: 0, max: 100};
     } else {
       r = this.getMinMaxElse(a, b);
     }
@@ -378,6 +474,62 @@ class TC20 {
     console.log(callBack.name, 'time is: ', e - s);
   }
 
+  getViewX(x) {
+    let [a, b] = this.getABfromScroll();
+    let scaleX = this.width / (b - a);
+    return scaleX * (x - a);
+  }
+
+  getXAxisPoints() {
+    let cur = this.data.length - 1;
+    let points = [cur];
+    let [a, b] = this.getABfromScroll();
+    let dx = (b - a) / 5.3;
+    while ((cur -= dx) > 0) {
+      if (Math.ceil(cur) == points[points.length - 1]) {
+        cur = Math.floor(cur);
+      } else {
+        cur = Math.ceil(cur);
+      }
+      if (cur == points[points.length - 1]) break;
+      points.push(cur);
+    }
+    return points;
+  }
+
+  initPathForGraphAndPanel() {
+    for (let i of this.allItems){
+      let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
+      if ('area' == this.type || 'bar' == this.type){
+        o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
+      }
+      this.graph[i] = TC20.path(o);
+      this.svgRoot.append(this.graph[i]);
+      this.panel[i] = TC20.path(o);
+      this.svgPanel.append(this.panel[i]);
+    }
+    this.pointer = {g: TC20.createSVG('g')};
+    this.svgRoot.append(this.pointer.g);
+  }
+
+  initSVG(o, width) {
+    let style = [
+      {height: o['height'] + 'px', width: width + 'px', style: 'display: block;'},
+      {height: '15px', width: width + 'px', style: 'display: block;'},
+      {height: o['heightPanel'] + 'px', width: width + 'px', 'style': `border-radius: ${this.panel.radius}px; display: block;`}
+    ];
+    ['svgRoot', 'svgXAxis', 'svgPanel'].forEach((e, i) => {
+      this[e] = TC20.createSVG('svg');
+      TC20.setA(this[e], style[i]);
+      this.divRoot.append(this[e]);
+    });
+  }
+
+
+  mmDD(date) {
+    return TC20.monthShort[date.getMonth()] + ' ' + date.getDate().toString();
+  }
+
   msg(text) {
     this.statusTag.innerHTML = text;
   }
@@ -391,15 +543,19 @@ class TC20 {
         s.x = s.reper + dx;
         if (s.x + s.width > w) {
           s.x = w - s.width;
+          s.target = undefined;
         } else if (s.x < 0) {
           s.x = 0;
+          s.target = undefined;
         }
       } else if ('right' == s.target) {
         s.width = s.reper + dx;
         if (s.x + s.width > w) {
           s.width = w - s.x;
+          s.target = undefined;
         } else if (s.width < mw) {
           s.width = mw;
+          s.target = undefined;
         }
       } else if ('left' == s.target) {
         s.width = s.reper.w - dx;
@@ -407,9 +563,11 @@ class TC20 {
         if (s.x < 0) {
           s.x = 0;
           s.width = s.reper.w + s.reper.x;
+          s.target = undefined;
         } else if (s.width < mw) {
           s.width = mw;
           s.x = s.reper.x + s.reper.w - s.width
+          s.target = undefined;
         }
       }
       requestAnimationFrame(() => {
@@ -418,6 +576,14 @@ class TC20 {
         this.updateDateRange();
       });
     }
+  }
+
+  onMoveGraph(x) {
+    this.pointer.status = 'draw';
+    this.pointer.x = x;
+    requestAnimationFrame(() => {
+      this.drawPointer();
+    });
   }
 
   onStart(x, k) {
@@ -475,10 +641,33 @@ class TC20 {
     delete this.data.raw.columns
   }
 
+  recreateYALabel(c) {
+    let ya = this.YAxis;
+    let t1 = Math.floor(ya.mmOriginal.min / ya.step) * ya.step;
+    let yLevel = Math.floor((c.min - t1) / ya.step) * ya.step + t1;
+    let dy = this.height / (c.max - c.min);
+    for (let e of this.YAxis.point) {
+      e.text.remove();
+    }
+    this.YAxis.points = [];
+    while (yLevel < c.max + ya.step) {
+      this.YAxis.point.push(this.drawYLabel(yLevel, Math.floor(this.height - (yLevel - c.min) * dy)));
+      yLevel += ya.step;
+    }
+  }
+
   static rect(x, y, w, h, o = {}) {
     let e = TC20.createSVG('rect');
     TC20.setA(e, Object.assign({'x': x, 'y': y, 'width': w, 'height': h}, o));
     return e;
+  }
+
+  removePointer() {
+    this.pointer.status = undefined;
+    for (let i of this.allItems) {
+      TC20.setA(this.graph[i], {opacity: 1});
+    }
+    this.pointer.g.innerHTML = '';
   }
 
   render() {
@@ -487,6 +676,7 @@ class TC20 {
     //   this.getMinMax(0, this.data.length - 1)
     //   }
     // });
+    this.drawXAxis();
     this.drawPanel();
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
@@ -527,10 +717,68 @@ class TC20 {
     }
   }
 
+  scaleXAxis() {
+    let visibleCount = 0;
+    let count = 0;
+    let s = this.XAxis.sieve;
+    for (let item of this.XAxis.points) {
+      item.viewX = this.getViewX(item.x);
+      TeleChart.setAttribute(item.text, {x: item.viewX - item.coord.width});
+      if (0 != count % (2 ** s) && 1 == item.visible) {
+        // let a = this.animateLabelRemove(item, 400, -1);
+        // this.doAnimation(a);
+        item.text.style.display = 'none';
+        item.visible = 0;
+      } else if (0 == count % (2 ** s) && 0 == item.visible) {
+        // let a = this.animateLabelRemove(item, 400, 1);
+        // this.doAnimation(a);
+        item.text.style.display = 'inline';
+        item.visible = 1;
+      }
+      count += 1;
+    }
+
+    visibleCount = this.width / (this.XAxis.points[0].viewX - this.XAxis.points[2 ** s].viewX);
+
+    if (visibleCount > 8) {
+      this.XAxis.sieve += 1;
+      this.requestExec(this.scaleXAxis);
+    } else if (visibleCount < 4 && s > 0)  {
+      this.XAxis.sieve -= 1;
+      this.requestExec(this.scaleXAxis);
+    }
+  }
+
+  scaleYAxis(c) {
+    let step = (c.max - c.min) / 5.1;
+    step = 1.2 ** Math.floor(Math.log(step) / Math.log(1.2));
+    let p = 10 ** (Math.floor(Math.log10(step)) - 1);
+    step = Math.floor(step / p) * p;
+
+    if (this.YAxis.step != step) {
+      this.YAxis.step = step;
+      this.recreateYALabel(c);
+    } else {
+      let dy = this.height / (c.max - c.min);
+      for (let e of this.YAxis.point) {
+        TC20.setA(e.text, {y: Math.floor(this.height - (e.y - c.min) * dy)});
+      }
+    }
+  }
+
   static setA(e, a) {
     Object.keys(a).map(k => {
       e.setAttributeNS(null, k, a[k]);
     });
+  }
+
+  static text(o) {
+    let e = TC20.createSVG('text');
+    TC20.setA(e, o);
+    if ('innerHTML' in o) {
+      e.innerHTML = o.innerHTML;
+    }
+    return e;
   }
 
   updateDateRange() {

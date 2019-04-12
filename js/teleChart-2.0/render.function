@@ -4,6 +4,7 @@
     //   this.getMinMax(0, this.data.length - 1)
     //   }
     // });
+    this.drawXAxis();
     this.drawPanel();
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);

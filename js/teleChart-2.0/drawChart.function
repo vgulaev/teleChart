@@ -8,4 +8,8 @@
     } else if ('area' == this.type) {
       this.drawAreaChart(a, b, s);
     }
+    if (s == this.graph) {
+      this.scaleXAxis();
+      this.scaleYAxis(c);
+    }
   }
