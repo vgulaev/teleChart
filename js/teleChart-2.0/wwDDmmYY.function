@@ -1,0 +1,3 @@
+  wwDDmmYY(date) {
+    return [TC20.dayNames[date.getDay()] + ',', date.getDate(), TC20.monthShort[date.getMonth()], date.getFullYear()].join(' ');
+  }

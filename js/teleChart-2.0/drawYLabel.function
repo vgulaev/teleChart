@@ -3,7 +3,7 @@
       y: y,
       viewY: viewY,
       text: TC20.text({x: 5, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(y), fill: '#252529', style: 'font-size: 10px', opacity: 1}),
-      line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': '#182D3B', 'fill': 'none', opacity: 0.1})
+      line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': this.YAxis.gridColor, 'fill': 'none', opacity: 0.1})
     };
     this.svgRoot.append(obj.text);
     this.svgRoot.append(obj.line);

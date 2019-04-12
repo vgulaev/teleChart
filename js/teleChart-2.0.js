@@ -80,11 +80,11 @@ class TC20 {
     });
 
     this.svgRoot.addEventListener('mousemove', e => {
-      this.onMoveGraph(Math.round(e.pageX));
+      this.onMoveGraph(Math.round(e.pageX), Math.round(e.pageY));
     });
 
     this.svgRoot.addEventListener('touchmove', (e) => {
-      this.onMoveGraph(Math.round(e.touches[0].pageX));
+      this.onMoveGraph(Math.round(e.touches[0].pageX), Math.round(e.touches[0].pageY));
     });
 
     this.svgRoot.addEventListener('mouseleave', (e) => {
@@ -123,21 +123,25 @@ class TC20 {
       width = document.body.clientWidth - 10;
     }
     this.width = width;
+    this.animationStack = new Set();
+    this.semafors = {};
 
     this.statusTag = document.getElementById('Status');
     this.divRoot = document.getElementById(tagID);
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
+
+    this.divTips = document.createElement('div');
+    this.divTips.setAttribute('style', `display: none; position: absolute; background-color: white; left: 800px; top: 100px; border: 1px solid ${this.axisColor}; border-radius: 5px; white-space: nowrap; font-size: 12px;`);
+    this.divRoot.append(this.divTips);
+
+
     this.prepareData(data);
-
     this.initInternalObjects(o);
-
     this.createHeader();
     this.initSVG(o, width);
 
     this.height = this.svgRoot.height.animVal.value;
-    this.animationStack = new Set();
-    this.semafors = {};
 
     this.initPathForGraphAndPanel();
     this.render();
@@ -275,6 +279,7 @@ class TC20 {
       // this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {
       this.drawStackedBarPoiner(this.pointer.x);
+      this.drawTips();
     } else if ('line' == this.type) {
       // this.drawLineChart(a, b, c, s);
     } else if ('area' == this.type) {
@@ -352,6 +357,23 @@ class TC20 {
     }
   }
 
+  drawTips() {
+    this.divTips.innerHTML = this.innerTips();
+    this.divTips.style.display = 'block'
+    let svg = this.svgRoot.getBoundingClientRect();
+    let coord = this.divTips.getBoundingClientRect();
+    if (this.pointer.x + 25 + coord.width > document.body.clientWidth ) {
+      this.divTips.style.left = this.pointer.x - coord.width - 25 + 'px';
+    } else {
+      this.divTips.style.left = this.pointer.x + 25 + 'px';
+    }
+    if (this.pointer.y + coord.height > svg.bottom) {
+      this.divTips.style.top = svg.bottom - coord.height + 'px';
+    } else {
+      this.divTips.style.top = this.pointer.y + 'px';
+    }
+  }
+
   drawXAxis() {
     this.XAxis.points = this.getXAxisPoints().map(x => this.drawXLabel(x));
   }
@@ -375,7 +397,7 @@ class TC20 {
       y: y,
       viewY: viewY,
       text: TC20.text({x: 5, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(y), fill: '#252529', style: 'font-size: 10px', opacity: 1}),
-      line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': '#182D3B', 'fill': 'none', opacity: 0.1})
+      line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': this.YAxis.gridColor, 'fill': 'none', opacity: 0.1})
     };
     this.svgRoot.append(obj.text);
     this.svgRoot.append(obj.line);
@@ -469,6 +491,10 @@ class TC20 {
     return points;
   }
 
+  hideTips() {
+    this.divTips.style.display = 'none';
+  }
+
   initInternalObjects(o) {
     let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
@@ -496,7 +522,8 @@ class TC20 {
       point: [],
       mmOriginal: mm,
       dMax: mm.max - mm.min,
-      textShift: 5
+      textShift: 5,
+      gridColor: '#182D3B'
     };
   }
 
@@ -528,6 +555,17 @@ class TC20 {
     });
   }
 
+
+  innerTips() {
+    let s = 0;
+    let r = [`<td><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
+    for (let e of this.allItems) {
+      s += this.data.y[e][this.pointer.curX];
+      r.push(`<td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
+    }
+    r.push(`<td>All</td><td style='text-align: right;'><b>${this.labelFormat(s)}</b></td>`);
+    return `<table style='margin: 5px;'>${r.map(e => `<tr>${e}</tr>`).join('')}</table>`;
+  }
 
   labelFormat(n) {
     var abs = Math.abs(n);
@@ -588,6 +626,7 @@ class TC20 {
         }
       }
       requestAnimationFrame(() => {
+        this.hideTips();
         this.requestExec(this.drawScroll);
         this.requestDrawGraph();
         this.updateDateRange();
@@ -595,9 +634,10 @@ class TC20 {
     }
   }
 
-  onMoveGraph(x) {
+  onMoveGraph(x, y) {
     this.pointer.status = 'draw';
     this.pointer.x = x;
+    this.pointer.y = y;
     requestAnimationFrame(() => {
       this.drawPointer();
     });
@@ -810,6 +850,10 @@ class TC20 {
   wMMDD(d) {
     return [d.getDate(), TC20.monthShort[d.getMonth()], d.getFullYear()].join(' ');
     // return TC20.monthNames[date.getDay()] + ', ' + this.mmDD(date);
+  }
+
+  wwDDmmYY(date) {
+    return [TC20.dayNames[date.getDay()] + ',', date.getDate(), TC20.monthShort[date.getMonth()], date.getFullYear()].join(' ');
   }
 
   static get xmlns() {

@@ -25,6 +25,7 @@
       point: [],
       mmOriginal: mm,
       dMax: mm.max - mm.min,
-      textShift: 5
+      textShift: 5,
+      gridColor: '#182D3B'
     };
   }

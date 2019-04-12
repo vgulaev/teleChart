@@ -1,6 +1,7 @@
-  onMoveGraph(x) {
+  onMoveGraph(x, y) {
     this.pointer.status = 'draw';
     this.pointer.x = x;
+    this.pointer.y = y;
     requestAnimationFrame(() => {
       this.drawPointer();
     });

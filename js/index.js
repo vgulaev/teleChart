@@ -24,12 +24,12 @@ function drawCharts() {
             heightPanel: 100
           });
     });
-  [1, 4, 5].forEach(i => {
-    httpGetAsync(`contest/${i}/overview.json`)
+  [3, 4, 5].forEach((e, i) => {
+    httpGetAsync(`contest/${e}/overview.json`)
       .then(data => {
         let d = JSON.parse(data);
-        d.caption = c[i - 1];
-        c0 = new TC20(`chart${i}`, d, {
+        d.caption = c[e - 1];
+        c0 = new TC20(`chart${i + 1}`, d, {
               width: 500,
               height: 300,
               widthToPage: document.getElementById('widthToPage').checked,

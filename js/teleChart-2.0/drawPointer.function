@@ -4,6 +4,7 @@
       // this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {
       this.drawStackedBarPoiner(this.pointer.x);
+      this.drawTips();
     } else if ('line' == this.type) {
       // this.drawLineChart(a, b, c, s);
     } else if ('area' == this.type) {
