@@ -402,7 +402,7 @@ class TC20 {
       y: y,
       viewY: viewY,
       innerHTML: y,
-      text: TC20.text({x: 5, y: viewY - this.YAxis.textShift, innerHTML: y, fill: '#252529', style: 'font-size: 10px', opacity: 1}),
+      text: TC20.text({x: 5, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(y), fill: '#252529', style: 'font-size: 10px', opacity: 1}),
       line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': '#182D3B', 'fill': 'none', opacity: 0.1})
     };
     // obj.text = ;
@@ -803,5 +803,24 @@ class TC20 {
   static get xmlns() {
     return "http://www.w3.org/2000/svg";
   }
+
+  yFormat(n) {
+      var abs = Math.abs(n);
+      if (abs > 1000000000) return (n / 1000000000).toFixed(2) + 'B';
+      if (abs > 1000000) return (n / 1000000).toFixed(2) + 'M';
+      if (abs > 1000) return (n / 1000).toFixed(1) + 'K';
+
+      if (abs > 1) {
+          var s = abs.toFixed(0);
+          var formatted = n < 0 ? '-' : '';
+          for (var i = 0; i < s.length; i++) {
+              formatted += s.charAt(i);
+              if ((s.length - 1 - i) % 3 === 0) formatted += ' ';
+          }
+          return formatted;
+      }
+
+      return n.toString()
+    }
 
 }
