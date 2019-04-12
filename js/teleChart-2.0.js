@@ -122,6 +122,7 @@ class TC20 {
     if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
     }
+    this.width = width;
 
     this.statusTag = document.getElementById('Status');
     this.divRoot = document.getElementById(tagID);
@@ -129,39 +130,11 @@ class TC20 {
     this.divRoot.style.width = width;
     this.prepareData(data);
 
-    let h1 = Math.floor(o['heightPanel'] * 0.03);
-    this.panel = {
-      width: width,
-      height: o['heightPanel'],
-      yb: h1,
-      radius: Math.floor(o['heightPanel'] * 0.1),
-      scrollBox: {
-        width: Math.floor(width * 0.25),
-        x: width - Math.floor(width * 0.25),
-        // Math.floor(width * 0.2),
-        h1: h1,
-        w1: Math.min(Math.floor(width * 0.03), 30)
-      }
-    };
-    this.graph = {
-      scales: [], yb: 0, y: {},
-      height: o['height']
-    };
-    this.XAxis = {
-      sieve: 0
-    };
-    let mm = this.getMinMax(0, this.data.length - 1);
-    this.YAxis = {
-      point: [],
-      mmOriginal: mm,
-      dMax: mm.max - mm.min,
-      textShift: 5
-    };
+    this.initInternalObjects(o);
 
     this.createHeader();
     this.initSVG(o, width);
 
-    this.width = this.svgPanel.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
     this.animationStack = new Set();
     this.semafors = {};
@@ -494,6 +467,37 @@ class TC20 {
       points.push(cur);
     }
     return points;
+  }
+
+  initInternalObjects(o) {
+    let h1 = Math.floor(o['heightPanel'] * 0.03);
+    this.panel = {
+      width: this.width,
+      height: o['heightPanel'],
+      yb: h1,
+      radius: Math.floor(o['heightPanel'] * 0.1),
+      scrollBox: {
+        width: Math.round(this.width * 0.25),
+        x: this.width - Math.round(this.width * 0.25),
+        // Math.floor(width * 0.2),
+        h1: h1,
+        w1: Math.min(Math.floor(this.width * 0.04), 30)
+      }
+    };
+    this.graph = {
+      scales: [], yb: 0, y: {},
+      height: o['height']
+    };
+    this.XAxis = {
+      sieve: 0
+    };
+    let mm = this.getMinMax(0, this.data.length - 1);
+    this.YAxis = {
+      point: [],
+      mmOriginal: mm,
+      dMax: mm.max - mm.min,
+      textShift: 5
+    };
   }
 
   initPathForGraphAndPanel() {

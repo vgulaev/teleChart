@@ -1,0 +1,30 @@
+  initInternalObjects(o) {
+    let h1 = Math.floor(o['heightPanel'] * 0.03);
+    this.panel = {
+      width: this.width,
+      height: o['heightPanel'],
+      yb: h1,
+      radius: Math.floor(o['heightPanel'] * 0.1),
+      scrollBox: {
+        width: Math.round(this.width * 0.25),
+        x: this.width - Math.round(this.width * 0.25),
+        // Math.floor(width * 0.2),
+        h1: h1,
+        w1: Math.min(Math.floor(this.width * 0.04), 30)
+      }
+    };
+    this.graph = {
+      scales: [], yb: 0, y: {},
+      height: o['height']
+    };
+    this.XAxis = {
+      sieve: 0
+    };
+    let mm = this.getMinMax(0, this.data.length - 1);
+    this.YAxis = {
+      point: [],
+      mmOriginal: mm,
+      dMax: mm.max - mm.min,
+      textShift: 5
+    };
+  }

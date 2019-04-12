@@ -21,7 +21,7 @@ function drawCharts() {
             width: 500,
             height: 300,
             widthToPage: document.getElementById('widthToPage').checked,
-            heightPanel: 120
+            heightPanel: 100
           });
     });
   [1, 4, 5].forEach(i => {
@@ -33,7 +33,7 @@ function drawCharts() {
               width: 500,
               height: 300,
               widthToPage: document.getElementById('widthToPage').checked,
-              heightPanel: 120
+              heightPanel: 100
             });
       });
   });
