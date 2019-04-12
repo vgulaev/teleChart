@@ -38,7 +38,8 @@
     this.YAxis = {
       point: [],
       mmOriginal: mm,
-      dMax: mm.max - mm.min
+      dMax: mm.max - mm.min,
+      textShift: 5
     };
 
     this.createHeader();

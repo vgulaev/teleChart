@@ -154,7 +154,8 @@ class TC20 {
     this.YAxis = {
       point: [],
       mmOriginal: mm,
-      dMax: mm.max - mm.min
+      dMax: mm.max - mm.min,
+      textShift: 5
     };
 
     this.createHeader();
@@ -400,10 +401,14 @@ class TC20 {
     let obj = {
       y: y,
       viewY: viewY,
-      innerHTML: y
+      innerHTML: y,
+      text: TC20.text({x: 5, y: viewY - this.YAxis.textShift, innerHTML: y, fill: '#252529', style: 'font-size: 10px', opacity: 1}),
+      line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': '#182D3B', 'fill': 'none', opacity: 0.1})
     };
-    obj.text = TC20.text({x: 10, y: obj.viewY, innerHTML: obj.innerHTML, fill: '#252529', style: 'font-size: 10px', opacity: 1});
+    // obj.text = ;
     this.svgRoot.append(obj.text);
+    this.svgRoot.append(obj.line);
+    // obj.line =
     // this.svgXAxis.append(obj.text);
     // obj.coord = obj.text.getBBox();
     // TC20.setA(obj.text, {x: obj.viewX - obj.coord.width, y: 10});
@@ -642,17 +647,16 @@ class TC20 {
   }
 
   recreateYALabel(c) {
-    let ya = this.YAxis;
-    let t1 = Math.floor(ya.mmOriginal.min / ya.step) * ya.step;
-    let yLevel = Math.floor((c.min - t1) / ya.step) * ya.step + t1;
-    let dy = this.height / (c.max - c.min);
     for (let e of this.YAxis.point) {
       e.text.remove();
+      e.line.remove();
     }
     this.YAxis.points = [];
-    while (yLevel < c.max + ya.step) {
+    let dy = this.height / (c.max - c.min);
+    let yLevel = this.YAxis.from;
+    while (yLevel < c.max + this.YAxis.step) {
       this.YAxis.point.push(this.drawYLabel(yLevel, Math.floor(this.height - (yLevel - c.min) * dy)));
-      yLevel += ya.step;
+      yLevel += this.YAxis.step;
     }
   }
 
@@ -754,14 +758,19 @@ class TC20 {
     step = 1.2 ** Math.floor(Math.log(step) / Math.log(1.2));
     let p = 10 ** (Math.floor(Math.log10(step)) - 1);
     step = Math.floor(step / p) * p;
-
-    if (this.YAxis.step != step) {
+    let t1 = Math.floor(this.YAxis.mmOriginal.min / step) * step;
+    let from = Math.floor((c.min - t1) / step) * step + t1;
+    // console.log(step, from);
+    if (this.YAxis.step != step || this.YAxis.from != from) {
+      this.YAxis.from = from;
       this.YAxis.step = step;
       this.recreateYALabel(c);
     } else {
       let dy = this.height / (c.max - c.min);
       for (let e of this.YAxis.point) {
-        TC20.setA(e.text, {y: Math.floor(this.height - (e.y - c.min) * dy)});
+        let viewY = Math.floor(this.height - (e.y - c.min) * dy);
+        TC20.setA(e.text, {y: viewY - this.YAxis.textShift});
+        TC20.setA(e.line, {d: `M0,${viewY}L${this.width},${viewY}`});
       }
     }
   }

@@ -3,14 +3,19 @@
     step = 1.2 ** Math.floor(Math.log(step) / Math.log(1.2));
     let p = 10 ** (Math.floor(Math.log10(step)) - 1);
     step = Math.floor(step / p) * p;
-
-    if (this.YAxis.step != step) {
+    let t1 = Math.floor(this.YAxis.mmOriginal.min / step) * step;
+    let from = Math.floor((c.min - t1) / step) * step + t1;
+    // console.log(step, from);
+    if (this.YAxis.step != step || this.YAxis.from != from) {
+      this.YAxis.from = from;
       this.YAxis.step = step;
       this.recreateYALabel(c);
     } else {
       let dy = this.height / (c.max - c.min);
       for (let e of this.YAxis.point) {
-        TC20.setA(e.text, {y: Math.floor(this.height - (e.y - c.min) * dy)});
+        let viewY = Math.floor(this.height - (e.y - c.min) * dy);
+        TC20.setA(e.text, {y: viewY - this.YAxis.textShift});
+        TC20.setA(e.line, {d: `M0,${viewY}L${this.width},${viewY}`});
       }
     }
   }
