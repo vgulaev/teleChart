@@ -31,7 +31,7 @@
     });
 
     this.svgRoot.addEventListener('mousemove', e => {
-      this.onMoveGraph(Math.round(e.pageX), Math.round(e.pageY));
+      this.onMoveGraph(Math.round(e.pageX), Math.round(e.pageY), Math.round(e.clientY));
     });
 
     this.svgRoot.addEventListener('touchmove', (e) => {

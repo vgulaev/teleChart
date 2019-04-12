@@ -80,7 +80,7 @@ class TC20 {
     });
 
     this.svgRoot.addEventListener('mousemove', e => {
-      this.onMoveGraph(Math.round(e.pageX), Math.round(e.pageY));
+      this.onMoveGraph(Math.round(e.pageX), Math.round(e.pageY), Math.round(e.clientY));
     });
 
     this.svgRoot.addEventListener('touchmove', (e) => {
@@ -361,14 +361,13 @@ class TC20 {
     this.divTips.innerHTML = this.innerTips();
     this.divTips.style.display = 'block'
     let svg = this.svgRoot.getBoundingClientRect();
-    let coord = this.divTips.getBoundingClientRect();
-    if (this.pointer.x + 25 + coord.width > document.body.clientWidth ) {
-      this.divTips.style.left = this.pointer.x - coord.width - 25 + 'px';
+    if (this.pointer.x + 25 + this.divTips.offsetWidth > document.body.clientWidth ) {
+      this.divTips.style.left = this.pointer.x - this.divTips.offsetWidth - 25 + 'px';
     } else {
       this.divTips.style.left = this.pointer.x + 25 + 'px';
     }
-    if (this.pointer.y + coord.height > svg.bottom) {
-      this.divTips.style.top = svg.bottom - coord.height + 'px';
+    if (this.pointer.clientY + this.divTips.offsetHeight > svg.bottom) {
+      this.divTips.style.top = (this.pointer.y - this.pointer.clientY) + svg.bottom - this.divTips.offsetHeight + 'px';
     } else {
       this.divTips.style.top = this.pointer.y + 'px';
     }
@@ -634,10 +633,12 @@ class TC20 {
     }
   }
 
-  onMoveGraph(x, y) {
+  onMoveGraph(x, y, clientY) {
     this.pointer.status = 'draw';
     this.pointer.x = x;
     this.pointer.y = y;
+    this.pointer.clientY = clientY;
+
     requestAnimationFrame(() => {
       this.drawPointer();
     });
