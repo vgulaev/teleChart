@@ -84,7 +84,7 @@ class TC20 {
     });
 
     this.svgRoot.addEventListener('touchmove', (e) => {
-      this.onMoveGraph(Math.round(e.touches[0].pageX), Math.round(e.touches[0].pageY));
+      this.onMoveGraph(Math.round(e.touches[0].pageX), Math.round(e.touches[0].pageY), Math.round(e.touches[0].clientY));
     });
 
     this.svgRoot.addEventListener('mouseleave', (e) => {
