@@ -310,7 +310,7 @@ class TC20 {
   }
 
   drawScroll() {
-    let s = this.panel.scrollBox;
+    let s = this.panel.scrollBox, h2 = this.panel.height / 3;
     let x1 = s.x + s.w1, x2 = s.x + s.width - s.w1, h1 = s.h1;
     TC20.setA(s.leftBox, {d: this.panelBracket(x1, 1)});
     TC20.setA(s.rightBox, {d: this.panelBracket(x2, -1)});
@@ -318,8 +318,8 @@ class TC20 {
     TC20.setA(s.bottom, {x: x1, y: this.panel.height - s.h1, width: x2 - x1, height: s.h1});
     TC20.setA(s.leftMask, {x:0, y: h1, width: x1, height: this.panel.height - 2 * h1});
     TC20.setA(s.rightMask, {x: x2, y: h1, width: this.panel.width - x2, height: this.panel.height - 2 * h1});
-    TC20.setA(s.leftLine, {d: `M${s.x + s.w1 / 2},${(this.panel.height - s.w1) / 2}v${s.w1}`});
-    TC20.setA(s.rightLine, {d: `M${s.x + s.width - s.w1 / 2},${(this.panel.height - s.w1) / 2}v${s.w1}`});
+    TC20.setA(s.leftLine, {d: `M${s.x + s.w1 / 2},${(this.panel.height - h2) / 2}v${h2}`});
+    TC20.setA(s.rightLine, {d: `M${s.x + s.width - s.w1 / 2},${(this.panel.height - h2) / 2}v${h2}`});
   }
 
   drawStackedBarChart(a, b, mm, s) {
@@ -401,17 +401,11 @@ class TC20 {
     let obj = {
       y: y,
       viewY: viewY,
-      innerHTML: y,
       text: TC20.text({x: 5, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(y), fill: '#252529', style: 'font-size: 10px', opacity: 1}),
       line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': '#182D3B', 'fill': 'none', opacity: 0.1})
     };
-    // obj.text = ;
     this.svgRoot.append(obj.text);
     this.svgRoot.append(obj.line);
-    // obj.line =
-    // this.svgXAxis.append(obj.text);
-    // obj.coord = obj.text.getBBox();
-    // TC20.setA(obj.text, {x: obj.viewX - obj.coord.width, y: 10});
     return obj;
   }
 
@@ -530,6 +524,20 @@ class TC20 {
     });
   }
 
+
+  labelFormat(n) {
+    var abs = Math.abs(n);
+    if (abs > 1) {
+      var s = abs.toFixed(0);
+      var formatted = n < 0 ? '-' : '';
+      for (var i = 0; i < s.length; i++) {
+          formatted += s.charAt(i);
+          if ((s.length - 1 - i) % 3 === 0) formatted += ' ';
+      }
+      return formatted;
+    }
+    return n.toString()
+  }
 
   mmDD(date) {
     return TC20.monthShort[date.getMonth()] + ' ' + date.getDate().toString();
@@ -805,22 +813,12 @@ class TC20 {
   }
 
   yFormat(n) {
-      var abs = Math.abs(n);
-      if (abs > 1000000000) return (n / 1000000000).toFixed(2) + 'B';
-      if (abs > 1000000) return (n / 1000000).toFixed(2) + 'M';
-      if (abs > 1000) return (n / 1000).toFixed(1) + 'K';
+    var abs = Math.abs(n);
+    if (abs > 1000000000) return (n / 1000000000).toFixed(2) + 'B';
+    if (abs > 1000000) return (n / 1000000).toFixed(2) + 'M';
+    if (abs > 1000) return (n / 1000).toFixed(1) + 'K';
 
-      if (abs > 1) {
-          var s = abs.toFixed(0);
-          var formatted = n < 0 ? '-' : '';
-          for (var i = 0; i < s.length; i++) {
-              formatted += s.charAt(i);
-              if ((s.length - 1 - i) % 3 === 0) formatted += ' ';
-          }
-          return formatted;
-      }
-
-      return n.toString()
+    return n.toString()
     }
 
 }
