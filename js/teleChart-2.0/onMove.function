@@ -35,9 +35,14 @@
         }
       }
       requestAnimationFrame(() => {
+        let [a,b] = this.getABfromScroll();
+        let mm = this.getMinMax(a, b);
+        let t = {min: this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x),
+          max: this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x)
+        };
         this.hideTips();
         this.requestExec(this.drawScroll);
-        this.requestDrawGraph();
+        this.requestDrawGraph(t);
         this.updateDateRange();
       });
     }

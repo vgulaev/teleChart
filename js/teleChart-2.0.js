@@ -31,7 +31,7 @@ class TC20 {
     }
   }
 
-  *anyCounter(from, to, steps) {
+  *anyCounter(from, to, steps, callBack) {
     if (from == to) {
       yield from;
       return;
@@ -40,45 +40,31 @@ class TC20 {
     let curent = from;
     for (let i = 0; i < steps - 1; i++) {
       curent += delta;
+      if (undefined != callBack) callBack.call(this, curent);
       yield curent;
     }
+    if (undefined != callBack) callBack.call(this, to);
     yield to;
   }
 
   *smothDrawLineChart() {
-    // let [f, t] = this.graph.scales;
     let c = {};
-    let s = 25;
-    if ('area' == this.type) s = 1;
-    // let dn = (t.min - f.min) / s, dx = (t.max - f.max) / s;
     yield 'start';
-    console.log(this.graph.transition);
     while (true) {
+      for (let g of Object.keys(this.graph.transition)) {
+        let v = this.graph.transition[g].next();
+        if (v.done) {
+          delete this.graph.transition[g];
+        }
+      }
+      if (0 == Object.keys(this.graph.transition).length) break;
       c = {min: this.graph.min, max: this.graph.max};
-      // let l = this.graph.scales[1];
-      // if (t.min != l.min || t.max != l.max) {
-      //   this.count += 1;
-      //   t = l;
-      //   dn = (t.min - c.min) / s;
-      //   dx = (t.max - c.max) / s;
-      // }
-      // c.min += dn;
-      // c.max += dx;
-      // if (Math.abs(c.min - t.min) < 2 * Math.abs(dn)) {
-      //   dn = 0;
-      //   c.min = t.min;
-      // }
-      // if (Math.abs(c.max - t.max) < 2 * Math.abs(dx)) {
-      //   dx = 0;
-      //   c.max = t.max;
-      // }
-
       let [a, b] = this.getABfromScroll();
       this.drawChart(a, b, c, this.graph);
-      break;
       yield true;
     }
   }
+
 
   addEventListenerToPanel() {
     let s = this.panel.scrollBox, p = this.svgPanel;
@@ -628,7 +614,7 @@ class TC20 {
   innerTips() {
     let s = 0;
     let r = [`<td><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
-    for (let e of this.allItems) {
+    for (let e of this.viewItems) {
       s += this.data.y[e][this.pointer.curX];
       r.push(`<td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
     }
@@ -695,9 +681,14 @@ class TC20 {
         }
       }
       requestAnimationFrame(() => {
+        let [a,b] = this.getABfromScroll();
+        let mm = this.getMinMax(a, b);
+        let t = {min: this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x),
+          max: this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x)
+        };
         this.hideTips();
         this.requestExec(this.drawScroll);
-        this.requestDrawGraph();
+        this.requestDrawGraph(t);
         this.updateDateRange();
       });
     }
@@ -774,17 +765,25 @@ class TC20 {
   reCheck(button, element) {
     let whiteCircle = button.querySelector('.whiteCircle');
     let direction = 1;
+    let factor = 0;
     if (this.viewItems.has(element)) {
       this.viewItems.delete(element);
-      this.data.factor[element] = 0;
     } else {
       direction = -1;
+      factor = 1;
       this.viewItems.add(element);
-      this.data.factor[element] = 1;
     }
     let a = this.animateCircleInButton(whiteCircle, 200, direction);
     this.doAnimation(a);
-    this.requestDrawGraph();
+    t = {}
+    t[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
+        this.data.factor[element] = x;
+        let [a, b] = this.getABfromScroll();
+        let mm = this.getMinMax(a, b);
+        this.graph.min = mm.min;
+        this.graph.max = mm.max;
+      });
+    this.requestDrawGraph(t);
     // console.log('check', b);
   }
 
@@ -830,10 +829,10 @@ class TC20 {
     this.drawChart(a, b, mm, this.graph);
   }
 
-  requestDrawGraph() {
-    // let [a, b] = this.getABfromScroll();
-    // let mm = this.getMinMax(a, b);
-    if (Object.keys(this.graph.transition) == 0) {
+  requestDrawGraph(transition) {
+    let startAnimation = (Object.keys(this.graph.transition) == 0);
+    Object.assign(this.graph.transition, transition);
+    if (startAnimation) {
       let n = this.smothDrawLineChart();
       this.doAnimation(n);
     }

@@ -1,34 +1,17 @@
   *smothDrawLineChart() {
-    // let [f, t] = this.graph.scales;
     let c = {};
-    let s = 25;
-    if ('area' == this.type) s = 1;
-    // let dn = (t.min - f.min) / s, dx = (t.max - f.max) / s;
     yield 'start';
-    console.log(this.graph.transition);
     while (true) {
+      for (let g of Object.keys(this.graph.transition)) {
+        let v = this.graph.transition[g].next();
+        if (v.done) {
+          delete this.graph.transition[g];
+        }
+      }
+      if (0 == Object.keys(this.graph.transition).length) break;
       c = {min: this.graph.min, max: this.graph.max};
-      // let l = this.graph.scales[1];
-      // if (t.min != l.min || t.max != l.max) {
-      //   this.count += 1;
-      //   t = l;
-      //   dn = (t.min - c.min) / s;
-      //   dx = (t.max - c.max) / s;
-      // }
-      // c.min += dn;
-      // c.max += dx;
-      // if (Math.abs(c.min - t.min) < 2 * Math.abs(dn)) {
-      //   dn = 0;
-      //   c.min = t.min;
-      // }
-      // if (Math.abs(c.max - t.max) < 2 * Math.abs(dx)) {
-      //   dx = 0;
-      //   c.max = t.max;
-      // }
-
       let [a, b] = this.getABfromScroll();
       this.drawChart(a, b, c, this.graph);
-      break;
       yield true;
     }
   }
