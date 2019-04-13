@@ -249,11 +249,11 @@ class TC20 {
     for (let i = a; i <= b; i++) {
       t = 0;
       for (let e of l) {
-        t += y[e][i];
+        t += y[e][i] * this.data.factor[e];
       }
       c = 0;
       for (let e of l) {
-        p[e][i - a] = Math.round(y[e][i] / t * 100);
+        p[e][i - a] = Math.round(y[e][i] * this.data.factor[e] / t * 100);
         c += p[e][i - a];
         vy[e][i - a] = Math.round(h * c / 100) + s.yb;
       }
@@ -776,7 +776,7 @@ class TC20 {
     }
     let a = this.animateCircleInButton(whiteCircle, 200, direction);
     this.doAnimation(a);
-    t = {}
+    t = {};
     t[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
         this.data.factor[element] = x;
         let [a, b] = this.getABfromScroll();
@@ -784,7 +784,9 @@ class TC20 {
         this.graph.min = mm.min;
         this.graph.max = mm.max;
       });
-    this.requestDrawGraph(t);
+    requestAnimationFrame(() => {
+      this.requestDrawGraph(t);
+    });
     // console.log('check', b);
   }
 

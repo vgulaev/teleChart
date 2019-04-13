@@ -8,11 +8,11 @@
     for (let i = a; i <= b; i++) {
       t = 0;
       for (let e of l) {
-        t += y[e][i];
+        t += y[e][i] * this.data.factor[e];
       }
       c = 0;
       for (let e of l) {
-        p[e][i - a] = Math.round(y[e][i] / t * 100);
+        p[e][i - a] = Math.round(y[e][i] * this.data.factor[e] / t * 100);
         c += p[e][i - a];
         vy[e][i - a] = Math.round(h * c / 100) + s.yb;
       }
