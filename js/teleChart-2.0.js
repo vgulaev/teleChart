@@ -539,7 +539,7 @@ class TC20 {
   }
 
   getMinMaxElse(a, b) {
-    if (0 == this.viewItems) {
+    if (0 == this.viewItems.size) {
       return {min: this.graph.min, max: this.graph.max};
     }
     let min = Infinity, max = -Infinity;
