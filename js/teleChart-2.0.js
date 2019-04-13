@@ -858,7 +858,6 @@ class TC20 {
   }
 
   removePointer() {
-    return;
     this.pointer.status = undefined;
     for (let i of this.viewItems) {
       TC20.setA(this.graph[i], {opacity: 1});
