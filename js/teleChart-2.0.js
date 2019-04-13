@@ -315,16 +315,6 @@ class TC20 {
   drawChart(a, b, c, s) {
     s.min = c.min;
     s.max = c.max;
-    if (0 == this.viewItems.size) {
-      for (let e of this.allItems) {
-        TC20.setA(s[e], {style: 'display: none'});
-      }
-      return;
-    } else {
-      for (let e of this.allItems) {
-        TC20.setA(s[e], {style: 'display: block'});
-      }
-    }
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
       this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {
@@ -548,6 +538,9 @@ class TC20 {
   }
 
   getMinMaxElse(a, b) {
+    if (0 == this.this.viewItems) {
+      return {min: this.graph.min, max: this.graph.max};
+    }
     let min = Infinity, max = -Infinity;
     for (let item of this.viewItems) {
       for (let i = Math.ceil(a); i <= b; i++) {
