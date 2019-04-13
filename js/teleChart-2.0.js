@@ -564,7 +564,7 @@ class TC20 {
       }
     };
     this.graph = {
-      scales: [], yb: 0, y: {},
+      transition: [], yb: 0, y: {},
       height: o['height']
     };
     this.XAxis = {
