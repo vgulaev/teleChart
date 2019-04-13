@@ -31,39 +31,53 @@ class TC20 {
     }
   }
 
+  *anyCounter(from, to, steps) {
+    if (from == to) {
+      yield from;
+      return;
+    }
+    let delta = (to - from) / steps;
+    let curent = from;
+    for (let i = 0; i < steps - 1; i++) {
+      curent += delta;
+      yield curent;
+    }
+    yield to;
+  }
+
   *smothDrawLineChart() {
-    let [f, t] = this.graph.scales;
-    let c = {min: f.min, max: f.max}, s = 25;
+    // let [f, t] = this.graph.scales;
+    let c = {};
+    let s = 25;
     if ('area' == this.type) s = 1;
-    let dn = (t.min - f.min) / s, dx = (t.max - f.max) / s;
+    // let dn = (t.min - f.min) / s, dx = (t.max - f.max) / s;
     yield 'start';
-    while (2 == this.graph.scales.length) {
-      let l = this.graph.scales[1];
-      if (t.min != l.min || t.max != l.max) {
-        this.count += 1;
-        t = l;
-        dn = (t.min - c.min) / s;
-        dx = (t.max - c.max) / s;
-      }
-      c.min += dn;
-      c.max += dx;
-      if (Math.abs(c.min - t.min) < 2 * Math.abs(dn)) {
-        dn = 0;
-        c.min = t.min;
-      }
-      if (Math.abs(c.max - t.max) < 2 * Math.abs(dx)) {
-        dx = 0;
-        c.max = t.max;
-      }
+    console.log(this.graph.transition);
+    while (true) {
+      c = {min: this.graph.min, max: this.graph.max};
+      // let l = this.graph.scales[1];
+      // if (t.min != l.min || t.max != l.max) {
+      //   this.count += 1;
+      //   t = l;
+      //   dn = (t.min - c.min) / s;
+      //   dx = (t.max - c.max) / s;
+      // }
+      // c.min += dn;
+      // c.max += dx;
+      // if (Math.abs(c.min - t.min) < 2 * Math.abs(dn)) {
+      //   dn = 0;
+      //   c.min = t.min;
+      // }
+      // if (Math.abs(c.max - t.max) < 2 * Math.abs(dx)) {
+      //   dx = 0;
+      //   c.max = t.max;
+      // }
+
       let [a, b] = this.getABfromScroll();
       this.drawChart(a, b, c, this.graph);
-      if (dx == 0 && dn == 0) {
-        break;
-      }
+      break;
       yield true;
     }
-    this.graph.scales.shift();
-    console.log('smothDrawLineChart', this.count);
   }
 
   addEventListenerToPanel() {
@@ -295,6 +309,8 @@ class TC20 {
   }
 
   drawChart(a, b, c, s) {
+    this.graph.min = c.min;
+    this.graph.max = c.max;
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
       this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {
@@ -564,7 +580,7 @@ class TC20 {
       }
     };
     this.graph = {
-      transition: [], yb: 0, y: {},
+      transition: {}, yb: 0, y: {}, min: 0, max: 0,
       height: o['height']
     };
     this.XAxis = {
@@ -810,20 +826,16 @@ class TC20 {
     this.drawPanel();
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
-    this.graph.scales.push(mm);
     this.updateDateRange();
     this.drawChart(a, b, mm, this.graph);
   }
 
   requestDrawGraph() {
-    let [a, b] = this.getABfromScroll();
-    let mm = this.getMinMax(a, b);
-    if (2 == this.graph.scales.length) {
-      this.graph.scales[1] = mm;
-    } else {
-      this.graph.scales.push(mm);
-      let a = this.smothDrawLineChart();
-      this.doAnimation(a);
+    // let [a, b] = this.getABfromScroll();
+    // let mm = this.getMinMax(a, b);
+    if (Object.keys(this.graph.transition) == 0) {
+      let n = this.smothDrawLineChart();
+      this.doAnimation(n);
     }
   }
 

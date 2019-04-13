@@ -1,0 +1,13 @@
+  *anyCounter(from, to, steps) {
+    if (from == to) {
+      yield from;
+      return;
+    }
+    let delta = (to - from) / steps;
+    let curent = from;
+    for (let i = 0; i < steps - 1; i++) {
+      curent += delta;
+      yield curent;
+    }
+    yield to;
+  }
