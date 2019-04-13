@@ -522,6 +522,7 @@ class TC20 {
       y = Math.floor(h - y0 - (d[i] - minY) * scaleY);
       res += `L${x},${y} `
     }
+    if (res.indexOf('NaN') != -1) this.his.his;
     return res;
   }
 
