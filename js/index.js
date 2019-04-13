@@ -11,7 +11,7 @@ function httpGetAsync(theUrl) {
 
 function drawCharts() {
   let c = ['Followers', 'Interactions', 'Messages', 'Views', 'Apps'];
-  httpGetAsync('contest/3/overview.json')
+  httpGetAsync('contest/1/overview.json')
     .then(data => {
       let d = JSON.parse(data);
       //d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => ((i < 50 || (250 < i && i < 280)) && i != 0 ? i * 100 : e)));
@@ -24,7 +24,7 @@ function drawCharts() {
             heightPanel: 100
           });
     });
-  [1, 4, 5].forEach((e, i) => {
+  [1, 2, 3, 4, 5].forEach((e, i) => {
     httpGetAsync(`contest/${e}/overview.json`)
       .then(data => {
         let d = JSON.parse(data);

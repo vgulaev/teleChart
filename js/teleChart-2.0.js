@@ -324,7 +324,7 @@ class TC20 {
 
   drawLineChart(a, b, mm, s) {
     for (let i of this.allItems) {
-      TC20.setA(s[i], {d: this.getD(0, 2 * s.yb, this.width, s.height - 3 * s.yb, s.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
+      TC20.setA(s[i], {d: this.getD(0, 2 * s.yb, this.width, s.height - 3 * s.yb, s.height, mm.min, mm.max, this.data.y[i], a, b + 1), opacity: this.data.factor[i]});
     }
   }
 
@@ -500,7 +500,7 @@ class TC20 {
 
   getMinMaxElse(a, b) {
     let min = Infinity, max = -Infinity;
-    for (let item of this.allItems) {
+    for (let item of this.viewItems) {
       for (let i = Math.ceil(a); i <= b; i++) {
         let j = this.data.y[item][i];
         if (j < min) min = j;
@@ -784,14 +784,7 @@ class TC20 {
     let a = this.animateCircleInButton(whiteCircle, 200, direction);
     this.doAnimation(a);
     let graph = {}, panel = {};
-    graph[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
-        this.data.factor[element] = x;
-        let [a, b] = this.getABfromScroll();
-        let mm = this.getMinMax(a, b);
-        this.graph.min = mm.min;
-        this.graph.max = mm.max;
-      });
-    panel[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => this.data.factor[element] = x);
+    this.setReCheckTransition(graph, panel, element, factor);
     requestAnimationFrame(() => {
       this.requestDrawGraph(graph, this.graph);
       this.requestDrawGraph(panel, this.panel);
@@ -820,7 +813,7 @@ class TC20 {
 
   removePointer() {
     this.pointer.status = undefined;
-    for (let i of this.allItems) {
+    for (let i of this.viewItems) {
       TC20.setA(this.graph[i], {opacity: 1});
     }
     this.pointer.g.innerHTML = '';
@@ -927,6 +920,32 @@ class TC20 {
     Object.keys(a).map(k => {
       e.setAttributeNS(null, k, a[k]);
     });
+  }
+
+  setReCheckTransition(graph, panel, name, factor) {
+    if (-1 != ['area', 'bar'].indexOf(this.type)) {
+      graph[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
+        this.data.factor[name] = x;
+        let [a, b] = this.getABfromScroll();
+        let mm = this.getMinMax(a, b);
+        this.graph.min = mm.min;
+        this.graph.max = mm.max;
+      });
+      panel[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => this.data.factor[name] = x);
+    } else if ('line' == this.type) {
+      let [a,b] = this.getABfromScroll();
+      let mm = this.getMinMax(a, b);
+      graph.min = this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x);
+      graph.max = this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x);
+      graph[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
+        this.data.factor[name] = x;
+        // TC20.setA(this.graph[name], {opacity: x});
+      });
+      panel[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
+        // TC20.setA(this.panel[name], {opacity: x});
+      });
+      // console.log('setReCheckTransition for line');
+    }
   }
 
   static text(o) {
