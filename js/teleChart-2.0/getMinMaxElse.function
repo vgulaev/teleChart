@@ -1,5 +1,5 @@
   getMinMaxElse(a, b) {
-    if (0 == this.this.viewItems) {
+    if (0 == this.viewItems) {
       return {min: this.graph.min, max: this.graph.max};
     }
     let min = Infinity, max = -Infinity;
