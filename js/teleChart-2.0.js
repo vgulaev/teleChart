@@ -766,6 +766,7 @@ class TC20 {
     let whiteCircle = button.querySelector('.whiteCircle');
     let direction = 1;
     let factor = 0;
+    this.hideTips();
     if (this.viewItems.has(element)) {
       this.viewItems.delete(element);
     } else {
