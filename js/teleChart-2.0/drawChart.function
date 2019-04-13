@@ -1,4 +1,10 @@
   drawChart(a, b, c, s) {
+    let display = (0 == this.viewItems.size ? 'none' : 'block');
+    for (let e of this.allItems) {
+      this.graph[e].style.display = 'none';
+      this.panel[e].style.display = 'none';
+    }
+    if (0 == this.viewItems.size) return;
     s.min = c.min;
     s.max = c.max;
     if ('bar' == this.type && undefined == this.data.raw.stacked) {

@@ -313,6 +313,12 @@ class TC20 {
   }
 
   drawChart(a, b, c, s) {
+    let display = (0 == this.viewItems.size ? 'none' : 'block');
+    for (let e of this.allItems) {
+      this.graph[e].style.display = 'none';
+      this.panel[e].style.display = 'none';
+    }
+    if (0 == this.viewItems.size) return;
     s.min = c.min;
     s.max = c.max;
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
@@ -522,7 +528,6 @@ class TC20 {
       y = Math.floor(h - y0 - (d[i] - minY) * scaleY);
       res += `L${x},${y} `
     }
-    if (res.indexOf('NaN') != -1) this.his.his;
     return res;
   }
 
