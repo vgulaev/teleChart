@@ -42,7 +42,7 @@
         };
         this.hideTips();
         this.requestExec(this.drawScroll);
-        this.requestDrawGraph(t);
+        this.requestDrawGraph(t, this.graph);
         this.updateDateRange();
       });
     }

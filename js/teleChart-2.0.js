@@ -47,20 +47,24 @@ class TC20 {
     yield to;
   }
 
-  *smothDrawLineChart() {
+  *smothDrawLineChart(obj) {
     let c = {};
     yield 'start';
     while (true) {
-      for (let g of Object.keys(this.graph.transition)) {
-        let v = this.graph.transition[g].next();
+      for (let g of Object.keys(obj.transition)) {
+        let v = obj.transition[g].next();
         if (v.done) {
-          delete this.graph.transition[g];
+          delete obj.transition[g];
         }
       }
-      if (0 == Object.keys(this.graph.transition).length) break;
-      c = {min: this.graph.min, max: this.graph.max};
+      if (0 == Object.keys(obj.transition).length) break;
+      c = {min: obj.min, max: obj.max};
       let [a, b] = this.getABfromScroll();
-      this.drawChart(a, b, c, this.graph);
+      if (obj == this.panel) {
+        a = 0;
+        b = this.data.length - 1;
+      }
+      this.drawChart(a, b, c, obj);
       yield true;
     }
   }
@@ -389,7 +393,7 @@ class TC20 {
       q += 'z';
       TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
-    this.graph.y = vy;
+    s.y = vy;
   }
 
   drawStackedBarPoiner(x) {
@@ -688,7 +692,7 @@ class TC20 {
         };
         this.hideTips();
         this.requestExec(this.drawScroll);
-        this.requestDrawGraph(t);
+        this.requestDrawGraph(t, this.graph);
         this.updateDateRange();
       });
     }
@@ -776,16 +780,23 @@ class TC20 {
     }
     let a = this.animateCircleInButton(whiteCircle, 200, direction);
     this.doAnimation(a);
-    t = {};
-    t[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
+    let graph = {}, panel = {};
+    graph[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
         this.data.factor[element] = x;
         let [a, b] = this.getABfromScroll();
         let mm = this.getMinMax(a, b);
         this.graph.min = mm.min;
         this.graph.max = mm.max;
       });
+    panel[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
+        this.data.factor[element] = x;
+        let mm = this.getMinMax(0, this.data.length - 1);
+        this.panel.min = mm.min;
+        this.panel.max = mm.max;
+      });
     requestAnimationFrame(() => {
-      this.requestDrawGraph(t);
+      this.requestDrawGraph(graph, this.graph);
+      this.requestDrawGraph(panel, this.panel);
     });
   }
 
@@ -831,11 +842,11 @@ class TC20 {
     this.drawChart(a, b, mm, this.graph);
   }
 
-  requestDrawGraph(transition) {
-    let startAnimation = (Object.keys(this.graph.transition) == 0);
-    Object.assign(this.graph.transition, transition);
+  requestDrawGraph(transition, obj) {
+    let startAnimation = (Object.keys(obj.transition) == 0);
+    Object.assign(obj.transition, transition);
     if (startAnimation) {
-      let n = this.smothDrawLineChart();
+      let n = this.smothDrawLineChart(obj);
       this.doAnimation(n);
     }
   }

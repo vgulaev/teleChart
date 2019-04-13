@@ -1,17 +1,21 @@
-  *smothDrawLineChart() {
+  *smothDrawLineChart(obj) {
     let c = {};
     yield 'start';
     while (true) {
-      for (let g of Object.keys(this.graph.transition)) {
-        let v = this.graph.transition[g].next();
+      for (let g of Object.keys(obj.transition)) {
+        let v = obj.transition[g].next();
         if (v.done) {
-          delete this.graph.transition[g];
+          delete obj.transition[g];
         }
       }
-      if (0 == Object.keys(this.graph.transition).length) break;
-      c = {min: this.graph.min, max: this.graph.max};
+      if (0 == Object.keys(obj.transition).length) break;
+      c = {min: obj.min, max: obj.max};
       let [a, b] = this.getABfromScroll();
-      this.drawChart(a, b, c, this.graph);
+      if (obj == this.panel) {
+        a = 0;
+        b = this.data.length - 1;
+      }
+      this.drawChart(a, b, c, obj);
       yield true;
     }
   }

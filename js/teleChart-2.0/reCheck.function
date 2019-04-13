@@ -12,15 +12,22 @@
     }
     let a = this.animateCircleInButton(whiteCircle, 200, direction);
     this.doAnimation(a);
-    t = {};
-    t[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
+    let graph = {}, panel = {};
+    graph[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
         this.data.factor[element] = x;
         let [a, b] = this.getABfromScroll();
         let mm = this.getMinMax(a, b);
         this.graph.min = mm.min;
         this.graph.max = mm.max;
       });
+    panel[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
+        this.data.factor[element] = x;
+        let mm = this.getMinMax(0, this.data.length - 1);
+        this.panel.min = mm.min;
+        this.panel.max = mm.max;
+      });
     requestAnimationFrame(() => {
-      this.requestDrawGraph(t);
+      this.requestDrawGraph(graph, this.graph);
+      this.requestDrawGraph(panel, this.panel);
     });
   }

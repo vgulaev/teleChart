@@ -31,5 +31,5 @@
       q += 'z';
       TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
-    this.graph.y = vy;
+    s.y = vy;
   }
