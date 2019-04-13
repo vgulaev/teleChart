@@ -1,9 +1,9 @@
   initInternalObjects(o) {
     let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
+      transition: {}, yb: h1, min: 0, max: 0,
       width: this.width,
       height: o['heightPanel'],
-      yb: h1,
       radius: Math.floor(o['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.round(this.width * 0.25),

@@ -553,9 +553,9 @@ class TC20 {
   initInternalObjects(o) {
     let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
+      transition: {}, yb: h1, min: 0, max: 0,
       width: this.width,
       height: o['heightPanel'],
-      yb: h1,
       radius: Math.floor(o['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.round(this.width * 0.25),
@@ -776,18 +776,17 @@ class TC20 {
     }
     let a = this.animateCircleInButton(whiteCircle, 200, direction);
     this.doAnimation(a);
-    // t = {};
-    // t[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
-    //     this.data.factor[element] = x;
-    //     let [a, b] = this.getABfromScroll();
-    //     let mm = this.getMinMax(a, b);
-    //     this.graph.min = mm.min;
-    //     this.graph.max = mm.max;
-    //   });
-    // requestAnimationFrame(() => {
-    //   this.requestDrawGraph(t);
-    // });
-    console.log(this.animationStack.size);
+    t = {};
+    t[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
+        this.data.factor[element] = x;
+        let [a, b] = this.getABfromScroll();
+        let mm = this.getMinMax(a, b);
+        this.graph.min = mm.min;
+        this.graph.max = mm.max;
+      });
+    requestAnimationFrame(() => {
+      this.requestDrawGraph(t);
+    });
   }
 
   recreateYALabel(c) {
