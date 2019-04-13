@@ -1,8 +1,8 @@
   drawChart(a, b, c, s) {
     let display = (0 == this.viewItems.size ? 'none' : 'block');
     for (let e of this.allItems) {
-      this.graph[e].style.display = 'none';
-      this.panel[e].style.display = 'none';
+      this.graph[e].style.display = display;
+      this.panel[e].style.display = display;
     }
     if (0 == this.viewItems.size) return;
     s.min = c.min;
