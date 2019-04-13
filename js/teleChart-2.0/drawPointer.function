@@ -2,7 +2,11 @@
     if (undefined == this.pointer.status) return;
 
     let [a, b] = this.getABfromScroll();
-    this.pointer.dx = this.width / (b - a);
+    if ('line' == this.type) {
+      this.pointer.dx = this.width / (b - a);
+    } else {
+      this.pointer.dx = this.width / (b - a + 1);
+    }
     let x = this.pointer.x;
     if ('line' == this.type) x -= this.pointer.dx / 2;
     let coord = this.svgRoot.getBoundingClientRect();

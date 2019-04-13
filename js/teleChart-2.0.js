@@ -342,7 +342,6 @@ class TC20 {
       let circle = TC20.circle(viewX, y, 5, {'class': 'point', 'fill': 'white', 'stroke': this.data.raw.colors[e], 'stroke-width': 2});
       p.g.append(circle);
     }
-    console.log(this.data.x[p.curX]);
   }
 
   drawPanel() {
@@ -356,7 +355,11 @@ class TC20 {
     if (undefined == this.pointer.status) return;
 
     let [a, b] = this.getABfromScroll();
-    this.pointer.dx = this.width / (b - a);
+    if ('line' == this.type) {
+      this.pointer.dx = this.width / (b - a);
+    } else {
+      this.pointer.dx = this.width / (b - a + 1);
+    }
     let x = this.pointer.x;
     if ('line' == this.type) x -= this.pointer.dx / 2;
     let coord = this.svgRoot.getBoundingClientRect();

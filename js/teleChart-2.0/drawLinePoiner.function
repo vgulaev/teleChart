@@ -10,5 +10,4 @@
       let circle = TC20.circle(viewX, y, 5, {'class': 'point', 'fill': 'white', 'stroke': this.data.raw.colors[e], 'stroke-width': 2});
       p.g.append(circle);
     }
-    console.log(this.data.x[p.curX]);
   }
