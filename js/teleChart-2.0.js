@@ -527,6 +527,7 @@ class TC20 {
   }
 
   getMinMax(a, b) {
+    if (0 == this.viewItems.size) return {min: this.graph.min, max: this.graph.max};
     let r;
     if ('bar' == this.type) {
       r = this.getMinMaxForStackedBar(a, b);
@@ -539,9 +540,6 @@ class TC20 {
   }
 
   getMinMaxElse(a, b) {
-    if (0 == this.viewItems.size) {
-      return {min: this.graph.min, max: this.graph.max};
-    }
     let min = Infinity, max = -Infinity;
     for (let item of this.viewItems) {
       for (let i = Math.ceil(a); i <= b; i++) {
