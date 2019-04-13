@@ -364,6 +364,7 @@ class TC20 {
 
   drawPointer() {
     if (undefined == this.pointer.status) return;
+    if (this.viewItems.size == 0) return;
 
     let [a, b] = this.getABfromScroll();
     if (-1 != ['line', 'area'].indexOf(this.type)) {
