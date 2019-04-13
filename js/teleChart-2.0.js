@@ -187,18 +187,20 @@ class TC20 {
   }
 
   createFooter() {
-    this.footer = document.createElement('div');
-    this.divRoot.append(this.footer);
+    if (this.allItems.size > 1) {
+      this.footer = document.createElement('div');
+      this.divRoot.append(this.footer);
 
-    for (let element of this.allItems) {
-      this.footer.innerHTML += this.button(element);
-    };
+      for (let element of this.allItems) {
+        this.footer.innerHTML += this.button(element);
+      };
 
-    for (let element of this.allItems) {
-      let b = this.footer.querySelector(`#${element}Button`);
-      b.addEventListener('click', eventData => {
-        this.reCheck(b, element);
-      });
+      for (let element of this.allItems) {
+        let b = this.footer.querySelector(`#${element}Button`);
+        b.addEventListener('click', eventData => {
+          this.reCheck(b, element);
+        });
+      };
     };
 
     // let dayNight = document.createElement('div');
@@ -980,8 +982,18 @@ class TC20 {
     if (abs > 1000000000) return (n / 1000000000).toFixed(2) + 'B';
     if (abs > 1000000) return (n / 1000000).toFixed(2) + 'M';
     if (abs > 1000) return (n / 1000).toFixed(1) + 'K';
+    if (n == 0) return 0;
 
-    return n.toString()
+    let p = Math.floor(Math.log10(abs));
+    let s = n < 0 ? '-' : '';
+    if (p < -2) {
+      s += Math.floor(n * (10 ** (Math.abs(p) + 2))) / 100 + `E${p}`;
+      return s;
+    }
+
+    if (Math.floor(n) == n) return n.toString();
+
+    return n.toFixed(3);
     }
 
 }

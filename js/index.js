@@ -11,42 +11,42 @@ function httpGetAsync(theUrl) {
 
 function drawCharts() {
   let c = ['Followers', 'Interactions', 'Messages', 'Views', 'Apps'];
-  httpGetAsync('contest/1/overview.json')
-    .then(data => {
-      let d = JSON.parse(data);
-      //d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => ((i < 50 || (250 < i && i < 280)) && i != 0 ? i * 100 : e)));
-      // d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => i > 0 ? Math.random() * (100 ** (i / 500 + 1)) * i : e));
-      d.caption = c[2];
-      t = new TC20('chart0', d, {
-            width: 500,
-            height: 300,
-            widthToPage: document.getElementById('widthToPage').checked,
-            heightPanel: 100
-          });
-    });
-  [1, 2, 3, 4, 5].forEach((e, i) => {
-    httpGetAsync(`contest/${e}/overview.json`)
-      .then(data => {
-        let d = JSON.parse(data);
-        d.caption = c[e - 1];
-        c0 = new TC20(`chart${i + 1}`, d, {
-              width: 500,
-              height: 300,
-              widthToPage: document.getElementById('widthToPage').checked,
-              heightPanel: 100
-            });
-      });
-  });
+  // httpGetAsync('contest/1/overview.json')
+  //   .then(data => {
+  //     let d = JSON.parse(data);
+  //     //d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => ((i < 50 || (250 < i && i < 280)) && i != 0 ? i * 100 : e)));
+  //     // d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => i > 0 ? Math.random() * (100 ** (i / 500 + 1)) * i : e));
+  //     d.caption = c[2];
+  //     t = new TC20('chart0', d, {
+  //           width: 500,
+  //           height: 300,
+  //           widthToPage: document.getElementById('widthToPage').checked,
+  //           heightPanel: 100
+  //         });
+  //   });
+  // [1, 2, 3, 4, 5].forEach((e, i) => {
+  //   httpGetAsync(`contest/${e}/overview.json`)
+  //     .then(data => {
+  //       let d = JSON.parse(data);
+  //       d.caption = c[e - 1];
+  //       c0 = new TC20(`chart${i + 1}`, d, {
+  //             width: 500,
+  //             height: 300,
+  //             widthToPage: document.getElementById('widthToPage').checked,
+  //             heightPanel: 100
+  //           });
+  //     });
+  // });
   // let dur = parseInt(document.getElementById('animationDuration').value);
-
-  // document.querySelectorAll('.chart').forEach((el, index) =>
-  //   craths.push(new TC20(el.id, chartData[index + 2], {
-  //     width: 500,
-  //     height: 300,
-  //     widthToPage: document.getElementById('widthToPage').checked,
-  //     heightPanel: 120
-  //   }))
-  //   );
+  craths = [];
+  document.querySelectorAll('.chart').forEach((el, index) =>
+    craths.push(new TC20(el.id, chartData[index], {
+      width: 500,
+      height: 300,
+      widthToPage: document.getElementById('widthToPage').checked,
+      heightPanel: 120
+    }))
+    );
   // new TeleChart('chart1', chartData[2], {
   //       width: '500px',
   //       height: '300px',
