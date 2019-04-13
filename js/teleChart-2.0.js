@@ -64,7 +64,7 @@ class TC20 {
         b = this.data.length - 1;
         c = this.YAxis.mmOriginal;
       } else {
-        c = this.getMinMax(a, b);
+        c = {min: obj.min, max: obj.max};
       }
       this.drawChart(a, b, c, obj);
       yield true;
@@ -689,7 +689,8 @@ class TC20 {
       requestAnimationFrame(() => {
         let [a,b] = this.getABfromScroll();
         let mm = this.getMinMax(a, b);
-        let t = {min: this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x),
+        let t = {
+          min: this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x),
           max: this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x)
         };
         this.hideTips();
@@ -785,6 +786,10 @@ class TC20 {
     let graph = {}, panel = {};
     graph[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
         this.data.factor[element] = x;
+        let [a, b] = this.getABfromScroll();
+        let mm = this.getMinMax(a, b);
+        this.graph.min = mm.min;
+        this.graph.max = mm.max;
       });
     panel[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => this.data.factor[element] = x);
     requestAnimationFrame(() => {

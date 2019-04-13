@@ -15,7 +15,7 @@
         b = this.data.length - 1;
         c = this.YAxis.mmOriginal;
       } else {
-        c = this.getMinMax(a, b);
+        c = {min: obj.min, max: obj.max};
       }
       this.drawChart(a, b, c, obj);
       yield true;

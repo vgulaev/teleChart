@@ -15,6 +15,10 @@
     let graph = {}, panel = {};
     graph[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
         this.data.factor[element] = x;
+        let [a, b] = this.getABfromScroll();
+        let mm = this.getMinMax(a, b);
+        this.graph.min = mm.min;
+        this.graph.max = mm.max;
       });
     panel[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => this.data.factor[element] = x);
     requestAnimationFrame(() => {
