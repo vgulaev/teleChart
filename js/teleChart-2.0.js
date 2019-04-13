@@ -330,6 +330,21 @@ class TC20 {
     }
   }
 
+  drawLinePoiner() {
+    let p = this.pointer;
+    let viewX = p.dx * p.k;
+    let scaleY = this.height / (this.graph.max - this.graph.min);
+
+    let path = TC20.path({d: `M${viewX},${0}L${viewX},${this.height}`, 'stroke-width': 2, 'stroke': this.YAxis.gridColor, 'fill': 'none', opacity: 0.1});
+    p.g.append(path);
+    for (let e of this.viewItems) {
+      let y = this.height - scaleY * (this.data.y[e][p.curX] - this.graph.min);
+      let circle = TC20.circle(viewX, y, 5, {'class': 'point', 'fill': 'white', 'stroke': this.data.raw.colors[e], 'stroke-width': 2});
+      p.g.append(circle);
+    }
+    console.log(this.data.x[p.curX]);
+  }
+
   drawPanel() {
     this.drawChartOnPanel();
     this.createScrollElement();
@@ -339,12 +354,28 @@ class TC20 {
 
   drawPointer() {
     if (undefined == this.pointer.status) return;
+
+    let [a, b] = this.getABfromScroll();
+    this.pointer.dx = this.width / (b - a);
+    let x = this.pointer.x;
+    if ('line' == this.type) x -= this.pointer.dx / 2;
+    let coord = this.svgRoot.getBoundingClientRect();
+    let localX = x - coord.x;
+    let k = Math.ceil(localX / this.pointer.dx);
+    if (this.pointer.curX == a + k) return;
+    this.pointer.a = a;
+    this.pointer.k = k;
+    this.pointer.curX = a + k;
+    this.pointer.g.innerHTML = '';
+
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
       // this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {
-      this.drawStackedBarPoiner(this.pointer.x);
+      this.drawStackedBarPoiner();
       this.drawTips();
     } else if ('line' == this.type) {
+      this.drawLinePoiner();
+      this.drawTips();
       // this.drawLineChart(a, b, c, s);
     } else if ('area' == this.type) {
       // this.drawAreaChart(a, b, s);
@@ -400,24 +431,16 @@ class TC20 {
     s.y = vy;
   }
 
-  drawStackedBarPoiner(x) {
-    let [a, b] = this.getABfromScroll();
-    let dx = this.width / (b - a + 1);
+  drawStackedBarPoiner() {
     let l = Array.from(this.allItems).sort();
-    let coord = this.svgRoot.getBoundingClientRect();
-    let localX = x - coord.x;
-    let k = Math.floor(localX / dx);
-    if (this.pointer.curX == a + k) return;
-    this.pointer.curX = a + k;
-    this.pointer.g.innerHTML = '';
-
-    let sx = Math.floor((this.pointer.curX - a) * dx);
+    let p = this.pointer;
+    let sx = Math.floor((p.curX - p.a) * p.dx);
     let y = this.height;
     for (let e of l) {
       TC20.setA(this.graph[e], {opacity: 0.5});
-      let p = TC20.path({'d': `M${sx},${y}H${Math.floor(dx * (k + 1))}V${this.graph.y[e][k]}H${sx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
-      this.pointer.g.append(p);
-      y = this.graph.y[e][k];
+      let path = TC20.path({'d': `M${sx},${y}H${Math.floor(p.dx * (p.k + 1))}V${this.graph.y[e][p.k]}H${sx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
+      this.pointer.g.append(path);
+      y = this.graph.y[e][p.k];
     }
   }
 
@@ -485,6 +508,7 @@ class TC20 {
       y = Math.floor(h - y0 - (d[i] - minY) * scaleY);
       res += `L${x},${y} `
     }
+    console.log(b, this.data.x.length);
     return res;
   }
 
@@ -626,7 +650,7 @@ class TC20 {
       s += this.data.y[e][this.pointer.curX];
       r.push(`<td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
     }
-    r.push(`<td>All</td><td style='text-align: right;'><b>${this.labelFormat(s)}</b></td>`);
+    if ('line' != this.type) r.push(`<td>All</td><td style='text-align: right;'><b>${this.labelFormat(s)}</b></td>`);
     return `<table style='margin: 5px;'>${r.map(e => `<tr>${e}</tr>`).join('')}</table>`;
   }
 
