@@ -787,7 +787,7 @@ class TC20 {
     requestAnimationFrame(() => {
       this.requestDrawGraph(t);
     });
-    // console.log('check', b);
+    console.log(this.animationStack.size);
   }
 
   recreateYALabel(c) {
