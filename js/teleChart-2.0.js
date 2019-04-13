@@ -80,11 +80,11 @@ class TC20 {
     });
 
     this.svgRoot.addEventListener('mousemove', e => {
-      this.onMoveGraph(Math.round(e.pageX));
+      this.onMoveGraph(Math.round(e.pageX), Math.round(e.pageY), Math.round(e.clientY));
     });
 
     this.svgRoot.addEventListener('touchmove', (e) => {
-      this.onMoveGraph(Math.round(e.touches[0].pageX));
+      this.onMoveGraph(Math.round(e.touches[0].pageX), Math.round(e.touches[0].pageY), Math.round(e.touches[0].clientY));
     });
 
     this.svgRoot.addEventListener('mouseleave', (e) => {
@@ -122,48 +122,26 @@ class TC20 {
     if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
     }
+    this.width = width;
+    this.animationStack = new Set();
+    this.semafors = {};
 
     this.statusTag = document.getElementById('Status');
     this.divRoot = document.getElementById(tagID);
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
+
+    this.divTips = document.createElement('div');
+    this.divTips.setAttribute('style', `display: none; position: absolute; background-color: white; left: 800px; top: 100px; border: 1px solid ${this.axisColor}; border-radius: 5px; white-space: nowrap; font-size: 12px;`);
+    this.divRoot.append(this.divTips);
+
+
     this.prepareData(data);
-
-    let h1 = Math.floor(o['heightPanel'] * 0.03);
-    this.panel = {
-      width: width,
-      height: o['heightPanel'],
-      yb: h1,
-      radius: Math.floor(o['heightPanel'] * 0.1),
-      scrollBox: {
-        width: Math.floor(width * 0.25),
-        x: width - Math.floor(width * 0.25),
-        // Math.floor(width * 0.2),
-        h1: h1,
-        w1: Math.min(Math.floor(width * 0.03), 30)
-      }
-    };
-    this.graph = {
-      scales: [], yb: 0, y: {},
-      height: o['height']
-    };
-    this.XAxis = {
-      sieve: 0
-    };
-    let mm = this.getMinMax(0, this.data.length - 1);
-    this.YAxis = {
-      point: [],
-      mmOriginal: mm,
-      dMax: mm.max - mm.min
-    };
-
+    this.initInternalObjects(o);
     this.createHeader();
     this.initSVG(o, width);
 
-    this.width = this.svgPanel.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
-    this.animationStack = new Set();
-    this.semafors = {};
 
     this.initPathForGraphAndPanel();
     this.render();
@@ -191,7 +169,7 @@ class TC20 {
     style = {'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
     s.leftMask = TC20.rect(0, 0, 0, 0, style);
     s.rightMask = TC20.rect(0, 0, 0, 0, style);
-    style = {'d': '', 'stroke-width': 4, 'stroke': 'white', 'fill': 'none'};
+    style = {'d': '', 'stroke-width': s.w1 / 4, 'stroke': 'white', 'fill': 'none'};
     s.leftLine = TC20.path(style);
     s.rightLine = TC20.path(style);
     ['leftMask', 'rightMask', 'top', 'leftBox', 'rightBox', 'bottom', 'leftLine', 'rightLine']
@@ -301,6 +279,7 @@ class TC20 {
       // this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {
       this.drawStackedBarPoiner(this.pointer.x);
+      this.drawTips();
     } else if ('line' == this.type) {
       // this.drawLineChart(a, b, c, s);
     } else if ('area' == this.type) {
@@ -309,7 +288,7 @@ class TC20 {
   }
 
   drawScroll() {
-    let s = this.panel.scrollBox;
+    let s = this.panel.scrollBox, h2 = this.panel.height / 3;
     let x1 = s.x + s.w1, x2 = s.x + s.width - s.w1, h1 = s.h1;
     TC20.setA(s.leftBox, {d: this.panelBracket(x1, 1)});
     TC20.setA(s.rightBox, {d: this.panelBracket(x2, -1)});
@@ -317,8 +296,8 @@ class TC20 {
     TC20.setA(s.bottom, {x: x1, y: this.panel.height - s.h1, width: x2 - x1, height: s.h1});
     TC20.setA(s.leftMask, {x:0, y: h1, width: x1, height: this.panel.height - 2 * h1});
     TC20.setA(s.rightMask, {x: x2, y: h1, width: this.panel.width - x2, height: this.panel.height - 2 * h1});
-    TC20.setA(s.leftLine, {d: `M${s.x + s.w1 / 2},${(this.panel.height - s.w1) / 2}v${s.w1}`});
-    TC20.setA(s.rightLine, {d: `M${s.x + s.width - s.w1 / 2},${(this.panel.height - s.w1) / 2}v${s.w1}`});
+    TC20.setA(s.leftLine, {d: `M${s.x + s.w1 / 2},${(this.panel.height - h2) / 2}v${h2}`});
+    TC20.setA(s.rightLine, {d: `M${s.x + s.width - s.w1 / 2},${(this.panel.height - h2) / 2}v${h2}`});
   }
 
   drawStackedBarChart(a, b, mm, s) {
@@ -378,6 +357,22 @@ class TC20 {
     }
   }
 
+  drawTips() {
+    this.divTips.innerHTML = this.innerTips();
+    this.divTips.style.display = 'block'
+    let svg = this.svgRoot.getBoundingClientRect();
+    if (this.pointer.x + 25 + this.divTips.offsetWidth > document.body.clientWidth ) {
+      this.divTips.style.left = this.pointer.x - this.divTips.offsetWidth - 25 + 'px';
+    } else {
+      this.divTips.style.left = this.pointer.x + 25 + 'px';
+    }
+    if (this.pointer.clientY + this.divTips.offsetHeight > svg.bottom) {
+      this.divTips.style.top = (this.pointer.y - this.pointer.clientY) + svg.bottom - this.divTips.offsetHeight + 'px';
+    } else {
+      this.divTips.style.top = this.pointer.y + 'px';
+    }
+  }
+
   drawXAxis() {
     this.XAxis.points = this.getXAxisPoints().map(x => this.drawXLabel(x));
   }
@@ -400,13 +395,11 @@ class TC20 {
     let obj = {
       y: y,
       viewY: viewY,
-      innerHTML: y
+      text: TC20.text({x: 5, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(y), fill: '#252529', style: 'font-size: 10px', opacity: 1}),
+      line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': this.YAxis.gridColor, 'fill': 'none', opacity: 0.1})
     };
-    obj.text = TC20.text({x: 10, y: obj.viewY, innerHTML: obj.innerHTML, fill: '#252529', style: 'font-size: 10px', opacity: 1});
     this.svgRoot.append(obj.text);
-    // this.svgXAxis.append(obj.text);
-    // obj.coord = obj.text.getBBox();
-    // TC20.setA(obj.text, {x: obj.viewX - obj.coord.width, y: 10});
+    this.svgRoot.append(obj.line);
     return obj;
   }
 
@@ -497,6 +490,42 @@ class TC20 {
     return points;
   }
 
+  hideTips() {
+    this.divTips.style.display = 'none';
+  }
+
+  initInternalObjects(o) {
+    let h1 = Math.floor(o['heightPanel'] * 0.03);
+    this.panel = {
+      width: this.width,
+      height: o['heightPanel'],
+      yb: h1,
+      radius: Math.floor(o['heightPanel'] * 0.1),
+      scrollBox: {
+        width: Math.round(this.width * 0.25),
+        x: this.width - Math.round(this.width * 0.25),
+        // Math.floor(width * 0.2),
+        h1: h1,
+        w1: Math.min(Math.floor(this.width * 0.04), 30)
+      }
+    };
+    this.graph = {
+      scales: [], yb: 0, y: {},
+      height: o['height']
+    };
+    this.XAxis = {
+      sieve: 0
+    };
+    let mm = this.getMinMax(0, this.data.length - 1);
+    this.YAxis = {
+      point: [],
+      mmOriginal: mm,
+      dMax: mm.max - mm.min,
+      textShift: 5,
+      gridColor: '#182D3B'
+    };
+  }
+
   initPathForGraphAndPanel() {
     for (let i of this.allItems){
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
@@ -525,6 +554,31 @@ class TC20 {
     });
   }
 
+
+  innerTips() {
+    let s = 0;
+    let r = [`<td><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
+    for (let e of this.allItems) {
+      s += this.data.y[e][this.pointer.curX];
+      r.push(`<td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
+    }
+    r.push(`<td>All</td><td style='text-align: right;'><b>${this.labelFormat(s)}</b></td>`);
+    return `<table style='margin: 5px;'>${r.map(e => `<tr>${e}</tr>`).join('')}</table>`;
+  }
+
+  labelFormat(n) {
+    var abs = Math.abs(n);
+    if (abs > 1) {
+      var s = abs.toFixed(0);
+      var formatted = n < 0 ? '-' : '';
+      for (var i = 0; i < s.length; i++) {
+          formatted += s.charAt(i);
+          if ((s.length - 1 - i) % 3 === 0) formatted += ' ';
+      }
+      return formatted;
+    }
+    return n.toString()
+  }
 
   mmDD(date) {
     return TC20.monthShort[date.getMonth()] + ' ' + date.getDate().toString();
@@ -571,6 +625,7 @@ class TC20 {
         }
       }
       requestAnimationFrame(() => {
+        this.hideTips();
         this.requestExec(this.drawScroll);
         this.requestDrawGraph();
         this.updateDateRange();
@@ -578,9 +633,12 @@ class TC20 {
     }
   }
 
-  onMoveGraph(x) {
+  onMoveGraph(x, y, clientY) {
     this.pointer.status = 'draw';
     this.pointer.x = x;
+    this.pointer.y = y;
+    this.pointer.clientY = clientY;
+
     requestAnimationFrame(() => {
       this.drawPointer();
     });
@@ -642,17 +700,16 @@ class TC20 {
   }
 
   recreateYALabel(c) {
-    let ya = this.YAxis;
-    let t1 = Math.floor(ya.mmOriginal.min / ya.step) * ya.step;
-    let yLevel = Math.floor((c.min - t1) / ya.step) * ya.step + t1;
-    let dy = this.height / (c.max - c.min);
     for (let e of this.YAxis.point) {
       e.text.remove();
+      e.line.remove();
     }
     this.YAxis.points = [];
-    while (yLevel < c.max + ya.step) {
+    let dy = this.height / (c.max - c.min);
+    let yLevel = this.YAxis.from;
+    while (yLevel < c.max + this.YAxis.step) {
       this.YAxis.point.push(this.drawYLabel(yLevel, Math.floor(this.height - (yLevel - c.min) * dy)));
-      yLevel += ya.step;
+      yLevel += this.YAxis.step;
     }
   }
 
@@ -754,14 +811,19 @@ class TC20 {
     step = 1.2 ** Math.floor(Math.log(step) / Math.log(1.2));
     let p = 10 ** (Math.floor(Math.log10(step)) - 1);
     step = Math.floor(step / p) * p;
-
-    if (this.YAxis.step != step) {
+    let t1 = Math.floor(this.YAxis.mmOriginal.min / step) * step;
+    let from = Math.floor((c.min - t1) / step) * step + t1;
+    // console.log(step, from);
+    if (this.YAxis.step != step || this.YAxis.from != from) {
+      this.YAxis.from = from;
       this.YAxis.step = step;
       this.recreateYALabel(c);
     } else {
       let dy = this.height / (c.max - c.min);
       for (let e of this.YAxis.point) {
-        TC20.setA(e.text, {y: Math.floor(this.height - (e.y - c.min) * dy)});
+        let viewY = Math.floor(this.height - (e.y - c.min) * dy);
+        TC20.setA(e.text, {y: viewY - this.YAxis.textShift});
+        TC20.setA(e.line, {d: `M0,${viewY}L${this.width},${viewY}`});
       }
     }
   }
@@ -791,8 +853,21 @@ class TC20 {
     // return TC20.monthNames[date.getDay()] + ', ' + this.mmDD(date);
   }
 
+  wwDDmmYY(date) {
+    return [TC20.dayNames[date.getDay()] + ',', date.getDate(), TC20.monthShort[date.getMonth()], date.getFullYear()].join(' ');
+  }
+
   static get xmlns() {
     return "http://www.w3.org/2000/svg";
   }
+
+  yFormat(n) {
+    var abs = Math.abs(n);
+    if (abs > 1000000000) return (n / 1000000000).toFixed(2) + 'B';
+    if (abs > 1000000) return (n / 1000000).toFixed(2) + 'M';
+    if (abs > 1000) return (n / 1000).toFixed(1) + 'K';
+
+    return n.toString()
+    }
 
 }

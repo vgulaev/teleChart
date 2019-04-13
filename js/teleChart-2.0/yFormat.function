@@ -1,0 +1,8 @@
+  yFormat(n) {
+    var abs = Math.abs(n);
+    if (abs > 1000000000) return (n / 1000000000).toFixed(2) + 'B';
+    if (abs > 1000000) return (n / 1000000).toFixed(2) + 'M';
+    if (abs > 1000) return (n / 1000).toFixed(1) + 'K';
+
+    return n.toString()
+    }

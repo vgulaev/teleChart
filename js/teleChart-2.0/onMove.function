@@ -35,6 +35,7 @@
         }
       }
       requestAnimationFrame(() => {
+        this.hideTips();
         this.requestExec(this.drawScroll);
         this.requestDrawGraph();
         this.updateDateRange();

@@ -1,0 +1,3 @@
+  hideTips() {
+    this.divTips.style.display = 'none';
+  }

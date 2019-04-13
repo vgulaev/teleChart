@@ -8,7 +8,7 @@
     style = {'stroke-width': 0, 'fill': '#e2eef9', 'opacity': '0.6'};
     s.leftMask = TC20.rect(0, 0, 0, 0, style);
     s.rightMask = TC20.rect(0, 0, 0, 0, style);
-    style = {'d': '', 'stroke-width': 4, 'stroke': 'white', 'fill': 'none'};
+    style = {'d': '', 'stroke-width': s.w1 / 4, 'stroke': 'white', 'fill': 'none'};
     s.leftLine = TC20.path(style);
     s.rightLine = TC20.path(style);
     ['leftMask', 'rightMask', 'top', 'leftBox', 'rightBox', 'bottom', 'leftLine', 'rightLine']

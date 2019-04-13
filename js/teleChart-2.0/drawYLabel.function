@@ -2,12 +2,10 @@
     let obj = {
       y: y,
       viewY: viewY,
-      innerHTML: y
+      text: TC20.text({x: 5, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(y), fill: '#252529', style: 'font-size: 10px', opacity: 1}),
+      line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': this.YAxis.gridColor, 'fill': 'none', opacity: 0.1})
     };
-    obj.text = TC20.text({x: 10, y: obj.viewY, innerHTML: obj.innerHTML, fill: '#252529', style: 'font-size: 10px', opacity: 1});
     this.svgRoot.append(obj.text);
-    // this.svgXAxis.append(obj.text);
-    // obj.coord = obj.text.getBBox();
-    // TC20.setA(obj.text, {x: obj.viewX - obj.coord.width, y: 10});
+    this.svgRoot.append(obj.line);
     return obj;
   }

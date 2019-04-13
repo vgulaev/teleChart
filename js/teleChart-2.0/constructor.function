@@ -6,48 +6,26 @@
     if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
     }
+    this.width = width;
+    this.animationStack = new Set();
+    this.semafors = {};
 
     this.statusTag = document.getElementById('Status');
     this.divRoot = document.getElementById(tagID);
     this.divRoot.innerHTML = '';
     this.divRoot.style.width = width;
+
+    this.divTips = document.createElement('div');
+    this.divTips.setAttribute('style', `display: none; position: absolute; background-color: white; left: 800px; top: 100px; border: 1px solid ${this.axisColor}; border-radius: 5px; white-space: nowrap; font-size: 12px;`);
+    this.divRoot.append(this.divTips);
+
+
     this.prepareData(data);
-
-    let h1 = Math.floor(o['heightPanel'] * 0.03);
-    this.panel = {
-      width: width,
-      height: o['heightPanel'],
-      yb: h1,
-      radius: Math.floor(o['heightPanel'] * 0.1),
-      scrollBox: {
-        width: Math.floor(width * 0.25),
-        x: width - Math.floor(width * 0.25),
-        // Math.floor(width * 0.2),
-        h1: h1,
-        w1: Math.min(Math.floor(width * 0.03), 30)
-      }
-    };
-    this.graph = {
-      scales: [], yb: 0, y: {},
-      height: o['height']
-    };
-    this.XAxis = {
-      sieve: 0
-    };
-    let mm = this.getMinMax(0, this.data.length - 1);
-    this.YAxis = {
-      point: [],
-      mmOriginal: mm,
-      dMax: mm.max - mm.min
-    };
-
+    this.initInternalObjects(o);
     this.createHeader();
     this.initSVG(o, width);
 
-    this.width = this.svgPanel.width.animVal.value;
     this.height = this.svgRoot.height.animVal.value;
-    this.animationStack = new Set();
-    this.semafors = {};
 
     this.initPathForGraphAndPanel();
     this.render();
