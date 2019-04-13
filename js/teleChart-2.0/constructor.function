@@ -24,6 +24,7 @@
     this.initInternalObjects(o);
     this.createHeader();
     this.initSVG(o, width);
+    this.createFooter();
 
     this.height = this.svgRoot.height.animVal.value;
 

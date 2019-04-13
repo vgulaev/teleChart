@@ -24,7 +24,7 @@ function drawCharts() {
             heightPanel: 100
           });
     });
-  [3, 4, 5].forEach((e, i) => {
+  [1, 4, 5].forEach((e, i) => {
     httpGetAsync(`contest/${e}/overview.json`)
       .then(data => {
         let d = JSON.parse(data);

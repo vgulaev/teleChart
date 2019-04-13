@@ -1,5 +1,22 @@
 class TC20 {
 
+  *animateCircleInButton(target, duration, direction) {
+    let startTime = performance.now();
+    if (1 == direction) target.style.display = 'inline';
+    yield 'start';
+    while (true) {
+      if (startTime + duration > this.animationTime) {
+        let progres = direction * (-0.5 + (this.animationTime - startTime) / duration) + 0.5;
+        target.setAttributeNS(null, 'r', 12 * progres);
+        yield performance.now()- startTime;
+      } else {
+        if (-1 == direction) target.style.display = 'none';
+        yield undefined;
+        break;
+      }
+    }
+  }
+
   *animateXLabelRemove(target, duration, direction) {
     let startTime = performance.now();
     yield 'start';
@@ -15,7 +32,7 @@ class TC20 {
   }
 
   *smothDrawLineChart() {
-    let f = this.graph.scales[0], t = this.graph.scales[1];
+    let [f, t] = this.graph.scales;
     let c = {min: f.min, max: f.max}, s = 25;
     if ('area' == this.type) s = 1;
     let dn = (t.min - f.min) / s, dx = (t.max - f.max) / s;
@@ -23,6 +40,7 @@ class TC20 {
     while (2 == this.graph.scales.length) {
       let l = this.graph.scales[1];
       if (t.min != l.min || t.max != l.max) {
+        this.count += 1;
         t = l;
         dn = (t.min - c.min) / s;
         dx = (t.max - c.max) / s;
@@ -40,11 +58,12 @@ class TC20 {
       let [a, b] = this.getABfromScroll();
       this.drawChart(a, b, c, this.graph);
       if (dx == 0 && dn == 0) {
-        this.graph.scales.shift();
         break;
       }
       yield true;
     }
+    this.graph.scales.shift();
+    console.log('smothDrawLineChart', this.count);
   }
 
   addEventListenerToPanel() {
@@ -108,6 +127,18 @@ class TC20 {
     };
   }
 
+  button(name) {
+    return `<button id="${name}Button" style="border-radius: 40px; border: 1px solid white; background-color: white; margin-right: 10px;">
+      <svg width="40px" height="40px" style=" display: inline-block; vertical-align: middle;">
+        <circle cy="20" cx="20" r="15" fill="${this.data.raw.colors[name]}"/>
+      <path class="mark" d="M 13,20 l7,7 l7,-12 l-4,0 l-3,7 l-3,-3 z" stroke-width="2" fill="white">
+        </path>
+      <circle class="whiteCircle" cy="20" cx="20" r="1" fill="white" style="display: none;"/>
+      </svg>
+      <span>${this.data.raw.names[name]}</span>
+    </button>`;
+  }
+
   static circle(cx, cy, r, o = {}) {
     let e = TeleChart.createSVG('circle');
     TC20.setA(e, Object.assign({'cx': cx, 'cy': cy, 'r': r}, o));
@@ -140,12 +171,35 @@ class TC20 {
     this.initInternalObjects(o);
     this.createHeader();
     this.initSVG(o, width);
+    this.createFooter();
 
     this.height = this.svgRoot.height.animVal.value;
 
     this.initPathForGraphAndPanel();
     this.render();
     this.count = 0;
+  }
+
+  createFooter() {
+    this.footer = document.createElement('div');
+    this.divRoot.append(this.footer);
+
+    for (let element of this.allItems) {
+      this.footer.innerHTML += this.button(element);
+    };
+
+    for (let element of this.allItems) {
+      let b = this.footer.querySelector(`#${element}Button`);
+      b.addEventListener('click', eventData => {
+        this.reCheck(b, element);
+      });
+    };
+
+    // let dayNight = document.createElement('div');
+    // dayNight.style['text-align'] = 'center';
+    // dayNight.innerHTML = `<button style="background-color: white; border: none; font-size: 18px; color: #108be3">${this.themeLabel()}</button>`;
+    // this.divRoot.append(dayNight);
+    // dayNight.querySelector('button').addEventListener('click', (eventData) => this.swithTheme(eventData));
   }
 
   createHeader() {
@@ -311,7 +365,7 @@ class TC20 {
     for (let i = a; i <= b; i++) {
       c = 0;
       for (let e of l) {
-        p[e][i - a] = y[e][i];
+        p[e][i - a] = y[e][i] * this.data.factor[e];
         c += p[e][i - a];
         vy[e][i - a] = s.height - Math.round(c * dy) - s.yb;
       }
@@ -453,7 +507,7 @@ class TC20 {
     for (let i = Math.ceil(a); i <= b; i++) {
       s = 0;
       for (let e of this.allItems) {
-        s += this.data.y[e][i];
+        s += this.data.y[e][i] * this.data.factor[e];
       }
       if (s > max) max = s;
     }
@@ -682,8 +736,9 @@ class TC20 {
   }
 
   prepareData(data) {
-    this.data = {x : [], y: {}, raw: data};
+    this.data = {x : [], y: {}, raw: data, buffer: {}, factor: {}};
     this.allItems = new Set(Object.keys(data.names));
+    this.viewItems = new Set(Object.keys(data.names));
     for (let col of data.columns) {
       if ('x' == col[0]) {
         for (let i = 1; i < col.length; i++) {
@@ -692,11 +747,29 @@ class TC20 {
       } else {
         let n = col[0];
         this.data.y[n] = col.slice(1);
+        this.data.factor[n] = 1;
       }
     }
     this.data.length = this.data.x.length;
     this.type = data.types['y0'];
     delete this.data.raw.columns
+  }
+
+  reCheck(button, element) {
+    let whiteCircle = button.querySelector('.whiteCircle');
+    let direction = 1;
+    if (this.viewItems.has(element)) {
+      this.viewItems.delete(element);
+      this.data.factor[element] = 0;
+    } else {
+      direction = -1;
+      this.viewItems.add(element);
+      this.data.factor[element] = 1;
+    }
+    let a = this.animateCircleInButton(whiteCircle, 200, direction);
+    this.doAnimation(a);
+    this.requestDrawGraph();
+    // console.log('check', b);
   }
 
   recreateYALabel(c) {

@@ -1,0 +1,16 @@
+  reCheck(button, element) {
+    let whiteCircle = button.querySelector('.whiteCircle');
+    let direction = 1;
+    if (this.viewItems.has(element)) {
+      this.viewItems.delete(element);
+      this.data.factor[element] = 0;
+    } else {
+      direction = -1;
+      this.viewItems.add(element);
+      this.data.factor[element] = 1;
+    }
+    let a = this.animateCircleInButton(whiteCircle, 200, direction);
+    this.doAnimation(a);
+    this.requestDrawGraph();
+    // console.log('check', b);
+  }

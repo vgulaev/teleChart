@@ -1,0 +1,21 @@
+  createFooter() {
+    this.footer = document.createElement('div');
+    this.divRoot.append(this.footer);
+
+    for (let element of this.allItems) {
+      this.footer.innerHTML += this.button(element);
+    };
+
+    for (let element of this.allItems) {
+      let b = this.footer.querySelector(`#${element}Button`);
+      b.addEventListener('click', eventData => {
+        this.reCheck(b, element);
+      });
+    };
+
+    // let dayNight = document.createElement('div');
+    // dayNight.style['text-align'] = 'center';
+    // dayNight.innerHTML = `<button style="background-color: white; border: none; font-size: 18px; color: #108be3">${this.themeLabel()}</button>`;
+    // this.divRoot.append(dayNight);
+    // dayNight.querySelector('button').addEventListener('click', (eventData) => this.swithTheme(eventData));
+  }

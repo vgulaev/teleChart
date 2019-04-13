@@ -3,7 +3,7 @@
     for (let i = Math.ceil(a); i <= b; i++) {
       s = 0;
       for (let e of this.allItems) {
-        s += this.data.y[e][i];
+        s += this.data.y[e][i] * this.data.factor[e];
       }
       if (s > max) max = s;
     }
