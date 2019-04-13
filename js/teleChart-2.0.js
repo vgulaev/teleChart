@@ -315,6 +315,16 @@ class TC20 {
   drawChart(a, b, c, s) {
     s.min = c.min;
     s.max = c.max;
+    if (0 == this.viewItems.size) {
+      for (let e of this.allItems) {
+        e.setA(s[e], {style: 'display: none'});
+      }
+      return;
+    } else {
+      for (let e of this.allItems) {
+        e.setA(s[e], {style: 'display: block'});
+      }
+    }
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
       this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {
@@ -364,7 +374,7 @@ class TC20 {
 
   drawPointer() {
     if (undefined == this.pointer.status) return;
-    if (this.viewItems.size == 0) return;
+    if (0 == this.viewItems.size) return;
 
     let [a, b] = this.getABfromScroll();
     if (-1 != ['line', 'area'].indexOf(this.type)) {
