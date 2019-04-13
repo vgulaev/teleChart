@@ -9,6 +9,5 @@
       y = Math.floor(h - y0 - (d[i] - minY) * scaleY);
       res += `L${x},${y} `
     }
-    console.log(b, this.data.x.length);
     return res;
   }

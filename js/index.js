@@ -11,11 +11,11 @@ function httpGetAsync(theUrl) {
 
 function drawCharts() {
   let c = ['Followers', 'Interactions', 'Messages', 'Views', 'Apps'];
-  httpGetAsync('contest/1/overview.json')
+  httpGetAsync('contest/4/overview.json')
     .then(data => {
       let d = JSON.parse(data);
       //d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => ((i < 50 || (250 < i && i < 280)) && i != 0 ? i * 100 : e)));
-      // d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => i > 0 ? Math.random() * (100 ** (i / 500 + 1)) * i : e));
+      // d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => i > 363 ? 2 : e));
       d.caption = c[2];
       t = new TC20('chart0', d, {
             width: 500,

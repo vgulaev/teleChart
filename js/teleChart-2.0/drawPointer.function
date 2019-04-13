@@ -2,16 +2,17 @@
     if (undefined == this.pointer.status) return;
 
     let [a, b] = this.getABfromScroll();
-    if ('line' == this.type) {
+    if (-1 != ['line', 'area'].indexOf(this.type)) {
       this.pointer.dx = this.width / (b - a);
     } else {
       this.pointer.dx = this.width / (b - a + 1);
     }
     let x = this.pointer.x;
-    if ('line' == this.type) x -= this.pointer.dx / 2;
+    if (-1 != ['line', 'area'].indexOf(this.type)) x -= this.pointer.dx / 2;
     let coord = this.svgRoot.getBoundingClientRect();
     let localX = x - coord.x;
     let k = Math.ceil(localX / this.pointer.dx);
+    if ('bar' == this.type) k = Math.floor(localX / this.pointer.dx);
     if (this.pointer.curX == a + k) return;
     this.pointer.a = a;
     this.pointer.k = k;
@@ -19,15 +20,13 @@
     this.pointer.g.innerHTML = '';
 
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
-      // this.drawBarChart(a, b, c, s);
+      this.drawBarPoiner();
     } else if ('bar' == this.type && true == this.data.raw.stacked) {
       this.drawStackedBarPoiner();
-      this.drawTips();
     } else if ('line' == this.type) {
       this.drawLinePoiner();
-      this.drawTips();
-      // this.drawLineChart(a, b, c, s);
     } else if ('area' == this.type) {
-      // this.drawAreaChart(a, b, s);
+      this.drawLinePoiner();
     }
+    this.drawTips();
   }

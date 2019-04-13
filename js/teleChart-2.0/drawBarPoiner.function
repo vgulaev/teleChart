@@ -1,0 +1,11 @@
+  drawBarPoiner() {
+    let p = this.pointer;
+    let sx = Math.floor((p.curX - p.a) * p.dx);
+    let scaleY = this.height / (this.graph.max - this.graph.min);
+    for (let e of this.allItems) {
+      let y = this.height - scaleY * this.data.y[e][p.curX];
+      TC20.setA(this.graph[e], {opacity: 0.5});
+      let path = TC20.path({'d': `M${sx},${this.height}H${Math.floor(p.dx * (p.k + 1))}V${y}H${sx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
+      this.pointer.g.append(path);
+    }
+  }

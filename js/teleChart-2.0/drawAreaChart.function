@@ -1,10 +1,10 @@
   drawAreaChart(a, b, s) {
     let l = Array.from(this.allItems).sort();
     let t = 0, c = 0;
-    let d = {}, p = {}, vy = {};
+    let p = {}, vy = {};
     let y = this.data.y, h = s.height - 2 * s.yb;
     let dx = this.width / (b - a);
-    l.forEach(e => {p[e] = new Array(b - a + 1); d[e] = ''; vy[e] = new Array(b - a + 1)});
+    l.forEach(e => {p[e] = new Array(b - a + 1); vy[e] = new Array(b - a + 1)});
     for (let i = a; i <= b; i++) {
       t = 0;
       for (let e of l) {
@@ -12,7 +12,7 @@
       }
       c = 0;
       for (let e of l) {
-        p[e][i - a] = Math.round(y[e][i] * this.data.factor[e] / t * 100);
+        p[e][i - a] = y[e][i] * this.data.factor[e] / t * 100;
         c += p[e][i - a];
         vy[e][i - a] = Math.round(h * c / 100) + s.yb;
       }
@@ -35,4 +35,5 @@
       q += 'z';
       TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
+    s.p = p;
   }

@@ -11,12 +11,9 @@
       if (0 == Object.keys(obj.transition).length) break;
       let [a, b] = this.getABfromScroll();
       if (obj == this.panel) {
-        a = 0;
-        b = this.data.length - 1;
-        c = this.YAxis.mmOriginal;
-      } else {
-        c = {min: obj.min, max: obj.max};
+        a = 0; b = this.data.length - 1;
       }
+      c = {min: obj.min, max: obj.max};
       this.drawChart(a, b, c, obj);
       yield true;
     }
