@@ -285,15 +285,15 @@ class TC20 {
   }
 
   drawBarChart(a, b, mm, s) {
-    let dx = 'h' + (this.width / (b - a + 1)).toFixed(2);
+    let dx = this.width / (b - a + 1);
     let sy = (s.height - 2 * s.yb) / mm.max;
     let y = Math.floor(s.height - this.data.y['y0'][a] * sy);
     let dy = 0, yy = s.yb;
-    let d = `M0,${y}` + dx;
+    let d = `M0,${y}H` + dx;
     for (let i = a + 1; i <= b; i++) {
       yy = Math.floor(s.height - this.data.y['y0'][i] * sy);
       dy = yy - y;
-      d += (`v${dy}` + dx);
+      d += `v${dy}H` + Math.floor(dx * (i - a + 1));
       y = yy;
     }
     d += `L${this.width},${s.height - s.yb}L${0},${s.height - s.yb}z`;
@@ -302,10 +302,10 @@ class TC20 {
 
   drawBarPoiner() {
     let p = this.pointer;
-    let sx = Math.floor((p.curX - p.a) * p.dx);
+    let sx = Math.floor((p.curX - p.a) * p.dx).toFixed(2);
     let scaleY = this.height / (this.graph.max - this.graph.min);
     for (let e of this.allItems) {
-      let y = this.height - scaleY * this.data.y[e][p.curX];
+      let y = Math.floor(this.height - scaleY * this.data.y[e][p.curX]);
       TC20.setA(this.graph[e], {opacity: 0.5});
       let path = TC20.path({'d': `M${sx},${this.height}H${Math.floor(p.dx * (p.k + 1))}V${y}H${sx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
       this.pointer.g.append(path);
@@ -858,6 +858,7 @@ class TC20 {
   }
 
   removePointer() {
+    return;
     this.pointer.status = undefined;
     for (let i of this.viewItems) {
       TC20.setA(this.graph[i], {opacity: 1});
