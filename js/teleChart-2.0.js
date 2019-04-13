@@ -317,12 +317,12 @@ class TC20 {
     s.max = c.max;
     if (0 == this.viewItems.size) {
       for (let e of this.allItems) {
-        e.setA(s[e], {style: 'display: none'});
+        TC20.setA(s[e], {style: 'display: none'});
       }
       return;
     } else {
       for (let e of this.allItems) {
-        e.setA(s[e], {style: 'display: block'});
+        TC20.setA(s[e], {style: 'display: block'});
       }
     }
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
