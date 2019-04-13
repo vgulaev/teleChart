@@ -58,11 +58,13 @@ class TC20 {
         }
       }
       if (0 == Object.keys(obj.transition).length) break;
-      c = {min: obj.min, max: obj.max};
       let [a, b] = this.getABfromScroll();
       if (obj == this.panel) {
         a = 0;
         b = this.data.length - 1;
+        c = this.YAxis.mmOriginal;
+      } else {
+        c = this.getMinMax(a, b);
       }
       this.drawChart(a, b, c, obj);
       yield true;
@@ -299,8 +301,8 @@ class TC20 {
   }
 
   drawChart(a, b, c, s) {
-    this.graph.min = c.min;
-    this.graph.max = c.max;
+    s.min = c.min;
+    s.max = c.max;
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
       this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {
@@ -783,17 +785,8 @@ class TC20 {
     let graph = {}, panel = {};
     graph[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
         this.data.factor[element] = x;
-        let [a, b] = this.getABfromScroll();
-        let mm = this.getMinMax(a, b);
-        this.graph.min = mm.min;
-        this.graph.max = mm.max;
       });
-    panel[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => {
-        this.data.factor[element] = x;
-        let mm = this.getMinMax(0, this.data.length - 1);
-        this.panel.min = mm.min;
-        this.panel.max = mm.max;
-      });
+    panel[element] = this.anyCounter(this.data.factor[element], factor, 25, (x) => this.data.factor[element] = x);
     requestAnimationFrame(() => {
       this.requestDrawGraph(graph, this.graph);
       this.requestDrawGraph(panel, this.panel);

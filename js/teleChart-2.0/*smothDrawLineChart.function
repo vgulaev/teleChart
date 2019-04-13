@@ -9,11 +9,13 @@
         }
       }
       if (0 == Object.keys(obj.transition).length) break;
-      c = {min: obj.min, max: obj.max};
       let [a, b] = this.getABfromScroll();
       if (obj == this.panel) {
         a = 0;
         b = this.data.length - 1;
+        c = this.YAxis.mmOriginal;
+      } else {
+        c = this.getMinMax(a, b);
       }
       this.drawChart(a, b, c, obj);
       yield true;
