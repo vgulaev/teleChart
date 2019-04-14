@@ -119,6 +119,10 @@ class TC20 {
     this.divTips.addEventListener('click', (e) => {
       this.clickZoom();
     });
+
+    this.divTips.addEventListener('touchstart', (e) => {
+      this.clickZoom();
+    });
   }
 
   animationStep() {
