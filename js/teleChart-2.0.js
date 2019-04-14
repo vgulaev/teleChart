@@ -112,6 +112,12 @@ class TC20 {
     this.svgRoot.addEventListener('mouseleave', (e) => {
       this.removePointer();
     });
+
+    this.svgRoot.addEventListener('click', (e) => {
+      if (true != this.zoomMode) {
+        this.zoom();
+      }
+    });
   }
 
   animationStep() {
@@ -157,6 +163,7 @@ class TC20 {
       width = document.body.clientWidth - 10;
     }
     this.width = width;
+    this.zoomPath = o['zoomPath'];
     this.animationStack = new Set();
     this.semafors = {};
 
@@ -208,10 +215,17 @@ class TC20 {
   }
 
   createHeader() {
+    let r = [];
     this.header = document.createElement('div');
-    this.header.innerHTML = `<h4 style='display: inline-block; margin: 0;'>${this.data.raw.caption}</h4><h5 id='dateRange' style='float: right; display: inline-block; margin: 0; user-select: none;'></h5>`;
+    r.push(`<h4 id='captionTag' style='display: inline-block; margin: 0;'>${this.data.raw.caption}</h4>`);
+    r.push(`<button id='zoomTag' style='display: none; background-color: white; border: none; font-size: 16px; color: #0083e1;'><img style='height: auto; width: 15%; vertical-align: middle; margin-right: 5px;' src="zoom.png"><b>Zoom Out</b></button>`);
+    r.push(`<h5 id='dateRange' style='float: right; display: inline-block; margin: 0; user-select: none;'></h5>`);
+    this.header.innerHTML = r.join('');
     this.divRoot.append(this.header);
     this.dateRange = this.header.querySelector('#dateRange');
+    this.captionTag = this.header.querySelector('#captionTag');
+    this.zoomOutButton = this.header.querySelector('#zoomTag');
+    this.zoomOutButton.addEventListener('click', () => this.zoomOut());
   }
 
   static createSVG(tag) {
@@ -634,6 +648,17 @@ class TC20 {
 
   hideTips() {
     this.divTips.style.display = 'none';
+  }
+
+  httpGetAsync(theUrl) {
+    return new Promise((resolve, reject) => {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) resolve(xmlHttp.responseText);
+      }
+      xmlHttp.open("GET", theUrl, true);
+      xmlHttp.send(null);
+    });
   }
 
   initInternalObjects(o) {
@@ -1104,5 +1129,19 @@ class TC20 {
 
     return n.toFixed(3);
     }
+
+  zoom() {
+    this.zoomMode = true;
+    this.zoomOutButton.style.display = 'inline-block';
+    this.captionTag.style.display = 'none';
+
+    console.log('zoom', this.pointer.curX, this.zoomPath);
+  }
+
+  zoomOut() {
+    this.zoomMode = undefined;
+    this.zoomOutButton.style.display = 'none';
+    this.captionTag.style.display = 'inline-block';
+  }
 
 }

@@ -1,0 +1,5 @@
+  zoomOut() {
+    this.zoomMode = undefined;
+    this.zoomOutButton.style.display = 'none';
+    this.captionTag.style.display = 'inline-block';
+  }

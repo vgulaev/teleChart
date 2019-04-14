@@ -22,7 +22,8 @@ function drawCharts() {
             width: 500,
             height: 300,
             widthToPage: document.getElementById('widthToPage').checked,
-            heightPanel: 100
+            heightPanel: 100,
+            zoomPath: 'contest/2/'
           });
     });
   [1, 2, 3, 4, 5].forEach((e, i) => {
@@ -34,7 +35,8 @@ function drawCharts() {
               width: 500,
               height: 300,
               widthToPage: document.getElementById('widthToPage').checked,
-              heightPanel: 100
+              heightPanel: 100,
+              zoomPath: `contest/${e}/`
             });
       });
   });

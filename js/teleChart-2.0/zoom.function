@@ -1,0 +1,7 @@
+  zoom() {
+    this.zoomMode = true;
+    this.zoomOutButton.style.display = 'inline-block';
+    this.captionTag.style.display = 'none';
+
+    console.log('zoom', this.pointer.curX, this.zoomPath);
+  }
