@@ -131,14 +131,15 @@ class TC20 {
   }
 
   button(name) {
-    return `<button id="${name}Button" style="border-radius: 40px; border: 1px solid white; background-color: white; margin-right: 10px;">
+    let c = this.data.raw.colors[name];
+    return `<button id="${name}Button" style="border-radius: 40px; border: 1px solid ${c}; background-color: ${c}; margin-right: 10px; color: white; padding-right: 20px;">
       <svg width="40px" height="40px" style=" display: inline-block; vertical-align: middle;">
-        <circle cy="20" cx="20" r="15" fill="${this.data.raw.colors[name]}"/>
+        <circle cy="20" cx="20" r="15" fill="${c}"/>
       <path class="mark" d="M 13,20 l7,7 l7,-12 l-4,0 l-3,7 l-3,-3 z" stroke-width="2" fill="white">
         </path>
       <circle class="whiteCircle" cy="20" cx="20" r="1" fill="white" style="display: none;"/>
       </svg>
-      <span>${this.data.raw.names[name]}</span>
+      <span><b>${this.data.raw.names[name]}</b></span>
     </button>`;
   }
 
