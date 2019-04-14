@@ -3,6 +3,8 @@
     if (abs > 1000000000) return (n / 1000000000).toFixed(2) + 'B';
     if (abs > 1000000) return (n / 1000000).toFixed(2) + 'M';
     if (abs > 1000) return (n / 1000).toFixed(1) + 'K';
+    if (abs > 99) return n.toFixed(0);
+    if (abs > 9) return n.toFixed(1);
     if (n == 0) return 0;
 
     let p = Math.floor(Math.log10(abs));

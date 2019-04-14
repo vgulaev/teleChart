@@ -11,7 +11,7 @@ function httpGetAsync(theUrl) {
 
 function drawCharts() {
   let c = ['Followers', 'Interactions', 'Messages', 'Views', 'Apps'];
-  let i = 1;
+  let i = 4;
   httpGetAsync(`contest/${i}/overview.json`)
   // httpGetAsync('contest/2/2018-04/07.json')
     .then(data => {

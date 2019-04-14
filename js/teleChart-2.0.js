@@ -903,7 +903,9 @@ class TC20 {
   prepareData(data) {
     this.data = {x : [], y: {}, raw: data, buffer: {}, factor: {}};
     this.allItems = new Set(Object.keys(data.names));
-    this.viewItems = new Set(Object.keys(data.names));
+    if (undefined == this.viewItems) {
+      this.viewItems = new Set(Object.keys(data.names));
+    }
     for (let col of data.columns) {
       if ('x' == col[0]) {
         for (let i = 1; i < col.length; i++) {
@@ -1025,7 +1027,6 @@ class TC20 {
 
   requestZoomAnimation() {
     if (true == this.zoomMode) {
-      console.log(this.zoomMode);
       this.panel.scrollBox.width = this.panel.scrollBox.minWidth;
       this.panel.scrollBox.x = (this.width - this.panel.scrollBox.width) / 2;
     }
@@ -1165,6 +1166,8 @@ class TC20 {
     if (abs > 1000000000) return (n / 1000000000).toFixed(2) + 'B';
     if (abs > 1000000) return (n / 1000000).toFixed(2) + 'M';
     if (abs > 1000) return (n / 1000).toFixed(1) + 'K';
+    if (abs > 99) return n.toFixed(0);
+    if (abs > 9) return n.toFixed(1);
     if (n == 0) return 0;
 
     let p = Math.floor(Math.log10(abs));
@@ -1188,13 +1191,23 @@ class TC20 {
       scrollBox: {
         x: this.panel.scrollBox.x,
         width: this.panel.scrollBox.width
-      }
+      },
+      viewItems: new Set(this.viewItems)
     };
 
-    // let t = Object.ass
+    let initPath = (1 == this.allItems.size);
+
+    let t = Object.assign({}, this.data.factor);
     this.prepareData(data);
-    if (1 == this.allItems.size) this.initPathForGraphAndPanel();
+    // if (this.allItems.size > 1) this.viewItems = new Set(this.cache.viewItems);
+    this.data.factor = t;
     this.XAxis.sieve = 0;
+
+    if (initPath) {
+      this.initPathForGraphAndPanel();
+      this.viewItems = new Set(this.allItems);
+      this.createFooter();
+    }
 
     requestAnimationFrame(() => this.requestZoomAnimation());
   }
@@ -1208,7 +1221,16 @@ class TC20 {
     this.panel.scrollBox.x = this.cache.scrollBox.x;
     this.panel.scrollBox.width = this.cache.scrollBox.width;
 
+    let t = Object.assign({}, this.data.factor);
     this.prepareData(this.zoomData);
+    if (this.allItems.size > 1) this.data.factor = t;
+
+    if (1 == this.allItems.size) {
+      this.initPathForGraphAndPanel();
+      this.viewItems = new Set(this.allItems);
+      this.footer.remove();
+    }
+
     this.initPathForGraphAndPanel();
 
     requestAnimationFrame(() => this.requestZoomAnimation());

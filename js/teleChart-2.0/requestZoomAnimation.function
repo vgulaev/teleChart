@@ -1,6 +1,5 @@
   requestZoomAnimation() {
     if (true == this.zoomMode) {
-      console.log(this.zoomMode);
       this.panel.scrollBox.width = this.panel.scrollBox.minWidth;
       this.panel.scrollBox.x = (this.width - this.panel.scrollBox.width) / 2;
     }
