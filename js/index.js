@@ -11,7 +11,8 @@ function httpGetAsync(theUrl) {
 
 function drawCharts() {
   let c = ['Followers', 'Interactions', 'Messages', 'Views', 'Apps'];
-  httpGetAsync('contest/4/overview.json')
+  httpGetAsync('contest/2/overview.json')
+  // httpGetAsync('contest/2/2018-04/07.json')
     .then(data => {
       let d = JSON.parse(data);
       //d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => ((i < 50 || (250 < i && i < 280)) && i != 0 ? i * 100 : e)));

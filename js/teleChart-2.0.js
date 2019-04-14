@@ -332,7 +332,14 @@ class TC20 {
     }
     if (s == this.graph) {
       this.scaleXAxis();
-      this.scaleYAxis(c);
+      if (true == this.data.raw.y_scaled) {
+        for (let e of Array.from(this.allItems).sort()) {
+          this.scaleYAxis(this.graph.mm[e]);
+          break;
+        }
+      } else {
+        this.scaleYAxis(c);
+      }
     }
   }
 
@@ -341,8 +348,10 @@ class TC20 {
   }
 
   drawLineChart(a, b, mm, s) {
+    let c = mm;
     for (let i of this.allItems) {
-      TC20.setA(s[i], {d: this.getD(0, 2 * s.yb, this.width, s.height - 3 * s.yb, s.height, mm.min, mm.max, this.data.y[i], a, b + 1), opacity: this.data.factor[i]});
+      if (true == this.data.raw.y_scaled) c = s.mm[i];
+      TC20.setA(s[i], {d: this.getD(0, 2 * s.yb, this.width, s.height - 3 * s.yb, s.height, c.min, c.max, this.data.y[i], a, b + 1), opacity: this.data.factor[i]});
     }
   }
 
@@ -355,7 +364,12 @@ class TC20 {
     p.g.append(path);
     if ('area' == this.type) return;
     for (let e of this.viewItems) {
-      let y = this.height - scaleY * (this.data.y[e][p.curX] - this.graph.min);
+      let min = this.graph.min;
+      if (true == this.data.raw.y_scaled) {
+        scaleY = this.height / (this.graph.mm[e].max - this.graph.mm[e].min);
+        min = this.graph.mm[e].min;
+      }
+      let y = this.height - scaleY * (this.data.y[e][p.curX] - min);
       let circle = TC20.circle(viewX, y, 5, {'class': 'point', 'fill': 'white', 'stroke': this.data.raw.colors[e], 'stroke-width': 2});
       p.g.append(circle);
     }
@@ -505,6 +519,16 @@ class TC20 {
       text: TC20.text({x: 5, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(y), fill: '#252529', style: 'font-size: 10px', opacity: 1}),
       line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': this.YAxis.gridColor, 'fill': 'none', opacity: 0.1})
     };
+    if (true == this.data.raw.y_scaled) {
+      let [y1, y2] = Array.from(this.allItems).sort();
+      let mm = this.graph.mm;
+      let yy = (y - mm[y1].min) / (mm[y1].max - mm[y1].min) * (mm[y2].max - mm[y2].min) + mm[y2].min;
+      TC20.setA(obj.text, {fill: this.data.raw.colors[y1]});
+      obj.second = TC20.text({x: this.width + 20, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(yy), fill: this.data.raw.colors[y2], style: 'font-size: 10px', opacity: 1});
+      this.svgRoot.append(obj.second);
+      let coord = obj.second.getBBox();
+      TC20.setA(obj.second, {x: this.width - coord.width - 5});
+    }
     this.svgRoot.append(obj.text);
     this.svgRoot.append(obj.line);
     return obj;
@@ -568,6 +592,16 @@ class TC20 {
     return {min: 0, max: max};
   }
 
+  getMinMaxYscaled(a, b, e) {
+    let min = Infinity, max = -Infinity;
+    for (let i = Math.ceil(a); i <= b; i++) {
+      let j = this.data.y[e][i];
+      if (j < min) min = j;
+      if (j > max) max = j;
+    }
+    return {min: min, max: max};
+  }
+
   getTime(callBack) {
     let s = performance.now();
     callBack.call(this);
@@ -605,7 +639,7 @@ class TC20 {
   initInternalObjects(o) {
     let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
-      transition: {}, yb: h1, min: 0, max: 0,
+      transition: {}, yb: h1, min: 0, max: 0, mm: {},
       width: this.width,
       height: o['heightPanel'],
       radius: Math.floor(o['heightPanel'] * 0.1),
@@ -618,7 +652,7 @@ class TC20 {
       }
     };
     this.graph = {
-      transition: {}, yb: 0, y: {}, min: 0, max: 0,
+      transition: {}, yb: 0, y: {}, min: 0, max: 0, mm: {},
       height: o['height']
     };
     this.XAxis = {
@@ -740,18 +774,7 @@ class TC20 {
           s.target = undefined;
         }
       }
-      requestAnimationFrame(() => {
-        let [a,b] = this.getABfromScroll();
-        let mm = this.getMinMax(a, b);
-        let t = {
-          min: this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x),
-          max: this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x)
-        };
-        this.hideTips();
-        this.requestExec(this.drawScroll);
-        this.requestDrawGraph(t, this.graph);
-        this.updateDateRange();
-      });
+      requestAnimationFrame(() => this.onMoveRender());
     }
   }
 
@@ -764,6 +787,30 @@ class TC20 {
     requestAnimationFrame(() => {
       this.drawPointer();
     });
+  }
+
+  onMoveRender() {
+    let t = {};
+    if (true == this.data.raw.y_scaled) {
+      let [a,b] = this.getABfromScroll();
+      for (let e of this.allItems) {
+        let mm = this.getMinMaxYscaled(a, b, e);
+        // console.log(this.graph.mm[e].min, mm.min);
+        t['min' + e] = this.anyCounter(this.graph.mm[e].min, mm.min, 25, (x) => this.graph.mm[e].min = x);
+        t['max' + e] = this.anyCounter(this.graph.mm[e].max, mm.max, 25, (x) => this.graph.mm[e].max = x);
+      }
+    } else {
+      let [a,b] = this.getABfromScroll();
+      let mm = this.getMinMax(a, b);
+      t = {
+        min: this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x),
+        max: this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x)
+      };
+    }
+    this.hideTips();
+    this.requestExec(this.drawScroll);
+    this.requestDrawGraph(t, this.graph);
+    this.updateDateRange();
   }
 
   onStart(x, k) {
@@ -849,6 +896,7 @@ class TC20 {
     for (let e of this.YAxis.point) {
       e.text.remove();
       e.line.remove();
+      if (true == this.data.raw.y_scaled) e.second.remove();
     }
     this.YAxis.points = [];
     let dy = this.height / (c.max - c.min);
@@ -879,10 +927,16 @@ class TC20 {
     //   this.getMinMax(0, this.data.length - 1)
     //   }
     // });
-    this.drawXAxis();
-    this.drawPanel();
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
+    if (true == this.data.raw.y_scaled) {
+      for (let e of this.allItems) {
+        this.graph.mm[e] = this.getMinMaxYscaled(a, b, e);
+        this.panel.mm[e] = this.getMinMaxYscaled(0, this.data.length - 1, e);
+      }
+    }
+    this.drawXAxis();
+    this.drawPanel();
     this.updateDateRange();
     this.drawChart(a, b, mm, this.graph);
   }
@@ -955,8 +1009,7 @@ class TC20 {
     step = Math.floor(step / p) * p;
     let t1 = Math.floor(this.YAxis.mmOriginal.min / step) * step;
     let from = Math.floor((c.min - t1) / step) * step + t1;
-    // console.log(step, from);
-    if (this.YAxis.step != step || this.YAxis.from != from) {
+    if (this.YAxis.step != step || this.YAxis.from != from || true == this.data.raw.y_scaled) {
       this.YAxis.from = from;
       this.YAxis.step = step;
       this.recreateYALabel(c);
@@ -966,6 +1019,7 @@ class TC20 {
         let viewY = Math.floor(this.height - (e.y - c.min) * dy);
         TC20.setA(e.text, {y: viewY - this.YAxis.textShift});
         TC20.setA(e.line, {d: `M0,${viewY}L${this.width},${viewY}`});
+        if (true == this.data.raw.y_scaled) TC20.setA(e.second, {y: viewY - this.YAxis.textShift});
       }
     }
   }

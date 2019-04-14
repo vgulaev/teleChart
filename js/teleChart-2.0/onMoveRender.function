@@ -1,0 +1,23 @@
+  onMoveRender() {
+    let t = {};
+    if (true == this.data.raw.y_scaled) {
+      let [a,b] = this.getABfromScroll();
+      for (let e of this.allItems) {
+        let mm = this.getMinMaxYscaled(a, b, e);
+        // console.log(this.graph.mm[e].min, mm.min);
+        t['min' + e] = this.anyCounter(this.graph.mm[e].min, mm.min, 25, (x) => this.graph.mm[e].min = x);
+        t['max' + e] = this.anyCounter(this.graph.mm[e].max, mm.max, 25, (x) => this.graph.mm[e].max = x);
+      }
+    } else {
+      let [a,b] = this.getABfromScroll();
+      let mm = this.getMinMax(a, b);
+      t = {
+        min: this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x),
+        max: this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x)
+      };
+    }
+    this.hideTips();
+    this.requestExec(this.drawScroll);
+    this.requestDrawGraph(t, this.graph);
+    this.updateDateRange();
+  }

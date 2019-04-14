@@ -1,0 +1,9 @@
+  getMinMaxYscaled(a, b, e) {
+    let min = Infinity, max = -Infinity;
+    for (let i = Math.ceil(a); i <= b; i++) {
+      let j = this.data.y[e][i];
+      if (j < min) min = j;
+      if (j > max) max = j;
+    }
+    return {min: min, max: max};
+  }

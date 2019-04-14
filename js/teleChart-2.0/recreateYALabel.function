@@ -2,6 +2,7 @@
     for (let e of this.YAxis.point) {
       e.text.remove();
       e.line.remove();
+      if (true == this.data.raw.y_scaled) e.second.remove();
     }
     this.YAxis.points = [];
     let dy = this.height / (c.max - c.min);

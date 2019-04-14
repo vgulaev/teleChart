@@ -1,7 +1,7 @@
   initInternalObjects(o) {
     let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
-      transition: {}, yb: h1, min: 0, max: 0,
+      transition: {}, yb: h1, min: 0, max: 0, mm: {},
       width: this.width,
       height: o['heightPanel'],
       radius: Math.floor(o['heightPanel'] * 0.1),
@@ -14,7 +14,7 @@
       }
     };
     this.graph = {
-      transition: {}, yb: 0, y: {}, min: 0, max: 0,
+      transition: {}, yb: 0, y: {}, min: 0, max: 0, mm: {},
       height: o['height']
     };
     this.XAxis = {

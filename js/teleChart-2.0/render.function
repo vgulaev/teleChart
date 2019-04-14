@@ -4,10 +4,16 @@
     //   this.getMinMax(0, this.data.length - 1)
     //   }
     // });
-    this.drawXAxis();
-    this.drawPanel();
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
+    if (true == this.data.raw.y_scaled) {
+      for (let e of this.allItems) {
+        this.graph.mm[e] = this.getMinMaxYscaled(a, b, e);
+        this.panel.mm[e] = this.getMinMaxYscaled(0, this.data.length - 1, e);
+      }
+    }
+    this.drawXAxis();
+    this.drawPanel();
     this.updateDateRange();
     this.drawChart(a, b, mm, this.graph);
   }

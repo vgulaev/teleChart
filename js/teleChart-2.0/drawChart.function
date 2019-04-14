@@ -18,6 +18,13 @@
     }
     if (s == this.graph) {
       this.scaleXAxis();
-      this.scaleYAxis(c);
+      if (true == this.data.raw.y_scaled) {
+        for (let e of Array.from(this.allItems).sort()) {
+          this.scaleYAxis(this.graph.mm[e]);
+          break;
+        }
+      } else {
+        this.scaleYAxis(c);
+      }
     }
   }
