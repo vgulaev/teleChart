@@ -793,7 +793,7 @@ class TC20 {
   }
 
   mmDDhh(d) {
-    return this.l0(d.getHours()) + ':00';
+    return this.l0(d.getHours()) + ':' + this.l0(d.getMinutes());
   }
 
   msg(text) {
@@ -1162,7 +1162,7 @@ class TC20 {
   }
 
   wwDDmmHH(d) {
-    return [TC20.dayNames[d.getDay()] + ',', d.getDate(), TC20.monthShort[d.getMonth()], this.l0(d.getHours()) + ':00'].join(' ');
+    return [TC20.dayNames[d.getDay()] + ',', d.getDate(), TC20.monthShort[d.getMonth()], this.l0(d.getHours()) + ':' + this.l0(d.getMinutes())].join(' ');
   }
 
   wwDDmmYY(date) {
