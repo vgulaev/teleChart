@@ -1,6 +1,6 @@
   removePointer() {
     this.pointer.status = undefined;
-    for (let i of this.allItems) {
+    for (let i of this.viewItems) {
       TC20.setA(this.graph[i], {opacity: 1});
     }
     this.pointer.g.innerHTML = '';

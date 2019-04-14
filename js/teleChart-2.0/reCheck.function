@@ -1,0 +1,21 @@
+  reCheck(button, element) {
+    let whiteCircle = button.querySelector('.whiteCircle');
+    let direction = 1;
+    let factor = 0;
+    this.hideTips();
+    if (this.viewItems.has(element)) {
+      this.viewItems.delete(element);
+    } else {
+      direction = -1;
+      factor = 1;
+      this.viewItems.add(element);
+    }
+    let a = this.animateCircleInButton(whiteCircle, 200, direction);
+    this.doAnimation(a);
+    let graph = {}, panel = {};
+    this.setReCheckTransition(graph, panel, element, factor);
+    requestAnimationFrame(() => {
+      this.requestDrawGraph(graph, this.graph);
+      this.requestDrawGraph(panel, this.panel);
+    });
+  }

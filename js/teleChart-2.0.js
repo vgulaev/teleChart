@@ -1,5 +1,22 @@
 class TC20 {
 
+  *animateCircleInButton(target, duration, direction) {
+    let startTime = performance.now();
+    if (1 == direction) target.style.display = 'inline';
+    yield 'start';
+    while (true) {
+      if (startTime + duration > this.animationTime) {
+        let progres = direction * (-0.5 + (this.animationTime - startTime) / duration) + 0.5;
+        target.setAttributeNS(null, 'r', 12 * progres);
+        yield performance.now()- startTime;
+      } else {
+        if (-1 == direction) target.style.display = 'none';
+        yield undefined;
+        break;
+      }
+    }
+  }
+
   *animateXLabelRemove(target, duration, direction) {
     let startTime = performance.now();
     yield 'start';
@@ -14,38 +31,43 @@ class TC20 {
     }
   }
 
-  *smothDrawLineChart() {
-    let f = this.graph.scales[0], t = this.graph.scales[1];
-    let c = {min: f.min, max: f.max}, s = 25;
-    if ('area' == this.type) s = 1;
-    let dn = (t.min - f.min) / s, dx = (t.max - f.max) / s;
+  *anyCounter(from, to, steps, callBack) {
+    if (from == to) {
+      yield from;
+      return;
+    }
+    let delta = (to - from) / steps;
+    let curent = from;
+    for (let i = 0; i < steps - 1; i++) {
+      curent += delta;
+      if (undefined != callBack) callBack.call(this, curent);
+      yield curent;
+    }
+    if (undefined != callBack) callBack.call(this, to);
+    yield to;
+  }
+
+  *smothDrawLineChart(obj) {
+    let c = {};
     yield 'start';
-    while (2 == this.graph.scales.length) {
-      let l = this.graph.scales[1];
-      if (t.min != l.min || t.max != l.max) {
-        t = l;
-        dn = (t.min - c.min) / s;
-        dx = (t.max - c.max) / s;
+    while (true) {
+      for (let g of Object.keys(obj.transition)) {
+        let v = obj.transition[g].next();
+        if (v.done) {
+          delete obj.transition[g];
+        }
       }
-      c.min += dn;
-      c.max += dx;
-      if (Math.abs(c.min - t.min) < 2 * Math.abs(dn)) {
-        dn = 0;
-        c.min = t.min;
-      }
-      if (Math.abs(c.max - t.max) < 2 * Math.abs(dx)) {
-        dx = 0;
-        c.max = t.max;
-      }
+      if (0 == Object.keys(obj.transition).length) break;
       let [a, b] = this.getABfromScroll();
-      this.drawChart(a, b, c, this.graph);
-      if (dx == 0 && dn == 0) {
-        this.graph.scales.shift();
-        break;
+      if (obj == this.panel) {
+        a = 0; b = this.data.length - 1;
       }
+      c = {min: obj.min, max: obj.max};
+      this.drawChart(a, b, c, obj);
       yield true;
     }
   }
+
 
   addEventListenerToPanel() {
     let s = this.panel.scrollBox, p = this.svgPanel;
@@ -108,6 +130,18 @@ class TC20 {
     };
   }
 
+  button(name) {
+    return `<button id="${name}Button" style="border-radius: 40px; border: 1px solid white; background-color: white; margin-right: 10px;">
+      <svg width="40px" height="40px" style=" display: inline-block; vertical-align: middle;">
+        <circle cy="20" cx="20" r="15" fill="${this.data.raw.colors[name]}"/>
+      <path class="mark" d="M 13,20 l7,7 l7,-12 l-4,0 l-3,7 l-3,-3 z" stroke-width="2" fill="white">
+        </path>
+      <circle class="whiteCircle" cy="20" cx="20" r="1" fill="white" style="display: none;"/>
+      </svg>
+      <span>${this.data.raw.names[name]}</span>
+    </button>`;
+  }
+
   static circle(cx, cy, r, o = {}) {
     let e = TeleChart.createSVG('circle');
     TC20.setA(e, Object.assign({'cx': cx, 'cy': cy, 'r': r}, o));
@@ -140,12 +174,37 @@ class TC20 {
     this.initInternalObjects(o);
     this.createHeader();
     this.initSVG(o, width);
+    this.createFooter();
 
     this.height = this.svgRoot.height.animVal.value;
 
     this.initPathForGraphAndPanel();
     this.render();
     this.count = 0;
+  }
+
+  createFooter() {
+    if (this.allItems.size > 1) {
+      this.footer = document.createElement('div');
+      this.divRoot.append(this.footer);
+
+      for (let element of this.allItems) {
+        this.footer.innerHTML += this.button(element);
+      };
+
+      for (let element of this.allItems) {
+        let b = this.footer.querySelector(`#${element}Button`);
+        b.addEventListener('click', eventData => {
+          this.reCheck(b, element);
+        });
+      };
+    };
+
+    // let dayNight = document.createElement('div');
+    // dayNight.style['text-align'] = 'center';
+    // dayNight.innerHTML = `<button style="background-color: white; border: none; font-size: 18px; color: #108be3">${this.themeLabel()}</button>`;
+    // this.divRoot.append(dayNight);
+    // dayNight.querySelector('button').addEventListener('click', (eventData) => this.swithTheme(eventData));
   }
 
   createHeader() {
@@ -188,18 +247,18 @@ class TC20 {
   drawAreaChart(a, b, s) {
     let l = Array.from(this.allItems).sort();
     let t = 0, c = 0;
-    let d = {}, p = {}, vy = {};
+    let p = {}, vy = {};
     let y = this.data.y, h = s.height - 2 * s.yb;
     let dx = this.width / (b - a);
-    l.forEach(e => {p[e] = new Array(b - a + 1); d[e] = ''; vy[e] = new Array(b - a + 1)});
+    l.forEach(e => {p[e] = new Array(b - a + 1); vy[e] = new Array(b - a + 1)});
     for (let i = a; i <= b; i++) {
       t = 0;
       for (let e of l) {
-        t += y[e][i];
+        t += y[e][i] * this.data.factor[e];
       }
       c = 0;
       for (let e of l) {
-        p[e][i - a] = Math.round(y[e][i] / t * 100);
+        p[e][i - a] = y[e][i] * this.data.factor[e] / t * 100;
         c += p[e][i - a];
         vy[e][i - a] = Math.round(h * c / 100) + s.yb;
       }
@@ -222,25 +281,46 @@ class TC20 {
       q += 'z';
       TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
+    s.p = p;
   }
 
   drawBarChart(a, b, mm, s) {
-    let dx = 'h' + (this.width / (b - a + 1)).toFixed(2);
+    let dx = this.width / (b - a + 1);
     let sy = (s.height - 2 * s.yb) / mm.max;
     let y = Math.floor(s.height - this.data.y['y0'][a] * sy);
     let dy = 0, yy = s.yb;
-    let d = `M0,${y}` + dx;
+    let d = `M0,${y}H` + dx;
     for (let i = a + 1; i <= b; i++) {
       yy = Math.floor(s.height - this.data.y['y0'][i] * sy);
       dy = yy - y;
-      d += (`v${dy}` + dx);
+      d += `v${dy}H` + Math.floor(dx * (i - a + 1));
       y = yy;
     }
     d += `L${this.width},${s.height - s.yb}L${0},${s.height - s.yb}z`;
     TC20.setA(s['y0'], {d: d});
   }
 
+  drawBarPoiner() {
+    let p = this.pointer;
+    let sx = Math.floor((p.curX - p.a) * p.dx).toFixed(2);
+    let scaleY = this.height / (this.graph.max - this.graph.min);
+    for (let e of this.allItems) {
+      let y = Math.floor(this.height - scaleY * this.data.y[e][p.curX]);
+      TC20.setA(this.graph[e], {opacity: 0.5});
+      let path = TC20.path({'d': `M${sx},${this.height}H${Math.floor(p.dx * (p.k + 1))}V${y}H${sx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
+      this.pointer.g.append(path);
+    }
+  }
+
   drawChart(a, b, c, s) {
+    let display = (0 == this.viewItems.size ? 'none' : 'block');
+    for (let e of this.allItems) {
+      this.graph[e].style.display = display;
+      this.panel[e].style.display = display;
+    }
+    if (0 == this.viewItems.size) return;
+    s.min = c.min;
+    s.max = c.max;
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
       this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {
@@ -262,7 +342,22 @@ class TC20 {
 
   drawLineChart(a, b, mm, s) {
     for (let i of this.allItems) {
-      TC20.setA(s[i], {d: this.getD(0, 2 * s.yb, this.width, s.height - 3 * s.yb, s.height, mm.min, mm.max, this.data.y[i], a, b + 1)});
+      TC20.setA(s[i], {d: this.getD(0, 2 * s.yb, this.width, s.height - 3 * s.yb, s.height, mm.min, mm.max, this.data.y[i], a, b + 1), opacity: this.data.factor[i]});
+    }
+  }
+
+  drawLinePoiner() {
+    let p = this.pointer;
+    let viewX = p.dx * p.k;
+    let scaleY = this.height / (this.graph.max - this.graph.min);
+
+    let path = TC20.path({d: `M${viewX},${0}L${viewX},${this.height}`, 'stroke-width': 2, 'stroke': this.YAxis.gridColor, 'fill': 'none', opacity: 0.1});
+    p.g.append(path);
+    if ('area' == this.type) return;
+    for (let e of this.viewItems) {
+      let y = this.height - scaleY * (this.data.y[e][p.curX] - this.graph.min);
+      let circle = TC20.circle(viewX, y, 5, {'class': 'point', 'fill': 'white', 'stroke': this.data.raw.colors[e], 'stroke-width': 2});
+      p.g.append(circle);
     }
   }
 
@@ -275,16 +370,36 @@ class TC20 {
 
   drawPointer() {
     if (undefined == this.pointer.status) return;
-    if ('bar' == this.type && undefined == this.data.raw.stacked) {
-      // this.drawBarChart(a, b, c, s);
-    } else if ('bar' == this.type && true == this.data.raw.stacked) {
-      this.drawStackedBarPoiner(this.pointer.x);
-      this.drawTips();
-    } else if ('line' == this.type) {
-      // this.drawLineChart(a, b, c, s);
-    } else if ('area' == this.type) {
-      // this.drawAreaChart(a, b, s);
+    if (0 == this.viewItems.size) return;
+
+    let [a, b] = this.getABfromScroll();
+    if (-1 != ['line', 'area'].indexOf(this.type)) {
+      this.pointer.dx = this.width / (b - a);
+    } else {
+      this.pointer.dx = this.width / (b - a + 1);
     }
+    let x = this.pointer.x;
+    if (-1 != ['line', 'area'].indexOf(this.type)) x -= this.pointer.dx / 2;
+    let coord = this.svgRoot.getBoundingClientRect();
+    let localX = x - coord.x;
+    let k = Math.ceil(localX / this.pointer.dx);
+    if ('bar' == this.type) k = Math.floor(localX / this.pointer.dx);
+    if (this.pointer.curX == a + k) return;
+    this.pointer.a = a;
+    this.pointer.k = k;
+    this.pointer.curX = a + k;
+    this.pointer.g.innerHTML = '';
+
+    if ('bar' == this.type && undefined == this.data.raw.stacked) {
+      this.drawBarPoiner();
+    } else if ('bar' == this.type && true == this.data.raw.stacked) {
+      this.drawStackedBarPoiner();
+    } else if ('line' == this.type) {
+      this.drawLinePoiner();
+    } else if ('area' == this.type) {
+      this.drawLinePoiner();
+    }
+    this.drawTips();
   }
 
   drawScroll() {
@@ -311,7 +426,7 @@ class TC20 {
     for (let i = a; i <= b; i++) {
       c = 0;
       for (let e of l) {
-        p[e][i - a] = y[e][i];
+        p[e][i - a] = y[e][i] * this.data.factor[e];
         c += p[e][i - a];
         vy[e][i - a] = s.height - Math.round(c * dy) - s.yb;
       }
@@ -333,27 +448,19 @@ class TC20 {
       q += 'z';
       TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
-    this.graph.y = vy;
+    s.y = vy;
   }
 
-  drawStackedBarPoiner(x) {
-    let [a, b] = this.getABfromScroll();
-    let dx = this.width / (b - a + 1);
+  drawStackedBarPoiner() {
     let l = Array.from(this.allItems).sort();
-    let coord = this.svgRoot.getBoundingClientRect();
-    let localX = x - coord.x;
-    let k = Math.floor(localX / dx);
-    if (this.pointer.curX == a + k) return;
-    this.pointer.curX = a + k;
-    this.pointer.g.innerHTML = '';
-
-    let sx = Math.floor((this.pointer.curX - a) * dx);
+    let p = this.pointer;
+    let sx = Math.floor((p.curX - p.a) * p.dx);
     let y = this.height;
     for (let e of l) {
       TC20.setA(this.graph[e], {opacity: 0.5});
-      let p = TC20.path({'d': `M${sx},${y}H${Math.floor(dx * (k + 1))}V${this.graph.y[e][k]}H${sx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
-      this.pointer.g.append(p);
-      y = this.graph.y[e][k];
+      let path = TC20.path({'d': `M${sx},${y}H${Math.floor(p.dx * (p.k + 1))}V${this.graph.y[e][p.k]}H${sx}`, 'stroke-width': 0, 'fill': this.data.raw.colors[e]});
+      this.pointer.g.append(path);
+      y = this.graph.y[e][p.k];
     }
   }
 
@@ -425,6 +532,7 @@ class TC20 {
   }
 
   getMinMax(a, b) {
+    if (0 == this.viewItems.size) return {min: this.graph.min, max: this.graph.max};
     let r;
     if ('bar' == this.type) {
       r = this.getMinMaxForStackedBar(a, b);
@@ -438,7 +546,7 @@ class TC20 {
 
   getMinMaxElse(a, b) {
     let min = Infinity, max = -Infinity;
-    for (let item of this.allItems) {
+    for (let item of this.viewItems) {
       for (let i = Math.ceil(a); i <= b; i++) {
         let j = this.data.y[item][i];
         if (j < min) min = j;
@@ -453,7 +561,7 @@ class TC20 {
     for (let i = Math.ceil(a); i <= b; i++) {
       s = 0;
       for (let e of this.allItems) {
-        s += this.data.y[e][i];
+        s += this.data.y[e][i] * this.data.factor[e];
       }
       if (s > max) max = s;
     }
@@ -497,9 +605,9 @@ class TC20 {
   initInternalObjects(o) {
     let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
+      transition: {}, yb: h1, min: 0, max: 0,
       width: this.width,
       height: o['heightPanel'],
-      yb: h1,
       radius: Math.floor(o['heightPanel'] * 0.1),
       scrollBox: {
         width: Math.round(this.width * 0.25),
@@ -510,7 +618,7 @@ class TC20 {
       }
     };
     this.graph = {
-      scales: [], yb: 0, y: {},
+      transition: {}, yb: 0, y: {}, min: 0, max: 0,
       height: o['height']
     };
     this.XAxis = {
@@ -556,13 +664,21 @@ class TC20 {
 
 
   innerTips() {
-    let s = 0;
-    let r = [`<td><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
-    for (let e of this.allItems) {
-      s += this.data.y[e][this.pointer.curX];
-      r.push(`<td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
+    let r, s = 0;
+    if ('area' == this.type) {
+      r = [`<td colspan=2><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
+      for (let e of this.viewItems) {
+        s += this.data.y[e][this.pointer.curX];
+        r.push(`<td style='text-align: right;'><b>${this.graph.p[e][this.pointer.k].toFixed(1)}%</b></td><td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
+      }
+    } else {
+      r = [`<td><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
+      for (let e of this.viewItems) {
+        s += this.data.y[e][this.pointer.curX];
+        r.push(`<td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
+      }
+      if ('line' != this.type && this.viewItems.size > 1) r.push(`<td>All</td><td style='text-align: right;'><b>${this.labelFormat(s)}</b></td>`);
     }
-    r.push(`<td>All</td><td style='text-align: right;'><b>${this.labelFormat(s)}</b></td>`);
     return `<table style='margin: 5px;'>${r.map(e => `<tr>${e}</tr>`).join('')}</table>`;
   }
 
@@ -625,9 +741,15 @@ class TC20 {
         }
       }
       requestAnimationFrame(() => {
+        let [a,b] = this.getABfromScroll();
+        let mm = this.getMinMax(a, b);
+        let t = {
+          min: this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x),
+          max: this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x)
+        };
         this.hideTips();
         this.requestExec(this.drawScroll);
-        this.requestDrawGraph();
+        this.requestDrawGraph(t, this.graph);
         this.updateDateRange();
       });
     }
@@ -682,8 +804,9 @@ class TC20 {
   }
 
   prepareData(data) {
-    this.data = {x : [], y: {}, raw: data};
+    this.data = {x : [], y: {}, raw: data, buffer: {}, factor: {}};
     this.allItems = new Set(Object.keys(data.names));
+    this.viewItems = new Set(Object.keys(data.names));
     for (let col of data.columns) {
       if ('x' == col[0]) {
         for (let i = 1; i < col.length; i++) {
@@ -692,11 +815,34 @@ class TC20 {
       } else {
         let n = col[0];
         this.data.y[n] = col.slice(1);
+        this.data.factor[n] = 1;
       }
     }
     this.data.length = this.data.x.length;
     this.type = data.types['y0'];
     delete this.data.raw.columns
+  }
+
+  reCheck(button, element) {
+    let whiteCircle = button.querySelector('.whiteCircle');
+    let direction = 1;
+    let factor = 0;
+    this.hideTips();
+    if (this.viewItems.has(element)) {
+      this.viewItems.delete(element);
+    } else {
+      direction = -1;
+      factor = 1;
+      this.viewItems.add(element);
+    }
+    let a = this.animateCircleInButton(whiteCircle, 200, direction);
+    this.doAnimation(a);
+    let graph = {}, panel = {};
+    this.setReCheckTransition(graph, panel, element, factor);
+    requestAnimationFrame(() => {
+      this.requestDrawGraph(graph, this.graph);
+      this.requestDrawGraph(panel, this.panel);
+    });
   }
 
   recreateYALabel(c) {
@@ -721,7 +867,7 @@ class TC20 {
 
   removePointer() {
     this.pointer.status = undefined;
-    for (let i of this.allItems) {
+    for (let i of this.viewItems) {
       TC20.setA(this.graph[i], {opacity: 1});
     }
     this.pointer.g.innerHTML = '';
@@ -737,20 +883,16 @@ class TC20 {
     this.drawPanel();
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
-    this.graph.scales.push(mm);
     this.updateDateRange();
     this.drawChart(a, b, mm, this.graph);
   }
 
-  requestDrawGraph() {
-    let [a, b] = this.getABfromScroll();
-    let mm = this.getMinMax(a, b);
-    if (2 == this.graph.scales.length) {
-      this.graph.scales[1] = mm;
-    } else {
-      this.graph.scales.push(mm);
-      let a = this.smothDrawLineChart();
-      this.doAnimation(a);
+  requestDrawGraph(transition, obj) {
+    let startAnimation = (Object.keys(obj.transition) == 0);
+    Object.assign(obj.transition, transition);
+    if (startAnimation) {
+      let n = this.smothDrawLineChart(obj);
+      this.doAnimation(n);
     }
   }
 
@@ -834,6 +976,31 @@ class TC20 {
     });
   }
 
+  setReCheckTransition(graph, panel, name, factor) {
+    if (-1 != ['area', 'bar'].indexOf(this.type)) {
+      graph[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
+        this.data.factor[name] = x;
+        let [a, b] = this.getABfromScroll();
+        let mm = this.getMinMax(a, b);
+        this.graph.min = mm.min;
+        this.graph.max = mm.max;
+      });
+      panel[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
+        this.data.factor[name] = x;
+        let mm = this.getMinMax(0, this.data.length - 1);
+        this.panel.min = mm.min;
+        this.panel.max = mm.max;
+      });
+    } else if ('line' == this.type) {
+      let [a,b] = this.getABfromScroll();
+      let mm = this.getMinMax(a, b);
+      graph.min = this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x);
+      graph.max = this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x);
+      graph[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => this.data.factor[name] = x);
+      panel[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {});
+    }
+  }
+
   static text(o) {
     let e = TC20.createSVG('text');
     TC20.setA(e, o);
@@ -866,8 +1033,18 @@ class TC20 {
     if (abs > 1000000000) return (n / 1000000000).toFixed(2) + 'B';
     if (abs > 1000000) return (n / 1000000).toFixed(2) + 'M';
     if (abs > 1000) return (n / 1000).toFixed(1) + 'K';
+    if (n == 0) return 0;
 
-    return n.toString()
+    let p = Math.floor(Math.log10(abs));
+    let s = n < 0 ? '-' : '';
+    if (p < -2) {
+      s += Math.floor(n * (10 ** (Math.abs(p) + 2))) / 100 + `E${p}`;
+      return s;
+    }
+
+    if (Math.floor(n) == n) return n.toString();
+
+    return n.toFixed(3);
     }
 
 }

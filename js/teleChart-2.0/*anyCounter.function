@@ -1,0 +1,15 @@
+  *anyCounter(from, to, steps, callBack) {
+    if (from == to) {
+      yield from;
+      return;
+    }
+    let delta = (to - from) / steps;
+    let curent = from;
+    for (let i = 0; i < steps - 1; i++) {
+      curent += delta;
+      if (undefined != callBack) callBack.call(this, curent);
+      yield curent;
+    }
+    if (undefined != callBack) callBack.call(this, to);
+    yield to;
+  }

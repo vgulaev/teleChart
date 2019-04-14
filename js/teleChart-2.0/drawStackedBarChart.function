@@ -9,7 +9,7 @@
     for (let i = a; i <= b; i++) {
       c = 0;
       for (let e of l) {
-        p[e][i - a] = y[e][i];
+        p[e][i - a] = y[e][i] * this.data.factor[e];
         c += p[e][i - a];
         vy[e][i - a] = s.height - Math.round(c * dy) - s.yb;
       }
@@ -31,5 +31,5 @@
       q += 'z';
       TC20.setA(s[l[e]], {d: 'M' + q.substring(1)});
     }
-    this.graph.y = vy;
+    s.y = vy;
   }

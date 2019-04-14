@@ -1,0 +1,16 @@
+  *animateCircleInButton(target, duration, direction) {
+    let startTime = performance.now();
+    if (1 == direction) target.style.display = 'inline';
+    yield 'start';
+    while (true) {
+      if (startTime + duration > this.animationTime) {
+        let progres = direction * (-0.5 + (this.animationTime - startTime) / duration) + 0.5;
+        target.setAttributeNS(null, 'r', 12 * progres);
+        yield performance.now()- startTime;
+      } else {
+        if (-1 == direction) target.style.display = 'none';
+        yield undefined;
+        break;
+      }
+    }
+  }

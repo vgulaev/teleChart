@@ -1,0 +1,24 @@
+  setReCheckTransition(graph, panel, name, factor) {
+    if (-1 != ['area', 'bar'].indexOf(this.type)) {
+      graph[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
+        this.data.factor[name] = x;
+        let [a, b] = this.getABfromScroll();
+        let mm = this.getMinMax(a, b);
+        this.graph.min = mm.min;
+        this.graph.max = mm.max;
+      });
+      panel[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
+        this.data.factor[name] = x;
+        let mm = this.getMinMax(0, this.data.length - 1);
+        this.panel.min = mm.min;
+        this.panel.max = mm.max;
+      });
+    } else if ('line' == this.type) {
+      let [a,b] = this.getABfromScroll();
+      let mm = this.getMinMax(a, b);
+      graph.min = this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x);
+      graph.max = this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x);
+      graph[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => this.data.factor[name] = x);
+      panel[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {});
+    }
+  }
