@@ -1,13 +1,14 @@
   innerTips() {
     let r, s = 0;
+    let d = true == this.zoomMode ? this.wwDDmmHH(this.data.x[this.pointer.curX]) : this.wwDDmmYY(this.data.x[this.pointer.curX]);
     if ('area' == this.type) {
-      r = [`<td colspan=2><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
+      r = [`<td colspan=2><b>${d}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
       for (let e of this.viewItems) {
         s += this.data.y[e][this.pointer.curX];
         r.push(`<td style='text-align: right;'><b>${this.graph.p[e][this.pointer.k].toFixed(1)}%</b></td><td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
       }
     } else {
-      r = [`<td><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
+      r = [`<td><b>${d}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
       for (let e of this.viewItems) {
         s += this.data.y[e][this.pointer.curX];
         r.push(`<td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);

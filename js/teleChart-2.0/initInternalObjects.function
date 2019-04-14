@@ -5,8 +5,10 @@
       width: this.width,
       height: o['heightPanel'],
       radius: Math.floor(o['heightPanel'] * 0.1),
+      g: TC20.createSVG('g'),
       scrollBox: {
         width: Math.round(this.width * 0.25),
+        minWidth: Math.round(this.width * 0.25),
         x: this.width - Math.round(this.width * 0.25),
         // Math.floor(width * 0.2),
         h1: h1,
@@ -15,6 +17,7 @@
     };
     this.graph = {
       transition: {}, yb: 0, y: {}, min: 0, max: 0, mm: {},
+      g: TC20.createSVG('g'),
       height: o['height']
     };
     this.XAxis = {
@@ -28,4 +31,5 @@
       textShift: 5,
       gridColor: '#182D3B'
     };
+    this.pointer = {g: TC20.createSVG('g')};
   }

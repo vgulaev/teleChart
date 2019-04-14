@@ -1,7 +1,19 @@
-  zoom() {
+  zoom(data) {
     this.zoomMode = true;
-    this.zoomOutButton.style.display = 'inline-block';
-    this.captionTag.style.display = 'none';
+    this.cache = {
+      XAxis: {
+        sieve: this.XAxis.sieve
+      },
+      scrollBox: {
+        x: this.panel.scrollBox.x,
+        width: this.panel.scrollBox.width
+      }
+    };
 
-    console.log('zoom', this.pointer.curX, this.zoomPath);
+    // let t = Object.ass
+    this.prepareData(data);
+    if (1 == this.allItems.size) this.initPathForGraphAndPanel();
+    this.XAxis.sieve = 0;
+
+    requestAnimationFrame(() => this.requestZoomAnimation());
   }

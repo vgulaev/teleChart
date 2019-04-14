@@ -1,0 +1,3 @@
+  wwDDmmHH(d) {
+    return [TC20.dayNames[d.getDay()] + ',', d.getDate(), TC20.monthShort[d.getMonth()], this.l0(d.getHours()) + ':00'].join(' ');
+  }

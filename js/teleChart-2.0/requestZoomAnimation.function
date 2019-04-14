@@ -1,0 +1,21 @@
+  requestZoomAnimation() {
+    if (true == this.zoomMode) {
+      console.log(this.zoomMode);
+      this.panel.scrollBox.width = this.panel.scrollBox.minWidth;
+      this.panel.scrollBox.x = (this.width - this.panel.scrollBox.width) / 2;
+    }
+
+    this.data.length = this.data.x.length;
+    if (true == this.data.raw.y_scaled) {
+      for (let e of this.allItems) {
+        this.panel.mm[e] = this.getMinMaxYscaled(0, this.data.length - 1, e);
+      }
+    } else {
+      this.YAxis.mmOriginal = this.getMinMax(0, this.data.length - 1);
+    }
+    this.removePointer();
+    this.hideTips();
+    this.onMoveRender();
+    this.drawChartOnPanel();
+    this.drawXAxis();
+  }

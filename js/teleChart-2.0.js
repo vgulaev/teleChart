@@ -68,7 +68,6 @@ class TC20 {
     }
   }
 
-
   addEventListenerToPanel() {
     let s = this.panel.scrollBox, p = this.svgPanel;
 
@@ -115,7 +114,15 @@ class TC20 {
 
     this.svgRoot.addEventListener('click', (e) => {
       if (true != this.zoomMode) {
-        this.zoom();
+        this.zoomMode = true;
+        this.zoomOutButton.style.display = 'inline-block';
+        this.captionTag.style.display = 'none';
+        let d = this.data.x[this.pointer.curX];
+        let path = `${this.zoomPath}/${d.getFullYear()}-${this.l0(d.getMonth() + 1)}/${this.l0(d.getDate())}.json`;
+        this.httpGetAsync(path)
+          .then((data) => {
+            this.zoom(JSON.parse(data));
+          });
       }
     });
   }
@@ -162,6 +169,7 @@ class TC20 {
     if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
     }
+    this.zoomData = data;
     this.width = width;
     this.zoomPath = o['zoomPath'];
     this.animationStack = new Set();
@@ -175,7 +183,6 @@ class TC20 {
     this.divTips = document.createElement('div');
     this.divTips.setAttribute('style', `display: none; position: absolute; background-color: white; left: 800px; top: 100px; border: 1px solid ${this.axisColor}; border-radius: 5px; white-space: nowrap; font-size: 12px;`);
     this.divRoot.append(this.divTips);
-
 
     this.prepareData(data);
     this.initInternalObjects(o);
@@ -509,6 +516,7 @@ class TC20 {
   }
 
   drawXAxis() {
+    this.svgXAxis.innerHTML = '';
     this.XAxis.points = this.getXAxisPoints().map(x => this.drawXLabel(x));
   }
 
@@ -517,7 +525,7 @@ class TC20 {
       x: x,
       visible: 1,
       viewX: this.getViewX(x),
-      innerHTML: this.mmDD(this.data.x[x])
+      innerHTML: true == this.zoomMode ? this.mmDDhh(this.data.x[x]) : this.mmDD(this.data.x[x])
     };
     obj.text = TC20.text({x: obj.viewX, y: 10, innerHTML: obj.innerHTML, fill: '#252529', style: 'font-size: 10px', opacity: 1});
     this.svgXAxis.append(obj.text);
@@ -632,8 +640,7 @@ class TC20 {
   getXAxisPoints() {
     let cur = this.data.length - 1;
     let points = [cur];
-    let [a, b] = this.getABfromScroll();
-    let dx = (b - a) / 5.3;
+    let dx = Math.floor(this.panel.scrollBox.minWidth / this.width * this.data.length / 5.3);
     while ((cur -= dx) > 0) {
       if (Math.ceil(cur) == points[points.length - 1]) {
         cur = Math.floor(cur);
@@ -668,8 +675,10 @@ class TC20 {
       width: this.width,
       height: o['heightPanel'],
       radius: Math.floor(o['heightPanel'] * 0.1),
+      g: TC20.createSVG('g'),
       scrollBox: {
         width: Math.round(this.width * 0.25),
+        minWidth: Math.round(this.width * 0.25),
         x: this.width - Math.round(this.width * 0.25),
         // Math.floor(width * 0.2),
         h1: h1,
@@ -678,6 +687,7 @@ class TC20 {
     };
     this.graph = {
       transition: {}, yb: 0, y: {}, min: 0, max: 0, mm: {},
+      g: TC20.createSVG('g'),
       height: o['height']
     };
     this.XAxis = {
@@ -691,21 +701,23 @@ class TC20 {
       textShift: 5,
       gridColor: '#182D3B'
     };
+    this.pointer = {g: TC20.createSVG('g')};
   }
 
   initPathForGraphAndPanel() {
+    this.graph.g.innerHTML = '';
+    this.panel.g.innerHTML = '';
+
     for (let i of this.allItems){
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
       if ('area' == this.type || 'bar' == this.type){
         o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
       }
       this.graph[i] = TC20.path(o);
-      this.svgRoot.append(this.graph[i]);
+      this.graph.g.append(this.graph[i]);
       this.panel[i] = TC20.path(o);
-      this.svgPanel.append(this.panel[i]);
+      this.panel.g.append(this.panel[i]);
     }
-    this.pointer = {g: TC20.createSVG('g')};
-    this.svgRoot.append(this.pointer.g);
   }
 
   initSVG(o, width) {
@@ -719,19 +731,23 @@ class TC20 {
       TC20.setA(this[e], style[i]);
       this.divRoot.append(this[e]);
     });
-  }
 
+    this.svgRoot.append(this.graph.g);
+    this.svgRoot.append(this.pointer.g);
+    this.svgPanel.append(this.panel.g)
+  }
 
   innerTips() {
     let r, s = 0;
+    let d = true == this.zoomMode ? this.wwDDmmHH(this.data.x[this.pointer.curX]) : this.wwDDmmYY(this.data.x[this.pointer.curX]);
     if ('area' == this.type) {
-      r = [`<td colspan=2><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
+      r = [`<td colspan=2><b>${d}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
       for (let e of this.viewItems) {
         s += this.data.y[e][this.pointer.curX];
         r.push(`<td style='text-align: right;'><b>${this.graph.p[e][this.pointer.k].toFixed(1)}%</b></td><td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
       }
     } else {
-      r = [`<td><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
+      r = [`<td><b>${d}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
       for (let e of this.viewItems) {
         s += this.data.y[e][this.pointer.curX];
         r.push(`<td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
@@ -739,6 +755,11 @@ class TC20 {
       if ('line' != this.type && this.viewItems.size > 1) r.push(`<td>All</td><td style='text-align: right;'><b>${this.labelFormat(s)}</b></td>`);
     }
     return `<table style='margin: 5px;'>${r.map(e => `<tr>${e}</tr>`).join('')}</table>`;
+  }
+
+  l0(n) {
+    if (n < 10) return '0' + n;
+    return n;
   }
 
   labelFormat(n) {
@@ -757,6 +778,10 @@ class TC20 {
 
   mmDD(date) {
     return TC20.monthShort[date.getMonth()] + ' ' + date.getDate().toString();
+  }
+
+  mmDDhh(d) {
+    return this.l0(d.getHours()) + ':00';
   }
 
   msg(text) {
@@ -892,7 +917,6 @@ class TC20 {
     }
     this.data.length = this.data.x.length;
     this.type = data.types['y0'];
-    delete this.data.raw.columns
   }
 
   reCheck(button, element) {
@@ -999,6 +1023,28 @@ class TC20 {
     }
   }
 
+  requestZoomAnimation() {
+    if (true == this.zoomMode) {
+      console.log(this.zoomMode);
+      this.panel.scrollBox.width = this.panel.scrollBox.minWidth;
+      this.panel.scrollBox.x = (this.width - this.panel.scrollBox.width) / 2;
+    }
+
+    this.data.length = this.data.x.length;
+    if (true == this.data.raw.y_scaled) {
+      for (let e of this.allItems) {
+        this.panel.mm[e] = this.getMinMaxYscaled(0, this.data.length - 1, e);
+      }
+    } else {
+      this.YAxis.mmOriginal = this.getMinMax(0, this.data.length - 1);
+    }
+    this.removePointer();
+    this.hideTips();
+    this.onMoveRender();
+    this.drawChartOnPanel();
+    this.drawXAxis();
+  }
+
   scaleXAxis() {
     let visibleCount = 0;
     let count = 0;
@@ -1100,7 +1146,10 @@ class TC20 {
 
   wMMDD(d) {
     return [d.getDate(), TC20.monthShort[d.getMonth()], d.getFullYear()].join(' ');
-    // return TC20.monthNames[date.getDay()] + ', ' + this.mmDD(date);
+  }
+
+  wwDDmmHH(d) {
+    return [TC20.dayNames[d.getDay()] + ',', d.getDate(), TC20.monthShort[d.getMonth()], this.l0(d.getHours()) + ':00'].join(' ');
   }
 
   wwDDmmYY(date) {
@@ -1130,18 +1179,39 @@ class TC20 {
     return n.toFixed(3);
     }
 
-  zoom() {
+  zoom(data) {
     this.zoomMode = true;
-    this.zoomOutButton.style.display = 'inline-block';
-    this.captionTag.style.display = 'none';
+    this.cache = {
+      XAxis: {
+        sieve: this.XAxis.sieve
+      },
+      scrollBox: {
+        x: this.panel.scrollBox.x,
+        width: this.panel.scrollBox.width
+      }
+    };
 
-    console.log('zoom', this.pointer.curX, this.zoomPath);
+    // let t = Object.ass
+    this.prepareData(data);
+    if (1 == this.allItems.size) this.initPathForGraphAndPanel();
+    this.XAxis.sieve = 0;
+
+    requestAnimationFrame(() => this.requestZoomAnimation());
   }
 
   zoomOut() {
     this.zoomMode = undefined;
     this.zoomOutButton.style.display = 'none';
     this.captionTag.style.display = 'inline-block';
+
+    this.XAxis.sieve = this.cache.XAxis.sieve;
+    this.panel.scrollBox.x = this.cache.scrollBox.x;
+    this.panel.scrollBox.width = this.cache.scrollBox.width;
+
+    this.prepareData(this.zoomData);
+    this.initPathForGraphAndPanel();
+
+    requestAnimationFrame(() => this.requestZoomAnimation());
   }
 
 }

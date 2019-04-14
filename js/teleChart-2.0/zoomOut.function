@@ -2,4 +2,13 @@
     this.zoomMode = undefined;
     this.zoomOutButton.style.display = 'none';
     this.captionTag.style.display = 'inline-block';
+
+    this.XAxis.sieve = this.cache.XAxis.sieve;
+    this.panel.scrollBox.x = this.cache.scrollBox.x;
+    this.panel.scrollBox.width = this.cache.scrollBox.width;
+
+    this.prepareData(this.zoomData);
+    this.initPathForGraphAndPanel();
+
+    requestAnimationFrame(() => this.requestZoomAnimation());
   }
