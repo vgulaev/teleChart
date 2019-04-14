@@ -1,16 +1,18 @@
   createFooter() {
-    this.footer = document.createElement('div');
-    this.divRoot.append(this.footer);
+    if (this.allItems.size > 1) {
+      this.footer = document.createElement('div');
+      this.divRoot.append(this.footer);
 
-    for (let element of this.allItems) {
-      this.footer.innerHTML += this.button(element);
-    };
+      for (let element of this.allItems) {
+        this.footer.innerHTML += this.button(element);
+      };
 
-    for (let element of this.allItems) {
-      let b = this.footer.querySelector(`#${element}Button`);
-      b.addEventListener('click', eventData => {
-        this.reCheck(b, element);
-      });
+      for (let element of this.allItems) {
+        let b = this.footer.querySelector(`#${element}Button`);
+        b.addEventListener('click', eventData => {
+          this.reCheck(b, element);
+        });
+      };
     };
 
     // let dayNight = document.createElement('div');

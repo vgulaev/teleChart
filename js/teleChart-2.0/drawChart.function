@@ -1,4 +1,12 @@
   drawChart(a, b, c, s) {
+    let display = (0 == this.viewItems.size ? 'none' : 'block');
+    for (let e of this.allItems) {
+      this.graph[e].style.display = display;
+      this.panel[e].style.display = display;
+    }
+    if (0 == this.viewItems.size) return;
+    s.min = c.min;
+    s.max = c.max;
     if ('bar' == this.type && undefined == this.data.raw.stacked) {
       this.drawBarChart(a, b, c, s);
     } else if ('bar' == this.type && true == this.data.raw.stacked) {

@@ -1,4 +1,5 @@
   getMinMax(a, b) {
+    if (0 == this.viewItems.size) return {min: this.graph.min, max: this.graph.max};
     let r;
     if ('bar' == this.type) {
       r = this.getMinMaxForStackedBar(a, b);

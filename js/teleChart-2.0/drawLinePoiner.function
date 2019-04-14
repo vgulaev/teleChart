@@ -1,0 +1,14 @@
+  drawLinePoiner() {
+    let p = this.pointer;
+    let viewX = p.dx * p.k;
+    let scaleY = this.height / (this.graph.max - this.graph.min);
+
+    let path = TC20.path({d: `M${viewX},${0}L${viewX},${this.height}`, 'stroke-width': 2, 'stroke': this.YAxis.gridColor, 'fill': 'none', opacity: 0.1});
+    p.g.append(path);
+    if ('area' == this.type) return;
+    for (let e of this.viewItems) {
+      let y = this.height - scaleY * (this.data.y[e][p.curX] - this.graph.min);
+      let circle = TC20.circle(viewX, y, 5, {'class': 'point', 'fill': 'white', 'stroke': this.data.raw.colors[e], 'stroke-width': 2});
+      p.g.append(circle);
+    }
+  }

@@ -1,6 +1,6 @@
   getMinMaxElse(a, b) {
     let min = Infinity, max = -Infinity;
-    for (let item of this.allItems) {
+    for (let item of this.viewItems) {
       for (let i = Math.ceil(a); i <= b; i++) {
         let j = this.data.y[item][i];
         if (j < min) min = j;

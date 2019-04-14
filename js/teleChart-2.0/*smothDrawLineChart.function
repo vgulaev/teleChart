@@ -1,34 +1,20 @@
-  *smothDrawLineChart() {
-    let [f, t] = this.graph.scales;
-    let c = {min: f.min, max: f.max}, s = 25;
-    if ('area' == this.type) s = 1;
-    let dn = (t.min - f.min) / s, dx = (t.max - f.max) / s;
+  *smothDrawLineChart(obj) {
+    let c = {};
     yield 'start';
-    while (2 == this.graph.scales.length) {
-      let l = this.graph.scales[1];
-      if (t.min != l.min || t.max != l.max) {
-        this.count += 1;
-        t = l;
-        dn = (t.min - c.min) / s;
-        dx = (t.max - c.max) / s;
+    while (true) {
+      for (let g of Object.keys(obj.transition)) {
+        let v = obj.transition[g].next();
+        if (v.done) {
+          delete obj.transition[g];
+        }
       }
-      c.min += dn;
-      c.max += dx;
-      if (Math.abs(c.min - t.min) < 2 * Math.abs(dn)) {
-        dn = 0;
-        c.min = t.min;
-      }
-      if (Math.abs(c.max - t.max) < 2 * Math.abs(dx)) {
-        dx = 0;
-        c.max = t.max;
-      }
+      if (0 == Object.keys(obj.transition).length) break;
       let [a, b] = this.getABfromScroll();
-      this.drawChart(a, b, c, this.graph);
-      if (dx == 0 && dn == 0) {
-        break;
+      if (obj == this.panel) {
+        a = 0; b = this.data.length - 1;
       }
+      c = {min: obj.min, max: obj.max};
+      this.drawChart(a, b, c, obj);
       yield true;
     }
-    this.graph.scales.shift();
-    console.log('smothDrawLineChart', this.count);
   }
