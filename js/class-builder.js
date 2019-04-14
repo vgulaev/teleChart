@@ -65,7 +65,7 @@ function truncSpace(content) {
 // }
 function *vvv() {
   let a = 'abcdefghijklmnopqrstuvwxyz'.split('');
-  for (let p of ['', 'a']) {
+  for (let p of ['', 'a', 'b']) {
     for (let e of a) {
       yield '_' + p + e;
     }

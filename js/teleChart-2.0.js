@@ -113,17 +113,11 @@ class TC20 {
     });
 
     this.svgRoot.addEventListener('click', (e) => {
-      if (true != this.zoomMode) {
-        this.zoomMode = true;
-        this.zoomOutButton.style.display = 'inline-block';
-        this.captionTag.style.display = 'none';
-        let d = this.data.x[this.pointer.curX];
-        let path = `${this.zoomPath}/${d.getFullYear()}-${this.l0(d.getMonth() + 1)}/${this.l0(d.getDate())}.json`;
-        this.httpGetAsync(path)
-          .then((data) => {
-            this.zoom(JSON.parse(data));
-          });
-      }
+      this.clickZoom();
+    });
+
+    this.divTips.addEventListener('click', (e) => {
+      this.clickZoom();
     });
   }
 
@@ -159,6 +153,20 @@ class TC20 {
     let e = TeleChart.createSVG('circle');
     TC20.setA(e, Object.assign({'cx': cx, 'cy': cy, 'r': r}, o));
     return e;
+  }
+
+  clickZoom() {
+    if (true != this.zoomMode) {
+      this.zoomMode = true;
+      this.zoomOutButton.style.display = 'inline-block';
+      this.captionTag.style.display = 'none';
+      let d = this.data.x[this.pointer.curX];
+      let path = `${this.zoomPath}/${d.getFullYear()}-${this.l0(d.getMonth() + 1)}/${this.l0(d.getDate())}.json`;
+      this.httpGetAsync(path)
+        .then((data) => {
+          this.zoom(JSON.parse(data));
+        });
+    }
   }
 
   constructor(tagID, data, o = {}) {
