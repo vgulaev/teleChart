@@ -11,5 +11,9 @@
       this.graph.g.append(this.graph[i]);
       this.panel[i] = TC20.path(o);
       this.panel.g.append(this.panel[i]);
+      if ('pie' == this.type) {
+        this.graph.text[i] = TC20.text({x: 0, y:0, fill: 'white', style: 'font-size: 12px', opacity: 1});
+        this.graph.g.append(this.graph.text[i]);
+      }
     }
   }

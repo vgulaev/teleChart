@@ -32,20 +32,20 @@ function drawCharts() {
             zoomPath: `contest/${i}`
           });
     });
-  [1, 2, 3, 4, 5].forEach((e, i) => {
-    httpGetAsync(`contest/${e}/overview.json`)
-      .then(data => {
-        let d = JSON.parse(data);
-        d.caption = c[e - 1];
-        c0 = new TC20(`chart${i + 1}`, d, {
-              width: 500,
-              height: 300,
-              widthToPage: document.getElementById('widthToPage').checked,
-              heightPanel: 100,
-              zoomPath: `contest/${e}`
-            });
-      });
-  });
+  // [1, 2, 3, 4, 5].forEach((e, i) => {
+  //   httpGetAsync(`contest/${e}/overview.json`)
+  //     .then(data => {
+  //       let d = JSON.parse(data);
+  //       d.caption = c[e - 1];
+  //       c0 = new TC20(`chart${i + 1}`, d, {
+  //             width: 500,
+  //             height: 300,
+  //             widthToPage: document.getElementById('widthToPage').checked,
+  //             heightPanel: 100,
+  //             zoomPath: `contest/${e}`
+  //           });
+  //     });
+  // });
   // let dur = parseInt(document.getElementById('animationDuration').value);
   // craths = [];
   // document.querySelectorAll('.chart').forEach((el, index) =>

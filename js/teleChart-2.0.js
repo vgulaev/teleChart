@@ -68,6 +68,7 @@ class TC20 {
     }
   }
 
+
   addEventListenerToPanel() {
     let s = this.panel.scrollBox, p = this.svgPanel;
 
@@ -418,7 +419,7 @@ class TC20 {
   drawPie() {
     let cx = Math.floor(this.width / 2), cy = Math.floor(this.height / 2);
     let r = Math.floor(Math.min(cx, cy) * 0.9);
-    let t = 0;
+    let t = 0, tx, ty, l, k, o;
     let ex, ey;
     if (undefined == this.data.rndX) this.data.rndX = Math.random() * 50;
     let sx = r * Math.cos(2 * Math.PI * this.data.rndX / 100) + cx;
@@ -432,6 +433,18 @@ class TC20 {
       lA = 0;
       if (y[e] > 50) lA = 1;
       TC20.setA(this.graph[e], {d: `M${sx},${sy}A${r},${r},0,${lA},0,${ex},${ey}L${cx},${cy}`, opacity: this.data.factor[e]});
+      this.graph.text[e].innerHTML = y[e].toFixed(1) + '%';
+      let coord = this.graph.text[e].getBBox();
+      tx = (sx + ex) / 2;
+      ty = (sy + ey) / 2;
+      l = ((tx - cx) ** 2 + (ty - cy) ** 2) ** 0.5;
+      k = r * 0.7 / l;
+      tx = (tx - cx) * k + cx;
+      ty = (ty - cy) * k + cy;
+      o = this.data.factor[e];
+      if (y[e] < 7) o = 0;
+      TC20.setA(this.graph.text[e], {x: tx - coord.width / 2 , y: ty + coord.height / 2, opacity: o});
+
       sx = ex;
       sy = ey;
     }
@@ -733,7 +746,7 @@ class TC20 {
       }
     };
     this.graph = {
-      transition: {}, yb: 0, y: {}, min: 0, max: 0, mm: {},
+      transition: {}, yb: 0, y: {}, min: 0, max: 0, mm: {}, text: {},
       g: TC20.createSVG('g'),
       height: o['height']
     };
@@ -764,6 +777,10 @@ class TC20 {
       this.graph.g.append(this.graph[i]);
       this.panel[i] = TC20.path(o);
       this.panel.g.append(this.panel[i]);
+      if ('pie' == this.type) {
+        this.graph.text[i] = TC20.text({x: 0, y:0, fill: 'white', style: 'font-size: 12px', opacity: 1});
+        this.graph.g.append(this.graph.text[i]);
+      }
     }
   }
 

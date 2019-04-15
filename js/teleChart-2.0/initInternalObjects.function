@@ -16,7 +16,7 @@
       }
     };
     this.graph = {
-      transition: {}, yb: 0, y: {}, min: 0, max: 0, mm: {},
+      transition: {}, yb: 0, y: {}, min: 0, max: 0, mm: {}, text: {},
       g: TC20.createSVG('g'),
       height: o['height']
     };
