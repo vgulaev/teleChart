@@ -1,4 +1,5 @@
   drawXAxis() {
+    if ('pie' == this.type) return;
     this.svgXAxis.innerHTML = '';
     this.XAxis.points = this.getXAxisPoints().map(x => this.drawXLabel(x));
   }

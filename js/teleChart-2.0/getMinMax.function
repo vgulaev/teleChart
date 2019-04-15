@@ -1,7 +1,7 @@
   getMinMax(a, b) {
     if (0 == this.viewItems.size) return {min: this.graph.min, max: this.graph.max};
     let r;
-    if ('bar' == this.type) {
+    if ('bar' == this.type || 'pie' == this.type) {
       r = this.getMinMaxForStackedBar(a, b);
     } else if ('area' == this.type) {
       r = {min: 0, max: 100};

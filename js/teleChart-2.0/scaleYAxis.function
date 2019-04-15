@@ -1,4 +1,5 @@
   scaleYAxis(c) {
+    if ('pie' == this.type) return;
     let step = (c.max - c.min) / 5.1;
     step = 1.2 ** Math.floor(Math.log(step) / Math.log(1.2));
     let p = 10 ** (Math.floor(Math.log10(step)) - 1);

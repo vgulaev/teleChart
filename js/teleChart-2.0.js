@@ -108,10 +108,6 @@ class TC20 {
       this.onMoveGraph(Math.round(e.touches[0].pageX), Math.round(e.touches[0].pageY), Math.round(e.touches[0].clientY));
     });
 
-    this.svgRoot.addEventListener('mouseleave', (e) => {
-      this.removePointer();
-    });
-
     this.svgRoot.addEventListener('click', (e) => {
       this.clickZoom();
     });
@@ -362,6 +358,10 @@ class TC20 {
       this.drawLineChart(a, b, c, s);
     } else if ('area' == this.type) {
       this.drawAreaChart(a, b, s);
+    } else if ('pie' == this.type) {
+      // this.drawPie(a, b, s);
+      if (s == this.graph) this.drawPie(a, b, s);
+      if (s == this.panel) this.drawStackedBarChart(a, b, c, s);
     }
     if (s == this.graph) {
       this.scaleXAxis();
@@ -413,6 +413,37 @@ class TC20 {
     this.createScrollElement();
     this.drawScroll();
     this.addEventListenerToPanel();
+  }
+
+  drawPie(a, b) {
+    let cx = Math.floor(this.width / 2), cy = Math.floor(this.height / 2);
+    let r = Math.floor(Math.min(cx, cy) * 0.9);
+    let t = 0;
+    let ex, ey;
+    let rndX = Math.random() * 50;
+    // let rndX = 23.997376641703845;
+    let sx = r * Math.cos(2 * Math.PI * rndX / 100) + cx;
+    let sy = -r * Math.sin(2 * Math.PI * rndX / 100) + cy;
+    let lA;
+    // this.data.y['y0'][b] = 30.28570210614545;
+    // this.data.y['y1'][b] = 20.685269616058935;
+    // this.data.y['y2'][b] = 8.838120083607407;
+    // this.data.y['y3'][b] = 1.3147078733233721;
+    // this.data.y['y4'][b] = 18.853610793581137;
+    // this.data.y['y5'][b] = 20.022589527283696;
+    for (let e of this.viewItems) {
+      t += this.data.y[e][b];
+      ex = r * Math.cos(2 * Math.PI * (t + rndX) / 100) + cx;
+      ey = -r * Math.sin(2 * Math.PI * (t + rndX) / 100) + cy;
+      // console.log(Math.round(ex), Math.round(ey));
+      lA = 0;
+      if (this.data.y[e][b] > 50) lA = 1;
+      TC20.setA(this.graph[e], {d: `M${sx},${sy}A${r},${r},0,${lA},0,${ex},${ey}L${cx},${cy}`});
+      sx = ex;
+      sy = ey;
+      // console.log(this.data.y[e][b], Math.cos(2 * Math.PI * (t + rndX) / 100));
+      // break;
+    }
   }
 
   drawPointer() {
@@ -512,6 +543,7 @@ class TC20 {
   }
 
   drawTips() {
+    if ('pie' == this.type) return;
     this.divTips.innerHTML = this.innerTips();
     this.divTips.style.display = 'block'
     let svg = this.svgRoot.getBoundingClientRect();
@@ -528,6 +560,7 @@ class TC20 {
   }
 
   drawXAxis() {
+    if ('pie' == this.type) return;
     this.svgXAxis.innerHTML = '';
     this.XAxis.points = this.getXAxisPoints().map(x => this.drawXLabel(x));
   }
@@ -592,7 +625,7 @@ class TC20 {
   getMinMax(a, b) {
     if (0 == this.viewItems.size) return {min: this.graph.min, max: this.graph.max};
     let r;
-    if ('bar' == this.type) {
+    if ('bar' == this.type || 'pie' == this.type) {
       r = this.getMinMaxForStackedBar(a, b);
     } else if ('area' == this.type) {
       r = {min: 0, max: 100};
@@ -653,6 +686,7 @@ class TC20 {
     let cur = this.data.length - 1;
     let points = [cur];
     let dx = Math.floor(this.panel.scrollBox.minWidth / this.width * this.data.length / 5.3);
+    if (0 == dx) dx = 2;
     while ((cur -= dx) > 0) {
       if (Math.ceil(cur) == points[points.length - 1]) {
         cur = Math.floor(cur);
@@ -689,9 +723,9 @@ class TC20 {
       radius: Math.floor(o['heightPanel'] * 0.1),
       g: TC20.createSVG('g'),
       scrollBox: {
-        width: Math.round(this.width * 0.25),
-        minWidth: Math.round(this.width * 0.25),
-        x: this.width - Math.round(this.width * 0.25),
+        width: Math.round(this.width / 7),
+        minWidth: Math.round(this.width / 7),
+        x: this.width - Math.round(this.width / 7),
         // Math.floor(width * 0.2),
         h1: h1,
         w1: Math.min(Math.floor(this.width * 0.04), 30)
@@ -722,7 +756,7 @@ class TC20 {
 
     for (let i of this.allItems){
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
-      if ('area' == this.type || 'bar' == this.type){
+      if ('area' == this.type || 'bar' == this.type || 'pie' == this.type){
         o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
       }
       this.graph[i] = TC20.path(o);
@@ -804,7 +838,7 @@ class TC20 {
     let s = this.panel.scrollBox, w = this.panel.width;
     if (undefined != s.target) {
       let dx = x - s.mouseXStart;
-      let mw = Math.floor(w * 0.25);
+      let mw = s.minWidth;
       if ('mid' == s.target) {
         s.x = s.reper + dx;
         if (s.x + s.width > w) {
@@ -1059,6 +1093,7 @@ class TC20 {
   }
 
   scaleXAxis() {
+    if ('pie' == this.type) return;
     let visibleCount = 0;
     let count = 0;
     let s = this.XAxis.sieve;
@@ -1091,6 +1126,7 @@ class TC20 {
   }
 
   scaleYAxis(c) {
+    if ('pie' == this.type) return;
     let step = (c.max - c.min) / 5.1;
     step = 1.2 ** Math.floor(Math.log(step) / Math.log(1.2));
     let p = 10 ** (Math.floor(Math.log10(step)) - 1);

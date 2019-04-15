@@ -38,10 +38,6 @@
       this.onMoveGraph(Math.round(e.touches[0].pageX), Math.round(e.touches[0].pageY), Math.round(e.touches[0].clientY));
     });
 
-    this.svgRoot.addEventListener('mouseleave', (e) => {
-      this.removePointer();
-    });
-
     this.svgRoot.addEventListener('click', (e) => {
       this.clickZoom();
     });

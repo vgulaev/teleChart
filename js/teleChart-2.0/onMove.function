@@ -2,7 +2,7 @@
     let s = this.panel.scrollBox, w = this.panel.width;
     if (undefined != s.target) {
       let dx = x - s.mouseXStart;
-      let mw = Math.floor(w * 0.25);
+      let mw = s.minWidth;
       if ('mid' == s.target) {
         s.x = s.reper + dx;
         if (s.x + s.width > w) {

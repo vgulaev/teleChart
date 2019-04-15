@@ -2,6 +2,7 @@
     let cur = this.data.length - 1;
     let points = [cur];
     let dx = Math.floor(this.panel.scrollBox.minWidth / this.width * this.data.length / 5.3);
+    if (0 == dx) dx = 2;
     while ((cur -= dx) > 0) {
       if (Math.ceil(cur) == points[points.length - 1]) {
         cur = Math.floor(cur);

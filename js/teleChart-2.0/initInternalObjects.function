@@ -7,9 +7,9 @@
       radius: Math.floor(o['heightPanel'] * 0.1),
       g: TC20.createSVG('g'),
       scrollBox: {
-        width: Math.round(this.width * 0.25),
-        minWidth: Math.round(this.width * 0.25),
-        x: this.width - Math.round(this.width * 0.25),
+        width: Math.round(this.width / 7),
+        minWidth: Math.round(this.width / 7),
+        x: this.width - Math.round(this.width / 7),
         // Math.floor(width * 0.2),
         h1: h1,
         w1: Math.min(Math.floor(this.width * 0.04), 30)

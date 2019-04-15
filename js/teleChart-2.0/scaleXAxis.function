@@ -1,4 +1,5 @@
   scaleXAxis() {
+    if ('pie' == this.type) return;
     let visibleCount = 0;
     let count = 0;
     let s = this.XAxis.sieve;

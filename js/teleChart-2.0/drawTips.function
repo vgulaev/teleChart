@@ -1,4 +1,5 @@
   drawTips() {
+    if ('pie' == this.type) return;
     this.divTips.innerHTML = this.innerTips();
     this.divTips.style.display = 'block'
     let svg = this.svgRoot.getBoundingClientRect();
