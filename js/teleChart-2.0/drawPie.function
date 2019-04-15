@@ -3,28 +3,19 @@
     let r = Math.floor(Math.min(cx, cy) * 0.9);
     let t = 0;
     let ex, ey;
-    let rndX = Math.random() * 50;
-    // let rndX = 23.997376641703845;
-    let sx = r * Math.cos(2 * Math.PI * rndX / 100) + cx;
-    let sy = -r * Math.sin(2 * Math.PI * rndX / 100) + cy;
+    if (undefined == this.data.rndX) this.data.rndX = Math.random() * 50;
+    let sx = r * Math.cos(2 * Math.PI * this.data.rndX / 100) + cx;
+    let sy = -r * Math.sin(2 * Math.PI * this.data.rndX / 100) + cy;
     let lA;
-    // this.data.y['y0'][b] = 30.28570210614545;
-    // this.data.y['y1'][b] = 20.685269616058935;
-    // this.data.y['y2'][b] = 8.838120083607407;
-    // this.data.y['y3'][b] = 1.3147078733233721;
-    // this.data.y['y4'][b] = 18.853610793581137;
-    // this.data.y['y5'][b] = 20.022589527283696;
-    for (let e of this.viewItems) {
-      t += this.data.y[e][b];
-      ex = r * Math.cos(2 * Math.PI * (t + rndX) / 100) + cx;
-      ey = -r * Math.sin(2 * Math.PI * (t + rndX) / 100) + cy;
-      // console.log(Math.round(ex), Math.round(ey));
+    let y = this.data.p;
+    for (let e of this.allItems) {
+      t += y[e][b];
+      ex = r * Math.cos(2 * Math.PI * (t + this.data.rndX) / 100) + cx;
+      ey = -r * Math.sin(2 * Math.PI * (t + this.data.rndX) / 100) + cy;
       lA = 0;
-      if (this.data.y[e][b] > 50) lA = 1;
-      TC20.setA(this.graph[e], {d: `M${sx},${sy}A${r},${r},0,${lA},0,${ex},${ey}L${cx},${cy}`});
+      if (y[e][b] > 50) lA = 1;
+      TC20.setA(this.graph[e], {d: `M${sx},${sy}A${r},${r},0,${lA},0,${ex},${ey}L${cx},${cy}`, opacity: this.data.factor[e]});
       sx = ex;
       sy = ey;
-      // console.log(this.data.y[e][b], Math.cos(2 * Math.PI * (t + rndX) / 100));
-      // break;
     }
   }

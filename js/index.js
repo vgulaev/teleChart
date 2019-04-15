@@ -18,18 +18,20 @@ function drawCharts() {
       let d = JSON.parse(data);
       //d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => ((i < 50 || (250 < i && i < 280)) && i != 0 ? i * 100 : e)));
       // d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => i > 363 ? 2 : e));
-      d.columns = d.columns.map(e => e.slice(0, 8).map((e, i, a) => i > 0 && a[0] != 'x' ? Math.random() * 100 : e));
-      for (let i = 1; i < d.columns[0].length; i++) {
-        let s = 0;
-        for (let e of d.columns) {
-          if ('x' == e[0]) continue;
-          s += e[i];
-        }
-        for (let e of d.columns) {
-          if ('x' == e[0]) continue;
-          e[i] = e[i] / s * 100;
-        }
-      }
+      // d.columns = d.columns.map(e => e.slice(0, 8).map((e, i, a) => i > 0 && a[0] != 'x' ? Math.random() * 100 : e));
+      d.columns = d.columns.map(e => e.slice(0, 8));
+
+      // for (let i = 1; i < d.columns[0].length; i++) {
+      //   let s = 0;
+      //   for (let e of d.columns) {
+      //     if ('x' == e[0]) continue;
+      //     s += e[i];
+      //   }
+      //   for (let e of d.columns) {
+      //     if ('x' == e[0]) continue;
+      //     e[i] = e[i] / s * 100;
+      //   }
+      // }
 
       Object.keys(d.types).map(e => d.types[e] = 'x' == d.types[e] ? 'x' : 'pie');
 

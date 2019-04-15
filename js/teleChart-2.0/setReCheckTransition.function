@@ -1,5 +1,5 @@
   setReCheckTransition(graph, panel, name, factor) {
-    if (-1 != ['area', 'bar'].indexOf(this.type)) {
+    if (-1 != ['area', 'bar', 'pie'].indexOf(this.type)) {
       graph[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
         this.data.factor[name] = x;
         let [a, b] = this.getABfromScroll();

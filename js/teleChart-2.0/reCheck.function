@@ -14,8 +14,6 @@
       button.style['background-color'] = this.data.raw.colors[element];
       button.style['color'] = 'white';
     }
-    // let a = this.animateCircleInButton(whiteCircle, 200, direction);
-    // this.doAnimation(a);
     let graph = {}, panel = {};
     this.setReCheckTransition(graph, panel, element, factor);
     requestAnimationFrame(() => {

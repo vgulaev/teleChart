@@ -1,10 +1,13 @@
-  drawStackedBarChart(a, b, mm, s) {
+  drawStackedBarChart(a, b, mm, s, _y) {
     let l = Array.from(this.allItems).sort();
     let t = 0, c = 0;
     let d = {}, p = {}, vy = {};
-    let y = this.data.y, h = s.height - 2 * s.yb;
+    let y = _y;
+    if (undefined == y) y = this.data.y;
+    let h = s.height - 2 * s.yb;
     let dy = h / mm.max;
     let dx = this.width / (b - a + 1);
+    // let k = 1 / (s.height - s.yb);
     l.forEach(e => {p[e] = new Array(b - a + 1); d[e] = ''; vy[e] = new Array(b - a + 1)});
     for (let i = a; i <= b; i++) {
       c = 0;

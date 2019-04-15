@@ -360,8 +360,9 @@ class TC20 {
       this.drawAreaChart(a, b, s);
     } else if ('pie' == this.type) {
       // this.drawPie(a, b, s);
+      let p = this.yForPie(this.data.y);
       if (s == this.graph) this.drawPie(a, b, s);
-      if (s == this.panel) this.drawStackedBarChart(a, b, c, s);
+      if (s == this.panel) this.drawStackedBarChart(a, b, c, s, p);
     }
     if (s == this.graph) {
       this.scaleXAxis();
@@ -420,29 +421,20 @@ class TC20 {
     let r = Math.floor(Math.min(cx, cy) * 0.9);
     let t = 0;
     let ex, ey;
-    let rndX = Math.random() * 50;
-    // let rndX = 23.997376641703845;
-    let sx = r * Math.cos(2 * Math.PI * rndX / 100) + cx;
-    let sy = -r * Math.sin(2 * Math.PI * rndX / 100) + cy;
+    if (undefined == this.data.rndX) this.data.rndX = Math.random() * 50;
+    let sx = r * Math.cos(2 * Math.PI * this.data.rndX / 100) + cx;
+    let sy = -r * Math.sin(2 * Math.PI * this.data.rndX / 100) + cy;
     let lA;
-    // this.data.y['y0'][b] = 30.28570210614545;
-    // this.data.y['y1'][b] = 20.685269616058935;
-    // this.data.y['y2'][b] = 8.838120083607407;
-    // this.data.y['y3'][b] = 1.3147078733233721;
-    // this.data.y['y4'][b] = 18.853610793581137;
-    // this.data.y['y5'][b] = 20.022589527283696;
-    for (let e of this.viewItems) {
-      t += this.data.y[e][b];
-      ex = r * Math.cos(2 * Math.PI * (t + rndX) / 100) + cx;
-      ey = -r * Math.sin(2 * Math.PI * (t + rndX) / 100) + cy;
-      // console.log(Math.round(ex), Math.round(ey));
+    let y = this.data.p;
+    for (let e of this.allItems) {
+      t += y[e][b];
+      ex = r * Math.cos(2 * Math.PI * (t + this.data.rndX) / 100) + cx;
+      ey = -r * Math.sin(2 * Math.PI * (t + this.data.rndX) / 100) + cy;
       lA = 0;
-      if (this.data.y[e][b] > 50) lA = 1;
-      TC20.setA(this.graph[e], {d: `M${sx},${sy}A${r},${r},0,${lA},0,${ex},${ey}L${cx},${cy}`});
+      if (y[e][b] > 50) lA = 1;
+      TC20.setA(this.graph[e], {d: `M${sx},${sy}A${r},${r},0,${lA},0,${ex},${ey}L${cx},${cy}`, opacity: this.data.factor[e]});
       sx = ex;
       sy = ey;
-      // console.log(this.data.y[e][b], Math.cos(2 * Math.PI * (t + rndX) / 100));
-      // break;
     }
   }
 
@@ -493,13 +485,16 @@ class TC20 {
     TC20.setA(s.rightLine, {d: `M${s.x + s.width - s.w1 / 2},${(this.panel.height - h2) / 2}v${h2}`});
   }
 
-  drawStackedBarChart(a, b, mm, s) {
+  drawStackedBarChart(a, b, mm, s, _y) {
     let l = Array.from(this.allItems).sort();
     let t = 0, c = 0;
     let d = {}, p = {}, vy = {};
-    let y = this.data.y, h = s.height - 2 * s.yb;
+    let y = _y;
+    if (undefined == y) y = this.data.y;
+    let h = s.height - 2 * s.yb;
     let dy = h / mm.max;
     let dx = this.width / (b - a + 1);
+    // let k = 1 / (s.height - s.yb);
     l.forEach(e => {p[e] = new Array(b - a + 1); d[e] = ''; vy[e] = new Array(b - a + 1)});
     for (let i = a; i <= b; i++) {
       c = 0;
@@ -625,9 +620,9 @@ class TC20 {
   getMinMax(a, b) {
     if (0 == this.viewItems.size) return {min: this.graph.min, max: this.graph.max};
     let r;
-    if ('bar' == this.type || 'pie' == this.type) {
+    if ('bar' == this.type) {
       r = this.getMinMaxForStackedBar(a, b);
-    } else if ('area' == this.type) {
+    } else if ('area' == this.type || 'pie' == this.type) {
       r = {min: 0, max: 100};
     } else {
       r = this.getMinMaxElse(a, b);
@@ -983,8 +978,6 @@ class TC20 {
       button.style['background-color'] = this.data.raw.colors[element];
       button.style['color'] = 'white';
     }
-    // let a = this.animateCircleInButton(whiteCircle, 200, direction);
-    // this.doAnimation(a);
     let graph = {}, panel = {};
     this.setReCheckTransition(graph, panel, element, factor);
     requestAnimationFrame(() => {
@@ -1155,7 +1148,7 @@ class TC20 {
   }
 
   setReCheckTransition(graph, panel, name, factor) {
-    if (-1 != ['area', 'bar'].indexOf(this.type)) {
+    if (-1 != ['area', 'bar', 'pie'].indexOf(this.type)) {
       graph[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
         this.data.factor[name] = x;
         let [a, b] = this.getABfromScroll();
@@ -1207,6 +1200,25 @@ class TC20 {
 
   static get xmlns() {
     return "http://www.w3.org/2000/svg";
+  }
+
+  yForPie(y) {
+    let r = {};
+    for (let e of this.allItems) {
+      r[e] = new Array(this.data.length);
+    }
+
+    for (let i = 0; i < this.data.length; i++) {
+      let s = 0;
+      for (let e of this.allItems) {
+        s += y[e][i] * this.data.factor[e];
+      }
+      for (let e of this.allItems) {
+        r[e][i] = y[e][i] * this.data.factor[e] / s * 100;
+      }
+    }
+    this.data.p = r;
+    return r;
   }
 
   yFormat(n) {
