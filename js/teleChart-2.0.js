@@ -426,13 +426,23 @@ class TC20 {
     let sy = -r * Math.sin(2 * Math.PI * this.data.rndX / 100) + cy;
     let lA;
     let y = this.data.p;
+
+    // y['y0'] = 10;
+    // y['y1'] = 10;
+    // y['y2'] = 10;
+    // y['y3'] = 5;
+    // y['y4'] = 5;
+    // y['y5'] = 60;
+
+
     for (let e of this.allItems) {
       t += y[e];
       ex = r * Math.cos(2 * Math.PI * (t + this.data.rndX) / 100) + cx;
       ey = -r * Math.sin(2 * Math.PI * (t + this.data.rndX) / 100) + cy;
       lA = 0;
       if (y[e] > 50) lA = 1;
-      TC20.setA(this.graph[e], {d: `M${sx},${sy}A${r},${r},0,${lA},0,${ex},${ey}L${cx},${cy}`, opacity: this.data.factor[e]});
+      o = this.data.factor[e];
+      TC20.setA(this.graph[e], {d: `M${sx},${sy}A${r},${r},0,${lA},0,${ex},${ey}L${cx},${cy}`, opacity: o});
       this.graph.text[e].innerHTML = y[e].toFixed(1) + '%';
       let coord = this.graph.text[e].getBBox();
       tx = (sx + ex) / 2;
@@ -441,8 +451,11 @@ class TC20 {
       k = r * 0.7 / l;
       tx = (tx - cx) * k + cx;
       ty = (ty - cy) * k + cy;
-      o = this.data.factor[e];
       if (y[e] < 7) o = 0;
+      if (y[e] > 50) {
+        tx = 2 * cx - tx;
+        ty = 2 * cy - ty;
+      }
       TC20.setA(this.graph.text[e], {x: tx - coord.width / 2 , y: ty + coord.height / 2, opacity: o});
 
       sx = ex;
