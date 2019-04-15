@@ -1,5 +1,5 @@
   prepareDataForPie() {
-    let m = Math.min(this.pointer.curX + 3, this.data.length + 1);
+    let m = Math.min(this.pointer.curX + 5, this.data.length + 1);
     let data = Object.assign({}, this.data.raw);
     // console.log(data);
     data.columns = new Array(this.data.raw.columns.length);

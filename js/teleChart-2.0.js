@@ -458,6 +458,7 @@ class TC20 {
   drawPointer() {
     if (undefined == this.pointer.status) return;
     if (0 == this.viewItems.size) return;
+    if ('pie' == this.type) return this.drawTips();
 
     let [a, b] = this.getABfromScroll();
     if (-1 != ['line', 'area'].indexOf(this.type)) {
@@ -555,7 +556,7 @@ class TC20 {
   }
 
   drawTips() {
-    if ('pie' == this.type) return;
+    // if ('pie' == this.type) return;
     this.divTips.innerHTML = this.innerTips();
     this.divTips.style.display = 'block';
     let svg = this.svgRoot.getBoundingClientRect();
@@ -807,8 +808,12 @@ class TC20 {
   }
 
   innerTips() {
-    let r, s = 0;
-    let d = true == this.zoomMode ? this.wwDDmmHH(this.data.x[this.pointer.curX]) : this.wwDDmmYY(this.data.x[this.pointer.curX]);
+    let r, s = 0, d, z;
+    if ('pie' == this.type) {
+      d = ''
+    } else {
+      d = (true == this.zoomMode) ? this.wwDDmmHH(this.data.x[this.pointer.curX]) : this.wwDDmmYY(this.data.x[this.pointer.curX]);
+    }
     if ('area' == this.type) {
       r = [`<td colspan=2><b>${d}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
       for (let e of this.viewItems) {
@@ -818,8 +823,15 @@ class TC20 {
     } else {
       r = [`<td><b>${d}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
       for (let e of this.viewItems) {
-        s += this.data.y[e][this.pointer.curX];
-        r.push(`<td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
+        if ('pie' == this.type) {
+          let [a, b] = this.getABfromScroll();
+          const reducer = (accumulator, currentValue) => accumulator + currentValue;
+          z = this.data.y[e].slice(a, b + 1).reduce(reducer);
+        } else {
+          z = this.data.y[e][this.pointer.curX];
+        }
+        s += z;
+        r.push(`<td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(z)}</b></td>`);
       }
       if ('line' != this.type && this.viewItems.size > 1) r.push(`<td>All</td><td style='text-align: right;'><b>${this.labelFormat(s)}</b></td>`);
     }
@@ -998,7 +1010,7 @@ class TC20 {
   }
 
   prepareDataForPie() {
-    let m = Math.min(this.pointer.curX + 3, this.data.length + 1);
+    let m = Math.min(this.pointer.curX + 5, this.data.length + 1);
     let data = Object.assign({}, this.data.raw);
     // console.log(data);
     data.columns = new Array(this.data.raw.columns.length);

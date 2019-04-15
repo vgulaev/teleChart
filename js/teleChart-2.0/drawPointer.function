@@ -1,6 +1,7 @@
   drawPointer() {
     if (undefined == this.pointer.status) return;
     if (0 == this.viewItems.size) return;
+    if ('pie' == this.type) return this.drawTips();
 
     let [a, b] = this.getABfromScroll();
     if (-1 != ['line', 'area'].indexOf(this.type)) {
