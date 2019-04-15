@@ -1,0 +1,16 @@
+  prepareDataForPie() {
+    let m = Math.min(this.pointer.curX + 3, this.data.length + 1);
+    let data = Object.assign({}, this.data.raw);
+    // console.log(data);
+    data.columns = new Array(this.data.raw.columns.length);
+    data.types = {};
+    for (let i = 0; i < this.data.raw.columns.length; i++) {
+      data.columns[i] = this.data.raw.columns[i].slice(m - 8, m);
+      data.columns[i][0] = this.data.raw.columns[i][0];
+    }
+    Object.keys(this.data.raw.types).forEach(e => {
+      data.types[e] = 'x' == this.data.raw.types[e] ? 'x' : 'pie';
+    });
+    // console.log(data);
+    return data;
+  }

@@ -15,12 +15,12 @@
 
     let t = Object.assign({}, this.data.factor);
     this.prepareData(data);
-    // if (this.allItems.size > 1) this.viewItems = new Set(this.cache.viewItems);
     this.data.factor = t;
     this.XAxis.sieve = 0;
 
+    if ('pie' == this.type) this.data.pie = this.yForPie(this.data.y);
+    if (initPath || 'pie' == this.type) this.initPathForGraphAndPanel();
     if (initPath) {
-      this.initPathForGraphAndPanel();
       this.viewItems = new Set(this.allItems);
       this.createFooter();
     }

@@ -161,6 +161,7 @@ class TC20 {
       this.zoomMode = true;
       this.zoomOutButton.style.display = 'inline-block';
       this.captionTag.style.display = 'none';
+      if ('area' == this.type) return this.zoom(this.prepareDataForPie());
       let d = this.data.x[this.pointer.curX];
       let path = `${this.zoomPath}/${d.getFullYear()}-${this.l0(d.getMonth() + 1)}/${this.l0(d.getDate())}.json`;
       this.httpGetAsync(path)
@@ -360,7 +361,6 @@ class TC20 {
     } else if ('area' == this.type) {
       this.drawAreaChart(a, b, s);
     } else if ('pie' == this.type) {
-      this.data.p = this.yForPie(this.data.y);
       if (s == this.graph) this.drawPie();
       if (s == this.panel) this.drawStackedBarChart(a, b, c, s, this.yForPiePanel(this.data.y));
     }
@@ -425,16 +425,7 @@ class TC20 {
     let sx = r * Math.cos(2 * Math.PI * this.data.rndX / 100) + cx;
     let sy = -r * Math.sin(2 * Math.PI * this.data.rndX / 100) + cy;
     let lA;
-    let y = this.data.p;
-
-    // y['y0'] = 10;
-    // y['y1'] = 10;
-    // y['y2'] = 10;
-    // y['y3'] = 5;
-    // y['y4'] = 5;
-    // y['y5'] = 60;
-
-
+    let y = this.data.pie;
     for (let e of this.allItems) {
       t += y[e];
       ex = r * Math.cos(2 * Math.PI * (t + this.data.rndX) / 100) + cx;
@@ -443,6 +434,7 @@ class TC20 {
       if (y[e] > 50) lA = 1;
       o = this.data.factor[e];
       TC20.setA(this.graph[e], {d: `M${sx},${sy}A${r},${r},0,${lA},0,${ex},${ey}L${cx},${cy}`, opacity: o});
+      // console.log(y[e]);
       this.graph.text[e].innerHTML = y[e].toFixed(1) + '%';
       let coord = this.graph.text[e].getBBox();
       tx = (sx + ex) / 2;
@@ -456,7 +448,7 @@ class TC20 {
         tx = 2 * cx - tx;
         ty = 2 * cy - ty;
       }
-      TC20.setA(this.graph.text[e], {x: tx - coord.width / 2 , y: ty + coord.height / 2, opacity: o});
+      TC20.setA(this.graph.text[e], {x: tx - coord.width / 2 , y: ty + coord.height / 2, opacity: o, 'fill-opacity': o});
 
       sx = ex;
       sy = ey;
@@ -565,7 +557,7 @@ class TC20 {
   drawTips() {
     if ('pie' == this.type) return;
     this.divTips.innerHTML = this.innerTips();
-    this.divTips.style.display = 'block'
+    this.divTips.style.display = 'block';
     let svg = this.svgRoot.getBoundingClientRect();
     if (this.pointer.x + 25 + this.divTips.offsetWidth > document.body.clientWidth ) {
       this.divTips.style.left = this.pointer.x - this.divTips.offsetWidth - 25 + 'px';
@@ -735,7 +727,7 @@ class TC20 {
       var xmlHttp = new XMLHttpRequest();
       xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) resolve(xmlHttp.responseText);
-      }
+      };
       xmlHttp.open("GET", theUrl, true);
       xmlHttp.send(null);
     });
@@ -897,7 +889,7 @@ class TC20 {
           s.target = undefined;
         } else if (s.width < mw) {
           s.width = mw;
-          s.x = s.reper.x + s.reper.w - s.width
+          s.x = s.reper.x + s.reper.w - s.width;
           s.target = undefined;
         }
       }
@@ -922,9 +914,16 @@ class TC20 {
       let [a,b] = this.getABfromScroll();
       for (let e of this.allItems) {
         let mm = this.getMinMaxYscaled(a, b, e);
-        // console.log(this.graph.mm[e].min, mm.min);
         t['min' + e] = this.anyCounter(this.graph.mm[e].min, mm.min, 25, (x) => this.graph.mm[e].min = x);
         t['max' + e] = this.anyCounter(this.graph.mm[e].max, mm.max, 25, (x) => this.graph.mm[e].max = x);
+      }
+    } else if ('pie' == this.type) {
+      let p = this.yForPie(this.data.y);
+      // console.log('here', p, this.data.p);
+      for (let e of this.allItems) {
+        t[e] = this.anyCounter(this.data.pie[e], p[e], 25, (x) => {
+          this.data.pie[e] = x
+        });
       }
     } else {
       let [a,b] = this.getABfromScroll();
@@ -998,6 +997,23 @@ class TC20 {
     this.type = data.types['y0'];
   }
 
+  prepareDataForPie() {
+    let m = Math.min(this.pointer.curX + 3, this.data.length + 1);
+    let data = Object.assign({}, this.data.raw);
+    // console.log(data);
+    data.columns = new Array(this.data.raw.columns.length);
+    data.types = {};
+    for (let i = 0; i < this.data.raw.columns.length; i++) {
+      data.columns[i] = this.data.raw.columns[i].slice(m - 8, m);
+      data.columns[i][0] = this.data.raw.columns[i][0];
+    }
+    Object.keys(this.data.raw.types).forEach(e => {
+      data.types[e] = 'x' == this.data.raw.types[e] ? 'x' : 'pie';
+    });
+    // console.log(data);
+    return data;
+  }
+
   reCheck(button, element) {
     let whiteCircle = button.querySelector('.whiteCircle');
     let direction = 1;
@@ -1068,6 +1084,7 @@ class TC20 {
     this.drawXAxis();
     this.drawPanel();
     this.updateDateRange();
+    if ('pie' == this.type) this.data.pie = this.yForPie(this.data.y);
     this.drawChart(a, b, mm, this.graph);
   }
 
@@ -1184,7 +1201,7 @@ class TC20 {
   }
 
   setReCheckTransition(graph, panel, name, factor) {
-    if (-1 != ['area', 'bar', 'pie'].indexOf(this.type)) {
+    if (-1 != ['area', 'bar'].indexOf(this.type)) {
       graph[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
         this.data.factor[name] = x;
         let [a, b] = this.getABfromScroll();
@@ -1205,6 +1222,15 @@ class TC20 {
       graph.max = this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x);
       graph[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => this.data.factor[name] = x);
       panel[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {});
+    } else if ('pie' == this.type) {
+      graph[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
+        this.data.factor[name] = x;
+        this.data.pie = this.yForPie(this.data.y);
+      });
+      panel[name] = this.anyCounter(this.data.factor[name], factor, 25, (x) => {
+        this.data.factor[name] = x;
+        this.data.pie = this.yForPie(this.data.y);
+      });
     }
   }
 
@@ -1314,12 +1340,12 @@ class TC20 {
 
     let t = Object.assign({}, this.data.factor);
     this.prepareData(data);
-    // if (this.allItems.size > 1) this.viewItems = new Set(this.cache.viewItems);
     this.data.factor = t;
     this.XAxis.sieve = 0;
 
+    if ('pie' == this.type) this.data.pie = this.yForPie(this.data.y);
+    if (initPath || 'pie' == this.type) this.initPathForGraphAndPanel();
     if (initPath) {
-      this.initPathForGraphAndPanel();
       this.viewItems = new Set(this.allItems);
       this.createFooter();
     }

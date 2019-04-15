@@ -4,9 +4,16 @@
       let [a,b] = this.getABfromScroll();
       for (let e of this.allItems) {
         let mm = this.getMinMaxYscaled(a, b, e);
-        // console.log(this.graph.mm[e].min, mm.min);
         t['min' + e] = this.anyCounter(this.graph.mm[e].min, mm.min, 25, (x) => this.graph.mm[e].min = x);
         t['max' + e] = this.anyCounter(this.graph.mm[e].max, mm.max, 25, (x) => this.graph.mm[e].max = x);
+      }
+    } else if ('pie' == this.type) {
+      let p = this.yForPie(this.data.y);
+      // console.log('here', p, this.data.p);
+      for (let e of this.allItems) {
+        t[e] = this.anyCounter(this.data.pie[e], p[e], 25, (x) => {
+          this.data.pie[e] = x
+        });
       }
     } else {
       let [a,b] = this.getABfromScroll();

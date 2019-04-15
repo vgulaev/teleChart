@@ -1,7 +1,7 @@
   drawTips() {
     if ('pie' == this.type) return;
     this.divTips.innerHTML = this.innerTips();
-    this.divTips.style.display = 'block'
+    this.divTips.style.display = 'block';
     let svg = this.svgRoot.getBoundingClientRect();
     if (this.pointer.x + 25 + this.divTips.offsetWidth > document.body.clientWidth ) {
       this.divTips.style.left = this.pointer.x - this.divTips.offsetWidth - 25 + 'px';

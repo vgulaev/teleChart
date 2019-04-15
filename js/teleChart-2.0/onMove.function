@@ -30,7 +30,7 @@
           s.target = undefined;
         } else if (s.width < mw) {
           s.width = mw;
-          s.x = s.reper.x + s.reper.w - s.width
+          s.x = s.reper.x + s.reper.w - s.width;
           s.target = undefined;
         }
       }

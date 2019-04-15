@@ -15,5 +15,6 @@
     this.drawXAxis();
     this.drawPanel();
     this.updateDateRange();
+    if ('pie' == this.type) this.data.pie = this.yForPie(this.data.y);
     this.drawChart(a, b, mm, this.graph);
   }
