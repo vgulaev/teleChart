@@ -1,7 +1,9 @@
   prepareData(data) {
     this.data = {x : [], y: {}, raw: data, buffer: {}, factor: {}};
     this.allItems = new Set(Object.keys(data.names));
-    this.viewItems = new Set(Object.keys(data.names));
+    if (undefined == this.viewItems) {
+      this.viewItems = new Set(Object.keys(data.names));
+    }
     for (let col of data.columns) {
       if ('x' == col[0]) {
         for (let i = 1; i < col.length; i++) {
@@ -15,5 +17,4 @@
     }
     this.data.length = this.data.x.length;
     this.type = data.types['y0'];
-    delete this.data.raw.columns
   }

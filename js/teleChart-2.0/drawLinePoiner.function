@@ -7,7 +7,12 @@
     p.g.append(path);
     if ('area' == this.type) return;
     for (let e of this.viewItems) {
-      let y = this.height - scaleY * (this.data.y[e][p.curX] - this.graph.min);
+      let min = this.graph.min;
+      if (true == this.data.raw.y_scaled) {
+        scaleY = this.height / (this.graph.mm[e].max - this.graph.mm[e].min);
+        min = this.graph.mm[e].min;
+      }
+      let y = this.height - scaleY * (this.data.y[e][p.curX] - min);
       let circle = TC20.circle(viewX, y, 5, {'class': 'point', 'fill': 'white', 'stroke': this.data.raw.colors[e], 'stroke-width': 2});
       p.g.append(circle);
     }

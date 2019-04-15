@@ -1,0 +1,13 @@
+  clickZoom() {
+    if (true != this.zoomMode) {
+      this.zoomMode = true;
+      this.zoomOutButton.style.display = 'inline-block';
+      this.captionTag.style.display = 'none';
+      let d = this.data.x[this.pointer.curX];
+      let path = `${this.zoomPath}/${d.getFullYear()}-${this.l0(d.getMonth() + 1)}/${this.l0(d.getDate())}.json`;
+      this.httpGetAsync(path)
+        .then((data) => {
+          this.zoom(JSON.parse(data));
+        });
+    }
+  }

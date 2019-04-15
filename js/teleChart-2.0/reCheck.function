@@ -5,13 +5,17 @@
     this.hideTips();
     if (this.viewItems.has(element)) {
       this.viewItems.delete(element);
+      button.style['background-color'] = 'white';
+      button.style['color'] = this.data.raw.colors[element];
     } else {
       direction = -1;
       factor = 1;
       this.viewItems.add(element);
+      button.style['background-color'] = this.data.raw.colors[element];
+      button.style['color'] = 'white';
     }
-    let a = this.animateCircleInButton(whiteCircle, 200, direction);
-    this.doAnimation(a);
+    // let a = this.animateCircleInButton(whiteCircle, 200, direction);
+    // this.doAnimation(a);
     let graph = {}, panel = {};
     this.setReCheckTransition(graph, panel, element, factor);
     requestAnimationFrame(() => {

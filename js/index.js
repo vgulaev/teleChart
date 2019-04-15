@@ -11,7 +11,9 @@ function httpGetAsync(theUrl) {
 
 function drawCharts() {
   let c = ['Followers', 'Interactions', 'Messages', 'Views', 'Apps'];
-  httpGetAsync('contest/4/overview.json')
+  let i = 4;
+  httpGetAsync(`contest/${i}/overview.json`)
+  // httpGetAsync('contest/2/2018-04/07.json')
     .then(data => {
       let d = JSON.parse(data);
       //d.columns = d.columns.map(e => 'x' == e[0] ? e : e.map((e, i) => ((i < 50 || (250 < i && i < 280)) && i != 0 ? i * 100 : e)));
@@ -21,7 +23,8 @@ function drawCharts() {
             width: 500,
             height: 300,
             widthToPage: document.getElementById('widthToPage').checked,
-            heightPanel: 100
+            heightPanel: 100,
+            zoomPath: `contest/${i}`
           });
     });
   [1, 2, 3, 4, 5].forEach((e, i) => {
@@ -33,7 +36,8 @@ function drawCharts() {
               width: 500,
               height: 300,
               widthToPage: document.getElementById('widthToPage').checked,
-              heightPanel: 100
+              heightPanel: 100,
+              zoomPath: `contest/${e}`
             });
       });
   });

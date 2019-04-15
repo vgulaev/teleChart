@@ -5,6 +5,16 @@
       text: TC20.text({x: 5, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(y), fill: '#252529', style: 'font-size: 10px', opacity: 1}),
       line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': this.YAxis.gridColor, 'fill': 'none', opacity: 0.1})
     };
+    if (true == this.data.raw.y_scaled) {
+      let [y1, y2] = Array.from(this.allItems).sort();
+      let mm = this.graph.mm;
+      let yy = (y - mm[y1].min) / (mm[y1].max - mm[y1].min) * (mm[y2].max - mm[y2].min) + mm[y2].min;
+      TC20.setA(obj.text, {fill: this.data.raw.colors[y1]});
+      obj.second = TC20.text({x: this.width + 20, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(yy), fill: this.data.raw.colors[y2], style: 'font-size: 10px', opacity: 1});
+      this.svgRoot.append(obj.second);
+      let coord = obj.second.getBBox();
+      TC20.setA(obj.second, {x: this.width - coord.width - 5});
+    }
     this.svgRoot.append(obj.text);
     this.svgRoot.append(obj.line);
     return obj;

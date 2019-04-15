@@ -1,0 +1,29 @@
+  zoom(data) {
+    this.zoomMode = true;
+    this.cache = {
+      XAxis: {
+        sieve: this.XAxis.sieve
+      },
+      scrollBox: {
+        x: this.panel.scrollBox.x,
+        width: this.panel.scrollBox.width
+      },
+      viewItems: new Set(this.viewItems)
+    };
+
+    let initPath = (1 == this.allItems.size);
+
+    let t = Object.assign({}, this.data.factor);
+    this.prepareData(data);
+    // if (this.allItems.size > 1) this.viewItems = new Set(this.cache.viewItems);
+    this.data.factor = t;
+    this.XAxis.sieve = 0;
+
+    if (initPath) {
+      this.initPathForGraphAndPanel();
+      this.viewItems = new Set(this.allItems);
+      this.createFooter();
+    }
+
+    requestAnimationFrame(() => this.requestZoomAnimation());
+  }

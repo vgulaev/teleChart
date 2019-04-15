@@ -1,5 +1,7 @@
   drawLineChart(a, b, mm, s) {
+    let c = mm;
     for (let i of this.allItems) {
-      TC20.setA(s[i], {d: this.getD(0, 2 * s.yb, this.width, s.height - 3 * s.yb, s.height, mm.min, mm.max, this.data.y[i], a, b + 1), opacity: this.data.factor[i]});
+      if (true == this.data.raw.y_scaled) c = s.mm[i];
+      TC20.setA(s[i], {d: this.getD(0, 2 * s.yb, this.width, s.height - 3 * s.yb, s.height, c.min, c.max, this.data.y[i], a, b + 1), opacity: this.data.factor[i]});
     }
   }

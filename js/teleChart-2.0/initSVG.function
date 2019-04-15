@@ -9,5 +9,8 @@
       TC20.setA(this[e], style[i]);
       this.divRoot.append(this[e]);
     });
-  }
 
+    this.svgRoot.append(this.graph.g);
+    this.svgRoot.append(this.pointer.g);
+    this.svgPanel.append(this.panel.g)
+  }

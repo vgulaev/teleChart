@@ -5,8 +5,7 @@
     step = Math.floor(step / p) * p;
     let t1 = Math.floor(this.YAxis.mmOriginal.min / step) * step;
     let from = Math.floor((c.min - t1) / step) * step + t1;
-    // console.log(step, from);
-    if (this.YAxis.step != step || this.YAxis.from != from) {
+    if (this.YAxis.step != step || this.YAxis.from != from || true == this.data.raw.y_scaled) {
       this.YAxis.from = from;
       this.YAxis.step = step;
       this.recreateYALabel(c);
@@ -16,6 +15,7 @@
         let viewY = Math.floor(this.height - (e.y - c.min) * dy);
         TC20.setA(e.text, {y: viewY - this.YAxis.textShift});
         TC20.setA(e.line, {d: `M0,${viewY}L${this.width},${viewY}`});
+        if (true == this.data.raw.y_scaled) TC20.setA(e.second, {y: viewY - this.YAxis.textShift});
       }
     }
   }

@@ -6,7 +6,9 @@
     if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
     }
+    this.zoomData = data;
     this.width = width;
+    this.zoomPath = o['zoomPath'];
     this.animationStack = new Set();
     this.semafors = {};
 
@@ -18,7 +20,6 @@
     this.divTips = document.createElement('div');
     this.divTips.setAttribute('style', `display: none; position: absolute; background-color: white; left: 800px; top: 100px; border: 1px solid ${this.axisColor}; border-radius: 5px; white-space: nowrap; font-size: 12px;`);
     this.divRoot.append(this.divTips);
-
 
     this.prepareData(data);
     this.initInternalObjects(o);

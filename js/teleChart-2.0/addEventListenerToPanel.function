@@ -41,4 +41,16 @@
     this.svgRoot.addEventListener('mouseleave', (e) => {
       this.removePointer();
     });
+
+    this.svgRoot.addEventListener('click', (e) => {
+      this.clickZoom();
+    });
+
+    this.divTips.addEventListener('click', (e) => {
+      this.clickZoom();
+    });
+
+    this.divTips.addEventListener('touchstart', (e) => {
+      this.clickZoom();
+    });
   }

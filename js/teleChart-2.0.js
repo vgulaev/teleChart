@@ -68,7 +68,6 @@ class TC20 {
     }
   }
 
-
   addEventListenerToPanel() {
     let s = this.panel.scrollBox, p = this.svgPanel;
 
@@ -112,6 +111,18 @@ class TC20 {
     this.svgRoot.addEventListener('mouseleave', (e) => {
       this.removePointer();
     });
+
+    this.svgRoot.addEventListener('click', (e) => {
+      this.clickZoom();
+    });
+
+    this.divTips.addEventListener('click', (e) => {
+      this.clickZoom();
+    });
+
+    this.divTips.addEventListener('touchstart', (e) => {
+      this.clickZoom();
+    });
   }
 
   animationStep() {
@@ -131,14 +142,14 @@ class TC20 {
   }
 
   button(name) {
-    return `<button id="${name}Button" style="border-radius: 40px; border: 1px solid white; background-color: white; margin-right: 10px;">
-      <svg width="40px" height="40px" style=" display: inline-block; vertical-align: middle;">
-        <circle cy="20" cx="20" r="15" fill="${this.data.raw.colors[name]}"/>
-      <path class="mark" d="M 13,20 l7,7 l7,-12 l-4,0 l-3,7 l-3,-3 z" stroke-width="2" fill="white">
+    let c = this.data.raw.colors[name];
+    return `<button id="${name}Button" style="border-radius: 40px; border: 2px solid ${c}; background-color: ${c}; margin-right: 10px; color: white; padding-right: 20px;">
+      <svg width="15px" height="30px" style=" display: inline-block; vertical-align: middle;">
+      <path class="mark" d="M 0,15 l7,7 l7,-12 l-4,0 l-3,7 l-3,-3 z" stroke-width="2" fill="white">
         </path>
       <circle class="whiteCircle" cy="20" cx="20" r="1" fill="white" style="display: none;"/>
       </svg>
-      <span>${this.data.raw.names[name]}</span>
+      <span><b>${this.data.raw.names[name]}</b></span>
     </button>`;
   }
 
@@ -146,6 +157,20 @@ class TC20 {
     let e = TeleChart.createSVG('circle');
     TC20.setA(e, Object.assign({'cx': cx, 'cy': cy, 'r': r}, o));
     return e;
+  }
+
+  clickZoom() {
+    if (true != this.zoomMode) {
+      this.zoomMode = true;
+      this.zoomOutButton.style.display = 'inline-block';
+      this.captionTag.style.display = 'none';
+      let d = this.data.x[this.pointer.curX];
+      let path = `${this.zoomPath}/${d.getFullYear()}-${this.l0(d.getMonth() + 1)}/${this.l0(d.getDate())}.json`;
+      this.httpGetAsync(path)
+        .then((data) => {
+          this.zoom(JSON.parse(data));
+        });
+    }
   }
 
   constructor(tagID, data, o = {}) {
@@ -156,7 +181,9 @@ class TC20 {
     if (true == o['widthToPage']) {
       width = document.body.clientWidth - 10;
     }
+    this.zoomData = data;
     this.width = width;
+    this.zoomPath = o['zoomPath'];
     this.animationStack = new Set();
     this.semafors = {};
 
@@ -168,7 +195,6 @@ class TC20 {
     this.divTips = document.createElement('div');
     this.divTips.setAttribute('style', `display: none; position: absolute; background-color: white; left: 800px; top: 100px; border: 1px solid ${this.axisColor}; border-radius: 5px; white-space: nowrap; font-size: 12px;`);
     this.divRoot.append(this.divTips);
-
 
     this.prepareData(data);
     this.initInternalObjects(o);
@@ -208,10 +234,17 @@ class TC20 {
   }
 
   createHeader() {
+    let r = [];
     this.header = document.createElement('div');
-    this.header.innerHTML = `<h4 style='display: inline-block; margin: 0;'>${this.data.raw.caption}</h4><h5 id='dateRange' style='float: right; display: inline-block; margin: 0; user-select: none;'></h5>`;
+    r.push(`<h4 id='captionTag' style='display: inline-block; margin: 0;'>${this.data.raw.caption}</h4>`);
+    r.push(`<button id='zoomTag' style='display: none; background-color: white; border: none; font-size: 16px; color: #0083e1;'><img style='height: auto; width: 15%; vertical-align: middle; margin-right: 5px;' src="zoom.png"><b>Zoom Out</b></button>`);
+    r.push(`<h5 id='dateRange' style='float: right; display: inline-block; margin: 0; user-select: none;'></h5>`);
+    this.header.innerHTML = r.join('');
     this.divRoot.append(this.header);
     this.dateRange = this.header.querySelector('#dateRange');
+    this.captionTag = this.header.querySelector('#captionTag');
+    this.zoomOutButton = this.header.querySelector('#zoomTag');
+    this.zoomOutButton.addEventListener('click', () => this.zoomOut());
   }
 
   static createSVG(tag) {
@@ -332,7 +365,14 @@ class TC20 {
     }
     if (s == this.graph) {
       this.scaleXAxis();
-      this.scaleYAxis(c);
+      if (true == this.data.raw.y_scaled) {
+        for (let e of Array.from(this.allItems).sort()) {
+          this.scaleYAxis(this.graph.mm[e]);
+          break;
+        }
+      } else {
+        this.scaleYAxis(c);
+      }
     }
   }
 
@@ -341,8 +381,10 @@ class TC20 {
   }
 
   drawLineChart(a, b, mm, s) {
+    let c = mm;
     for (let i of this.allItems) {
-      TC20.setA(s[i], {d: this.getD(0, 2 * s.yb, this.width, s.height - 3 * s.yb, s.height, mm.min, mm.max, this.data.y[i], a, b + 1), opacity: this.data.factor[i]});
+      if (true == this.data.raw.y_scaled) c = s.mm[i];
+      TC20.setA(s[i], {d: this.getD(0, 2 * s.yb, this.width, s.height - 3 * s.yb, s.height, c.min, c.max, this.data.y[i], a, b + 1), opacity: this.data.factor[i]});
     }
   }
 
@@ -355,7 +397,12 @@ class TC20 {
     p.g.append(path);
     if ('area' == this.type) return;
     for (let e of this.viewItems) {
-      let y = this.height - scaleY * (this.data.y[e][p.curX] - this.graph.min);
+      let min = this.graph.min;
+      if (true == this.data.raw.y_scaled) {
+        scaleY = this.height / (this.graph.mm[e].max - this.graph.mm[e].min);
+        min = this.graph.mm[e].min;
+      }
+      let y = this.height - scaleY * (this.data.y[e][p.curX] - min);
       let circle = TC20.circle(viewX, y, 5, {'class': 'point', 'fill': 'white', 'stroke': this.data.raw.colors[e], 'stroke-width': 2});
       p.g.append(circle);
     }
@@ -481,6 +528,7 @@ class TC20 {
   }
 
   drawXAxis() {
+    this.svgXAxis.innerHTML = '';
     this.XAxis.points = this.getXAxisPoints().map(x => this.drawXLabel(x));
   }
 
@@ -489,7 +537,7 @@ class TC20 {
       x: x,
       visible: 1,
       viewX: this.getViewX(x),
-      innerHTML: this.mmDD(this.data.x[x])
+      innerHTML: true == this.zoomMode ? this.mmDDhh(this.data.x[x]) : this.mmDD(this.data.x[x])
     };
     obj.text = TC20.text({x: obj.viewX, y: 10, innerHTML: obj.innerHTML, fill: '#252529', style: 'font-size: 10px', opacity: 1});
     this.svgXAxis.append(obj.text);
@@ -505,6 +553,16 @@ class TC20 {
       text: TC20.text({x: 5, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(y), fill: '#252529', style: 'font-size: 10px', opacity: 1}),
       line: TC20.path({d: `M0,${viewY}L${this.width},${viewY}`, 'stroke-width': 2, 'stroke': this.YAxis.gridColor, 'fill': 'none', opacity: 0.1})
     };
+    if (true == this.data.raw.y_scaled) {
+      let [y1, y2] = Array.from(this.allItems).sort();
+      let mm = this.graph.mm;
+      let yy = (y - mm[y1].min) / (mm[y1].max - mm[y1].min) * (mm[y2].max - mm[y2].min) + mm[y2].min;
+      TC20.setA(obj.text, {fill: this.data.raw.colors[y1]});
+      obj.second = TC20.text({x: this.width + 20, y: viewY - this.YAxis.textShift, innerHTML: this.yFormat(yy), fill: this.data.raw.colors[y2], style: 'font-size: 10px', opacity: 1});
+      this.svgRoot.append(obj.second);
+      let coord = obj.second.getBBox();
+      TC20.setA(obj.second, {x: this.width - coord.width - 5});
+    }
     this.svgRoot.append(obj.text);
     this.svgRoot.append(obj.line);
     return obj;
@@ -568,6 +626,16 @@ class TC20 {
     return {min: 0, max: max};
   }
 
+  getMinMaxYscaled(a, b, e) {
+    let min = Infinity, max = -Infinity;
+    for (let i = Math.ceil(a); i <= b; i++) {
+      let j = this.data.y[e][i];
+      if (j < min) min = j;
+      if (j > max) max = j;
+    }
+    return {min: min, max: max};
+  }
+
   getTime(callBack) {
     let s = performance.now();
     callBack.call(this);
@@ -584,8 +652,7 @@ class TC20 {
   getXAxisPoints() {
     let cur = this.data.length - 1;
     let points = [cur];
-    let [a, b] = this.getABfromScroll();
-    let dx = (b - a) / 5.3;
+    let dx = Math.floor(this.panel.scrollBox.minWidth / this.width * this.data.length / 5.3);
     while ((cur -= dx) > 0) {
       if (Math.ceil(cur) == points[points.length - 1]) {
         cur = Math.floor(cur);
@@ -602,15 +669,28 @@ class TC20 {
     this.divTips.style.display = 'none';
   }
 
+  httpGetAsync(theUrl) {
+    return new Promise((resolve, reject) => {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) resolve(xmlHttp.responseText);
+      }
+      xmlHttp.open("GET", theUrl, true);
+      xmlHttp.send(null);
+    });
+  }
+
   initInternalObjects(o) {
     let h1 = Math.floor(o['heightPanel'] * 0.03);
     this.panel = {
-      transition: {}, yb: h1, min: 0, max: 0,
+      transition: {}, yb: h1, min: 0, max: 0, mm: {},
       width: this.width,
       height: o['heightPanel'],
       radius: Math.floor(o['heightPanel'] * 0.1),
+      g: TC20.createSVG('g'),
       scrollBox: {
         width: Math.round(this.width * 0.25),
+        minWidth: Math.round(this.width * 0.25),
         x: this.width - Math.round(this.width * 0.25),
         // Math.floor(width * 0.2),
         h1: h1,
@@ -618,7 +698,8 @@ class TC20 {
       }
     };
     this.graph = {
-      transition: {}, yb: 0, y: {}, min: 0, max: 0,
+      transition: {}, yb: 0, y: {}, min: 0, max: 0, mm: {},
+      g: TC20.createSVG('g'),
       height: o['height']
     };
     this.XAxis = {
@@ -632,21 +713,23 @@ class TC20 {
       textShift: 5,
       gridColor: '#182D3B'
     };
+    this.pointer = {g: TC20.createSVG('g')};
   }
 
   initPathForGraphAndPanel() {
+    this.graph.g.innerHTML = '';
+    this.panel.g.innerHTML = '';
+
     for (let i of this.allItems){
       let o = {'d': '', 'stroke-width': 2, 'stroke': this.data.raw.colors[i], 'fill': 'none'};
       if ('area' == this.type || 'bar' == this.type){
         o = {'d': '', 'stroke-width': 0, 'fill': this.data.raw.colors[i]};
       }
       this.graph[i] = TC20.path(o);
-      this.svgRoot.append(this.graph[i]);
+      this.graph.g.append(this.graph[i]);
       this.panel[i] = TC20.path(o);
-      this.svgPanel.append(this.panel[i]);
+      this.panel.g.append(this.panel[i]);
     }
-    this.pointer = {g: TC20.createSVG('g')};
-    this.svgRoot.append(this.pointer.g);
   }
 
   initSVG(o, width) {
@@ -660,19 +743,23 @@ class TC20 {
       TC20.setA(this[e], style[i]);
       this.divRoot.append(this[e]);
     });
-  }
 
+    this.svgRoot.append(this.graph.g);
+    this.svgRoot.append(this.pointer.g);
+    this.svgPanel.append(this.panel.g)
+  }
 
   innerTips() {
     let r, s = 0;
+    let d = true == this.zoomMode ? this.wwDDmmHH(this.data.x[this.pointer.curX]) : this.wwDDmmYY(this.data.x[this.pointer.curX]);
     if ('area' == this.type) {
-      r = [`<td colspan=2><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
+      r = [`<td colspan=2><b>${d}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
       for (let e of this.viewItems) {
         s += this.data.y[e][this.pointer.curX];
         r.push(`<td style='text-align: right;'><b>${this.graph.p[e][this.pointer.k].toFixed(1)}%</b></td><td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
       }
     } else {
-      r = [`<td><b>${this.wwDDmmYY(this.data.x[this.pointer.curX])}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
+      r = [`<td><b>${d}</b></td><td style='text-align: right; color: #D2D5D7'>&gt;</td>`];
       for (let e of this.viewItems) {
         s += this.data.y[e][this.pointer.curX];
         r.push(`<td>${this.data.raw.names[e]}</td><td style='text-align: right; color:${this.data.raw.colors[e]}'><b>${this.labelFormat(this.data.y[e][this.pointer.curX])}</b></td>`);
@@ -680,6 +767,11 @@ class TC20 {
       if ('line' != this.type && this.viewItems.size > 1) r.push(`<td>All</td><td style='text-align: right;'><b>${this.labelFormat(s)}</b></td>`);
     }
     return `<table style='margin: 5px;'>${r.map(e => `<tr>${e}</tr>`).join('')}</table>`;
+  }
+
+  l0(n) {
+    if (n < 10) return '0' + n;
+    return n;
   }
 
   labelFormat(n) {
@@ -698,6 +790,10 @@ class TC20 {
 
   mmDD(date) {
     return TC20.monthShort[date.getMonth()] + ' ' + date.getDate().toString();
+  }
+
+  mmDDhh(d) {
+    return this.l0(d.getHours()) + ':' + this.l0(d.getMinutes());
   }
 
   msg(text) {
@@ -740,18 +836,7 @@ class TC20 {
           s.target = undefined;
         }
       }
-      requestAnimationFrame(() => {
-        let [a,b] = this.getABfromScroll();
-        let mm = this.getMinMax(a, b);
-        let t = {
-          min: this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x),
-          max: this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x)
-        };
-        this.hideTips();
-        this.requestExec(this.drawScroll);
-        this.requestDrawGraph(t, this.graph);
-        this.updateDateRange();
-      });
+      requestAnimationFrame(() => this.onMoveRender());
     }
   }
 
@@ -764,6 +849,30 @@ class TC20 {
     requestAnimationFrame(() => {
       this.drawPointer();
     });
+  }
+
+  onMoveRender() {
+    let t = {};
+    if (true == this.data.raw.y_scaled) {
+      let [a,b] = this.getABfromScroll();
+      for (let e of this.allItems) {
+        let mm = this.getMinMaxYscaled(a, b, e);
+        // console.log(this.graph.mm[e].min, mm.min);
+        t['min' + e] = this.anyCounter(this.graph.mm[e].min, mm.min, 25, (x) => this.graph.mm[e].min = x);
+        t['max' + e] = this.anyCounter(this.graph.mm[e].max, mm.max, 25, (x) => this.graph.mm[e].max = x);
+      }
+    } else {
+      let [a,b] = this.getABfromScroll();
+      let mm = this.getMinMax(a, b);
+      t = {
+        min: this.anyCounter(this.graph.min, mm.min, 25, (x) => this.graph.min = x),
+        max: this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x)
+      };
+    }
+    this.hideTips();
+    this.requestExec(this.drawScroll);
+    this.requestDrawGraph(t, this.graph);
+    this.updateDateRange();
   }
 
   onStart(x, k) {
@@ -806,7 +915,9 @@ class TC20 {
   prepareData(data) {
     this.data = {x : [], y: {}, raw: data, buffer: {}, factor: {}};
     this.allItems = new Set(Object.keys(data.names));
-    this.viewItems = new Set(Object.keys(data.names));
+    if (undefined == this.viewItems) {
+      this.viewItems = new Set(Object.keys(data.names));
+    }
     for (let col of data.columns) {
       if ('x' == col[0]) {
         for (let i = 1; i < col.length; i++) {
@@ -820,7 +931,6 @@ class TC20 {
     }
     this.data.length = this.data.x.length;
     this.type = data.types['y0'];
-    delete this.data.raw.columns
   }
 
   reCheck(button, element) {
@@ -830,13 +940,17 @@ class TC20 {
     this.hideTips();
     if (this.viewItems.has(element)) {
       this.viewItems.delete(element);
+      button.style['background-color'] = 'white';
+      button.style['color'] = this.data.raw.colors[element];
     } else {
       direction = -1;
       factor = 1;
       this.viewItems.add(element);
+      button.style['background-color'] = this.data.raw.colors[element];
+      button.style['color'] = 'white';
     }
-    let a = this.animateCircleInButton(whiteCircle, 200, direction);
-    this.doAnimation(a);
+    // let a = this.animateCircleInButton(whiteCircle, 200, direction);
+    // this.doAnimation(a);
     let graph = {}, panel = {};
     this.setReCheckTransition(graph, panel, element, factor);
     requestAnimationFrame(() => {
@@ -849,6 +963,7 @@ class TC20 {
     for (let e of this.YAxis.point) {
       e.text.remove();
       e.line.remove();
+      if (true == this.data.raw.y_scaled) e.second.remove();
     }
     this.YAxis.points = [];
     let dy = this.height / (c.max - c.min);
@@ -879,10 +994,16 @@ class TC20 {
     //   this.getMinMax(0, this.data.length - 1)
     //   }
     // });
-    this.drawXAxis();
-    this.drawPanel();
     let [a, b] = this.getABfromScroll();
     let mm = this.getMinMax(a, b);
+    if (true == this.data.raw.y_scaled) {
+      for (let e of this.allItems) {
+        this.graph.mm[e] = this.getMinMaxYscaled(a, b, e);
+        this.panel.mm[e] = this.getMinMaxYscaled(0, this.data.length - 1, e);
+      }
+    }
+    this.drawXAxis();
+    this.drawPanel();
     this.updateDateRange();
     this.drawChart(a, b, mm, this.graph);
   }
@@ -914,6 +1035,27 @@ class TC20 {
           if ('recall' == this.semafors[n]) this.requestExec(call);
         });
     }
+  }
+
+  requestZoomAnimation() {
+    if (true == this.zoomMode) {
+      this.panel.scrollBox.width = this.panel.scrollBox.minWidth;
+      this.panel.scrollBox.x = (this.width - this.panel.scrollBox.width) / 2;
+    }
+
+    this.data.length = this.data.x.length;
+    if (true == this.data.raw.y_scaled) {
+      for (let e of this.allItems) {
+        this.panel.mm[e] = this.getMinMaxYscaled(0, this.data.length - 1, e);
+      }
+    } else {
+      this.YAxis.mmOriginal = this.getMinMax(0, this.data.length - 1);
+    }
+    this.removePointer();
+    this.hideTips();
+    this.onMoveRender();
+    this.drawChartOnPanel();
+    this.drawXAxis();
   }
 
   scaleXAxis() {
@@ -955,8 +1097,7 @@ class TC20 {
     step = Math.floor(step / p) * p;
     let t1 = Math.floor(this.YAxis.mmOriginal.min / step) * step;
     let from = Math.floor((c.min - t1) / step) * step + t1;
-    // console.log(step, from);
-    if (this.YAxis.step != step || this.YAxis.from != from) {
+    if (this.YAxis.step != step || this.YAxis.from != from || true == this.data.raw.y_scaled) {
       this.YAxis.from = from;
       this.YAxis.step = step;
       this.recreateYALabel(c);
@@ -966,6 +1107,7 @@ class TC20 {
         let viewY = Math.floor(this.height - (e.y - c.min) * dy);
         TC20.setA(e.text, {y: viewY - this.YAxis.textShift});
         TC20.setA(e.line, {d: `M0,${viewY}L${this.width},${viewY}`});
+        if (true == this.data.raw.y_scaled) TC20.setA(e.second, {y: viewY - this.YAxis.textShift});
       }
     }
   }
@@ -1017,7 +1159,10 @@ class TC20 {
 
   wMMDD(d) {
     return [d.getDate(), TC20.monthShort[d.getMonth()], d.getFullYear()].join(' ');
-    // return TC20.monthNames[date.getDay()] + ', ' + this.mmDD(date);
+  }
+
+  wwDDmmHH(d) {
+    return [TC20.dayNames[d.getDay()] + ',', d.getDate(), TC20.monthShort[d.getMonth()], this.l0(d.getHours()) + ':' + this.l0(d.getMinutes())].join(' ');
   }
 
   wwDDmmYY(date) {
@@ -1033,6 +1178,8 @@ class TC20 {
     if (abs > 1000000000) return (n / 1000000000).toFixed(2) + 'B';
     if (abs > 1000000) return (n / 1000000).toFixed(2) + 'M';
     if (abs > 1000) return (n / 1000).toFixed(1) + 'K';
+    if (abs > 99) return n.toFixed(0);
+    if (abs > 9) return n.toFixed(1);
     if (n == 0) return 0;
 
     let p = Math.floor(Math.log10(abs));
@@ -1046,5 +1193,59 @@ class TC20 {
 
     return n.toFixed(3);
     }
+
+  zoom(data) {
+    this.zoomMode = true;
+    this.cache = {
+      XAxis: {
+        sieve: this.XAxis.sieve
+      },
+      scrollBox: {
+        x: this.panel.scrollBox.x,
+        width: this.panel.scrollBox.width
+      },
+      viewItems: new Set(this.viewItems)
+    };
+
+    let initPath = (1 == this.allItems.size);
+
+    let t = Object.assign({}, this.data.factor);
+    this.prepareData(data);
+    // if (this.allItems.size > 1) this.viewItems = new Set(this.cache.viewItems);
+    this.data.factor = t;
+    this.XAxis.sieve = 0;
+
+    if (initPath) {
+      this.initPathForGraphAndPanel();
+      this.viewItems = new Set(this.allItems);
+      this.createFooter();
+    }
+
+    requestAnimationFrame(() => this.requestZoomAnimation());
+  }
+
+  zoomOut() {
+    this.zoomMode = undefined;
+    this.zoomOutButton.style.display = 'none';
+    this.captionTag.style.display = 'inline-block';
+
+    this.XAxis.sieve = this.cache.XAxis.sieve;
+    this.panel.scrollBox.x = this.cache.scrollBox.x;
+    this.panel.scrollBox.width = this.cache.scrollBox.width;
+
+    let t = Object.assign({}, this.data.factor);
+    this.prepareData(this.zoomData);
+    if (this.allItems.size > 1) this.data.factor = t;
+
+    if (1 == this.allItems.size) {
+      this.initPathForGraphAndPanel();
+      this.viewItems = new Set(this.allItems);
+      this.footer.remove();
+    }
+
+    this.initPathForGraphAndPanel();
+
+    requestAnimationFrame(() => this.requestZoomAnimation());
+  }
 
 }

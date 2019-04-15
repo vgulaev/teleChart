@@ -9,3 +9,6 @@ logs/*
 *.gz
 
 hw.js
+
+*.sublime-workspace
+.function

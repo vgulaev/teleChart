@@ -1,0 +1,23 @@
+  zoomOut() {
+    this.zoomMode = undefined;
+    this.zoomOutButton.style.display = 'none';
+    this.captionTag.style.display = 'inline-block';
+
+    this.XAxis.sieve = this.cache.XAxis.sieve;
+    this.panel.scrollBox.x = this.cache.scrollBox.x;
+    this.panel.scrollBox.width = this.cache.scrollBox.width;
+
+    let t = Object.assign({}, this.data.factor);
+    this.prepareData(this.zoomData);
+    if (this.allItems.size > 1) this.data.factor = t;
+
+    if (1 == this.allItems.size) {
+      this.initPathForGraphAndPanel();
+      this.viewItems = new Set(this.allItems);
+      this.footer.remove();
+    }
+
+    this.initPathForGraphAndPanel();
+
+    requestAnimationFrame(() => this.requestZoomAnimation());
+  }
