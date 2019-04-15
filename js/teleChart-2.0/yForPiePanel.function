@@ -1,0 +1,18 @@
+  yForPiePanel(y) {
+    let r = {};
+    for (let e of this.allItems) {
+      r[e] = new Array(this.data.length);
+    }
+
+    for (let i = 0; i < this.data.length; i++) {
+      let s = 0;
+      for (let e of this.allItems) {
+        s += y[e][i] * this.data.factor[e];
+      }
+      for (let e of this.allItems) {
+        r[e][i] = y[e][i] * this.data.factor[e] / s * 100;
+      }
+    }
+    this.data.p = r;
+    return r;
+  }

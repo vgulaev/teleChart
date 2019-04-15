@@ -359,10 +359,9 @@ class TC20 {
     } else if ('area' == this.type) {
       this.drawAreaChart(a, b, s);
     } else if ('pie' == this.type) {
-      // this.drawPie(a, b, s);
-      let p = this.yForPie(this.data.y);
-      if (s == this.graph) this.drawPie(a, b, s);
-      if (s == this.panel) this.drawStackedBarChart(a, b, c, s, p);
+      this.data.p = this.yForPie(this.data.y);
+      if (s == this.graph) this.drawPie();
+      if (s == this.panel) this.drawStackedBarChart(a, b, c, s, this.yForPiePanel(this.data.y));
     }
     if (s == this.graph) {
       this.scaleXAxis();
@@ -416,7 +415,7 @@ class TC20 {
     this.addEventListenerToPanel();
   }
 
-  drawPie(a, b) {
+  drawPie() {
     let cx = Math.floor(this.width / 2), cy = Math.floor(this.height / 2);
     let r = Math.floor(Math.min(cx, cy) * 0.9);
     let t = 0;
@@ -427,11 +426,11 @@ class TC20 {
     let lA;
     let y = this.data.p;
     for (let e of this.allItems) {
-      t += y[e][b];
+      t += y[e];
       ex = r * Math.cos(2 * Math.PI * (t + this.data.rndX) / 100) + cx;
       ey = -r * Math.sin(2 * Math.PI * (t + this.data.rndX) / 100) + cy;
       lA = 0;
-      if (y[e][b] > 50) lA = 1;
+      if (y[e] > 50) lA = 1;
       TC20.setA(this.graph[e], {d: `M${sx},${sy}A${r},${r},0,${lA},0,${ex},${ey}L${cx},${cy}`, opacity: this.data.factor[e]});
       sx = ex;
       sy = ey;
@@ -598,8 +597,15 @@ class TC20 {
 
   getABfromScroll() {
     let s = this.panel.scrollBox;
-    let a = Math.ceil(s.x / this.width * (this.data.length - 1));
-    let b = Math.floor((s.x + s.width) / this.width * (this.data.length - 1));
+    let a, b;
+    if ('pie' == this.type) {
+      a = Math.floor(s.x / this.width * (this.data.length));
+      b = Math.floor((s.x + s.width - 1) / this.width * (this.data.length));
+      if (s.width == s.minWidth) a = b;
+    } else {
+      a = Math.floor(s.x / this.width * (this.data.length - 1));
+      b = Math.floor((s.x + s.width) / this.width * (this.data.length - 1));
+    }
     return [a, b];
   }
 
@@ -1203,6 +1209,25 @@ class TC20 {
   }
 
   yForPie(y) {
+    let [a, b] = this.getABfromScroll();
+    let r = {};
+    let s = {};
+    let t = 0;
+    for (let e of this.allItems) {
+      s[e] = 0;
+      for (let i = a; i <= b; i++) {
+        s[e] += y[e][i];
+      }
+      s[e] *= this.data.factor[e];
+      t += s[e];
+    }
+    for (let e of this.allItems) {
+      r[e] = s[e] / t * 100;
+    }
+    return r;
+  }
+
+  yForPiePanel(y) {
     let r = {};
     for (let e of this.allItems) {
       r[e] = new Array(this.data.length);

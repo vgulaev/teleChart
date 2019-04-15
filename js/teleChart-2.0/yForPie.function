@@ -1,18 +1,18 @@
   yForPie(y) {
+    let [a, b] = this.getABfromScroll();
     let r = {};
+    let s = {};
+    let t = 0;
     for (let e of this.allItems) {
-      r[e] = new Array(this.data.length);
-    }
-
-    for (let i = 0; i < this.data.length; i++) {
-      let s = 0;
-      for (let e of this.allItems) {
-        s += y[e][i] * this.data.factor[e];
+      s[e] = 0;
+      for (let i = a; i <= b; i++) {
+        s[e] += y[e][i];
       }
-      for (let e of this.allItems) {
-        r[e][i] = y[e][i] * this.data.factor[e] / s * 100;
-      }
+      s[e] *= this.data.factor[e];
+      t += s[e];
     }
-    this.data.p = r;
+    for (let e of this.allItems) {
+      r[e] = s[e] / t * 100;
+    }
     return r;
   }

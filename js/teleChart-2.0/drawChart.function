@@ -16,10 +16,9 @@
     } else if ('area' == this.type) {
       this.drawAreaChart(a, b, s);
     } else if ('pie' == this.type) {
-      // this.drawPie(a, b, s);
-      let p = this.yForPie(this.data.y);
-      if (s == this.graph) this.drawPie(a, b, s);
-      if (s == this.panel) this.drawStackedBarChart(a, b, c, s, p);
+      this.data.p = this.yForPie(this.data.y);
+      if (s == this.graph) this.drawPie();
+      if (s == this.panel) this.drawStackedBarChart(a, b, c, s, this.yForPiePanel(this.data.y));
     }
     if (s == this.graph) {
       this.scaleXAxis();

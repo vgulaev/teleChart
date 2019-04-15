@@ -1,4 +1,4 @@
-  drawPie(a, b) {
+  drawPie() {
     let cx = Math.floor(this.width / 2), cy = Math.floor(this.height / 2);
     let r = Math.floor(Math.min(cx, cy) * 0.9);
     let t = 0;
@@ -9,11 +9,11 @@
     let lA;
     let y = this.data.p;
     for (let e of this.allItems) {
-      t += y[e][b];
+      t += y[e];
       ex = r * Math.cos(2 * Math.PI * (t + this.data.rndX) / 100) + cx;
       ey = -r * Math.sin(2 * Math.PI * (t + this.data.rndX) / 100) + cy;
       lA = 0;
-      if (y[e][b] > 50) lA = 1;
+      if (y[e] > 50) lA = 1;
       TC20.setA(this.graph[e], {d: `M${sx},${sy}A${r},${r},0,${lA},0,${ex},${ey}L${cx},${cy}`, opacity: this.data.factor[e]});
       sx = ex;
       sy = ey;
