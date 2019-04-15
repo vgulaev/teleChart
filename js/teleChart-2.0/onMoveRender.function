@@ -9,7 +9,6 @@
       }
     } else if ('pie' == this.type) {
       let p = this.yForPie(this.data.y);
-      // console.log('here', p, this.data.p);
       for (let e of this.allItems) {
         t[e] = this.anyCounter(this.data.pie[e], p[e], 25, (x) => {
           this.data.pie[e] = x
@@ -23,6 +22,7 @@
         max: this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x)
       };
     }
+    this.removePointer();
     this.hideTips();
     this.requestExec(this.drawScroll);
     this.requestDrawGraph(t, this.graph);

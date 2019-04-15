@@ -1,0 +1,3 @@
+  themeLabel() {
+    return `Switch to ${this.themes.list[1 - this.themes.current].title} Mode`;
+  }

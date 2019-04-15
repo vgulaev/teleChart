@@ -32,4 +32,23 @@
       gridColor: '#182D3B'
     };
     this.pointer = {g: TC20.createSVG('g')};
+    this.themes = {
+      current: 0,
+      list: [{
+        'title': 'Day',
+        'background-color': 'white',
+        'color': 'black',
+        'background-tips': 'white',
+        'scroll-background': '#e2eef9',
+        'scroll-selector': '#C0D1E1'
+      },
+      {
+        'title': 'Night',
+        'background-color': '#242f3e',
+        'color': 'white',
+        'background-tips': '#1c2533',
+        'scroll-background': '#304259',
+        'scroll-selector': '#56626D'
+      }]
+    };
   }

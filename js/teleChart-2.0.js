@@ -224,11 +224,11 @@ class TC20 {
       };
     };
 
-    // let dayNight = document.createElement('div');
-    // dayNight.style['text-align'] = 'center';
-    // dayNight.innerHTML = `<button style="background-color: white; border: none; font-size: 18px; color: #108be3">${this.themeLabel()}</button>`;
-    // this.divRoot.append(dayNight);
-    // dayNight.querySelector('button').addEventListener('click', (eventData) => this.swithTheme(eventData));
+    let dayNight = document.createElement('div');
+    dayNight.style['text-align'] = 'center';
+    dayNight.innerHTML = `<button id='themeButton' style="background-color: white; border: none; font-size: 18px; color: #108be3">${this.themeLabel()}</button>`;
+    this.divRoot.append(dayNight);
+    dayNight.querySelector('button').addEventListener('click', (eventData) => this.swithTheme(eventData));
   }
 
   createHeader() {
@@ -768,6 +768,25 @@ class TC20 {
       gridColor: '#182D3B'
     };
     this.pointer = {g: TC20.createSVG('g')};
+    this.themes = {
+      current: 0,
+      list: [{
+        'title': 'Day',
+        'background-color': 'white',
+        'color': 'black',
+        'background-tips': 'white',
+        'scroll-background': '#e2eef9',
+        'scroll-selector': '#C0D1E1'
+      },
+      {
+        'title': 'Night',
+        'background-color': '#242f3e',
+        'color': 'white',
+        'background-tips': '#1c2533',
+        'scroll-background': '#304259',
+        'scroll-selector': '#56626D'
+      }]
+    };
   }
 
   initPathForGraphAndPanel() {
@@ -931,7 +950,6 @@ class TC20 {
       }
     } else if ('pie' == this.type) {
       let p = this.yForPie(this.data.y);
-      // console.log('here', p, this.data.p);
       for (let e of this.allItems) {
         t[e] = this.anyCounter(this.data.pie[e], p[e], 25, (x) => {
           this.data.pie[e] = x
@@ -945,6 +963,7 @@ class TC20 {
         max: this.anyCounter(this.graph.max, mm.max, 25, (x) => this.graph.max = x)
       };
     }
+    this.removePointer();
     this.hideTips();
     this.requestExec(this.drawScroll);
     this.requestDrawGraph(t, this.graph);
@@ -1246,6 +1265,19 @@ class TC20 {
     }
   }
 
+  swithTheme(eventData) {
+    this.themes.current = 1 - this.themes.current;
+    let style = this.themes.list[this.themes.current];
+    eventData.target.innerHTML = this.themeLabel();
+    this.divRoot.style['background-color'] = style['background-color'];
+    this.divTips.style['background-color'] = style['background-tips'];
+    this.divRoot.style['color'] = style['color'];
+    this.divRoot.querySelector('#themeButton').style['background-color'] = style['background-color'];
+    this.divRoot.querySelector('#zoomTag').style['background-color'] = style['background-color'];
+    ['top', 'leftBox', 'rightBox', 'bottom', 'leftLine', 'rightLine'].forEach(item => TC20.setA(this.panel.scrollBox[item], {'fill': style['scroll-selector']}));
+    ['leftMask', 'rightMask'].forEach(item => TC20.setA(this.panel.scrollBox[item], {'fill': style['scroll-background']}));
+  }
+
   static text(o) {
     let e = TC20.createSVG('text');
     TC20.setA(e, o);
@@ -1253,6 +1285,10 @@ class TC20 {
       e.innerHTML = o.innerHTML;
     }
     return e;
+  }
+
+  themeLabel() {
+    return `Switch to ${this.themes.list[1 - this.themes.current].title} Mode`;
   }
 
   updateDateRange() {

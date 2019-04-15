@@ -15,9 +15,9 @@
       };
     };
 
-    // let dayNight = document.createElement('div');
-    // dayNight.style['text-align'] = 'center';
-    // dayNight.innerHTML = `<button style="background-color: white; border: none; font-size: 18px; color: #108be3">${this.themeLabel()}</button>`;
-    // this.divRoot.append(dayNight);
-    // dayNight.querySelector('button').addEventListener('click', (eventData) => this.swithTheme(eventData));
+    let dayNight = document.createElement('div');
+    dayNight.style['text-align'] = 'center';
+    dayNight.innerHTML = `<button id='themeButton' style="background-color: white; border: none; font-size: 18px; color: #108be3">${this.themeLabel()}</button>`;
+    this.divRoot.append(dayNight);
+    dayNight.querySelector('button').addEventListener('click', (eventData) => this.swithTheme(eventData));
   }

@@ -1,0 +1,12 @@
+  swithTheme(eventData) {
+    this.themes.current = 1 - this.themes.current;
+    let style = this.themes.list[this.themes.current];
+    eventData.target.innerHTML = this.themeLabel();
+    this.divRoot.style['background-color'] = style['background-color'];
+    this.divTips.style['background-color'] = style['background-tips'];
+    this.divRoot.style['color'] = style['color'];
+    this.divRoot.querySelector('#themeButton').style['background-color'] = style['background-color'];
+    this.divRoot.querySelector('#zoomTag').style['background-color'] = style['background-color'];
+    ['top', 'leftBox', 'rightBox', 'bottom', 'leftLine', 'rightLine'].forEach(item => TC20.setA(this.panel.scrollBox[item], {'fill': style['scroll-selector']}));
+    ['leftMask', 'rightMask'].forEach(item => TC20.setA(this.panel.scrollBox[item], {'fill': style['scroll-background']}));
+  }
