@@ -151,7 +151,7 @@ class TC20 {
   }
 
   static circle(cx, cy, r, o = {}) {
-    let e = TeleChart.createSVG('circle');
+    let e = TC20.createSVG('circle');
     TC20.setA(e, Object.assign({'cx': cx, 'cy': cy, 'r': r}, o));
     return e;
   }
@@ -246,7 +246,7 @@ class TC20 {
   }
 
   static createSVG(tag) {
-    return document.createElementNS(TeleChart.xmlns, tag);
+    return document.createElementNS(TC20.xmlns, tag);
   }
 
   createScrollElement() {
@@ -1002,7 +1002,7 @@ class TC20 {
   }
 
   static path(o = {}) {
-    let e = TeleChart.createSVG('path');
+    let e = TC20.createSVG('path');
     TC20.setA(e, o);
     return e;
   }
@@ -1176,15 +1176,11 @@ class TC20 {
     let s = this.XAxis.sieve;
     for (let item of this.XAxis.points) {
       item.viewX = this.getViewX(item.x);
-      TeleChart.setAttribute(item.text, {x: item.viewX - item.coord.width});
+      TC20.setA(item.text, {x: item.viewX - item.coord.width});
       if (0 != count % (2 ** s) && 1 == item.visible) {
-        // let a = this.animateLabelRemove(item, 400, -1);
-        // this.doAnimation(a);
         item.text.style.display = 'none';
         item.visible = 0;
       } else if (0 == count % (2 ** s) && 0 == item.visible) {
-        // let a = this.animateLabelRemove(item, 400, 1);
-        // this.doAnimation(a);
         item.text.style.display = 'inline';
         item.visible = 1;
       }

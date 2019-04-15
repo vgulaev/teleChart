@@ -1,5 +1,5 @@
   static path(o = {}) {
-    let e = TeleChart.createSVG('path');
+    let e = TC20.createSVG('path');
     TC20.setA(e, o);
     return e;
   }
